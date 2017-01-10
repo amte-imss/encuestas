@@ -1,0 +1,15 @@
+-----------------------------------------------------------------------------------
+  MODIFICACIÓN DE TABLA CURSO CONFIG
+-----------------------------------------------------------------------------------
+  
+ALTER TABLE public.mdl_course_config 
+ADD 
+	tutorizado NUMERIC(1,0);,
+ADD 
+	curso_alcance VARCHAR(20),
+ADD 
+	CONSTRAINT CK_cur_tutorizado CHECK(tutorizado=0 OR tutorizado=1),
+ADD 
+	CONSTRAINT CK_curso_alcance CHECK(curso_alcance='Actualizacin' OR curso_alcance='Capacitación' OR curso_alcance='Formación' );
+
+------------------------------------------------------------------------------------

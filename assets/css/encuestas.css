@@ -1,0 +1,55 @@
+.navbar-nav>li>a {
+    color: #e80303;
+}
+
+.navbar-inverse {
+    border-color: rgba(148, 158, 107, 1);
+}
+
+.container-fluid {
+    background-color: #630a6a;
+}
+
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:focus, .navbar-inverse .navbar-nav>.active>a:hover {
+    color: #fff;
+    background-color: #630a6a;
+}
+
+.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:focus, .navbar-inverse .navbar-nav>.open>a:hover {
+    color: #fff;
+    background-color: #630a6a;
+}
+
+
+.a_menu {
+    background-color: #630a6a;
+}
+
+/*.dropdown-menu>li>a .a_color_:hover{
+    color:#000 ;
+    background-color: #0066FF;
+}
+.dropdown-menu>li>a .a_color_{
+    color:#BBB;
+    background-color: #fff;
+}*/
+
+.dropdown-menu>li>a {
+    /*    display: block;
+        padding: 3px 20px;
+        clear: both;
+        font-weight: 400;
+        line-height: 1.42857143;*/
+    color: #fff;
+    /*white-space: nowrap;*/
+}
+
+.dropdown-menu>li>font:hover, .dropdown-menu>li>font:active{
+    color:#000 ;
+    /*background-color: #0066FF;*/
+}
+.dropdown-menu>li>font{
+    color:#BBB;
+    /*background-color: #fff;*/
+}
