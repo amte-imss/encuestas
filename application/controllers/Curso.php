@@ -27,45 +27,53 @@ class Curso extends CI_Controller {
     }
 
     public function index() {
-        $anios = $this->lista_anios(2009, date('Y'));
-        $rol = $this->config->item('rol_docente');
-        $adscripcion;
-        $categoria;
 
-        //$data['categoria']=dropdown_options($categoria, 'cve_categoria','nom_nombre');
-        //$data['adscripcion']=dropdown_options($adscripcion, '','');
-        $data['anios'] = dropdown_options($anios, 'anio_id', 'anio_desc');
-        //$data['rol']=dropdown_options($rol, 'rol_id','rol_nom');
-        $datos['order_columns'] = array('emp_matricula' => 'Matrícula', 'cve_depto_adscripcion' => 'Adscripción', 'cat_nombre' => 'Categoría', 'grup_nom' => 'BD');
+        if ($this->session->has_userdata('id')) {
 
-        /*
-          #
-          [2] => emp_matricula
-          [3] => emp_nombre
-          [11] => cat_nombre
-          [15] => fch_pre_registro
-          [17] => cur_clave
-          [18] => cur_nom_completo
-          [19] => fecha_inicio
-          [20] => horascur
-          [21] => fecha_fin
-          [24] => grup_nom
-          [25] => tutorizado
-          [26] => curso_alcance
-          [27] => rol_nom
-          [28] => tipocur
+            $anios = $this->lista_anios(2009, date('Y'));
+            $rol = $this->config->item('rol_docente');
+            $adscripcion;
+            $categoria;
+
+            //$data['categoria']=dropdown_options($categoria, 'cve_categoria','nom_nombre');
+            //$data['adscripcion']=dropdown_options($adscripcion, '','');
+            $data['anios'] = dropdown_options($anios, 'anio_id', 'anio_desc');
+            //$data['rol']=dropdown_options($rol, 'rol_id','rol_nom');
+            $datos['order_columns'] = array('emp_matricula' => 'Matrícula', 'cve_depto_adscripcion' => 'Adscripción', 'cat_nombre' => 'Categoría', 'grup_nom' => 'BD');
+
+            /*
+              #
+              [2] => emp_matricula
+              [3] => emp_nombre
+              [11] => cat_nombre
+              [15] => fch_pre_registro
+              [17] => cur_clave
+              [18] => cur_nom_completo
+              [19] => fecha_inicio
+              [20] => horascur
+              [21] => fecha_fin
+              [24] => grup_nom
+              [25] => tutorizado
+              [26] => curso_alcance
+              [27] => rol_nom
+              [28] => tipocur
 
 
-         */
+             */
 
-        /*
-          $data['profesores'] = $this->rep_mod->reporte_usuarios(array('per_page'=>10, 'current_row'=>1));
-          pr($data['profesores']);
+            /*
+              $data['profesores'] = $this->rep_mod->reporte_usuarios(array('per_page'=>10, 'current_row'=>1));
+              pr($data['profesores']);
 
-         */
-        $main_contet = $this->load->view('curso/cursos', $data, true);
-        $this->template->setMainContent($main_contet);
-        $this->template->getTemplate();
+             */
+            $main_contet = $this->load->view('curso/cursos', $data, true);
+            $this->template->setMainContent($main_contet);
+            $this->template->getTemplate();
+        } else {
+            $url_sied = $this->config->item('url_sied');
+            redirect($url_sied);
+            //redirect('http://11.32.41.13/kio/sied');        # code...
+        }
     }
 
     public function info($curso = null) {
@@ -138,10 +146,9 @@ class Curso extends CI_Controller {
                 if ($result === 1) {//Se guardo exitosamente la relacion curso-grupo-bloque
                     $html['mensaje'] = 'Los datos se almacenaron correctamente';
                     $html['tipo_alert'] = En_general::SUCCESS;
-                }else{
+                } else {
                     $html['mensaje'] = 'Ocurrio un error, por favor intentelo más tarde';
                     $html['tipo_alert'] = En_general::DANGER;
-                    
                 }
             }
 
@@ -217,16 +224,21 @@ class Curso extends CI_Controller {
     }
 
     public function info_curso($curso = null) {
-
-        $data['curso'] = $this->cur_mod->listado_cursos(array('cur_id' => $curso));
-        $data['roles'] = $this->cur_mod->listar_roles_curso(array('cur_id' => $curso));
+        if ($this->session->has_userdata('id')) {
+            $data['curso'] = $this->cur_mod->listado_cursos(array('cur_id' => $curso));
+            $data['roles'] = $this->cur_mod->listar_roles_curso(array('cur_id' => $curso));
 //        $data['grupos'] = $this->cur_mod->listar_grupos_curso(array('cur_id' => $curso));
-        $data += $this->cur_mod->getGruposBloques(array('vdc.idc' => $curso));
+            $data += $this->cur_mod->getGruposBloques(array('vdc.idc' => $curso));
 //        pr($data); exit();
 
-        $main_contet = $this->load->view('curso/info_curso', $data, true);
-        $this->template->setMainContent($main_contet);
-        $this->template->getTemplate();
+            $main_contet = $this->load->view('curso/info_curso', $data, true);
+            $this->template->setMainContent($main_contet);
+            $this->template->getTemplate();
+        } else {
+            $url_sied = $this->config->item('url_sied');
+            redirect($url_sied);
+            //redirect('http://11.32.41.13/kio/sied');        # code...
+        }
     }
 
     public function curso_encuesta() {

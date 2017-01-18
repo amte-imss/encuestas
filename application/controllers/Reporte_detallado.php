@@ -26,19 +26,25 @@ class Reporte_detallado extends CI_Controller {
     }
 
     public function index() {
-        $this->load->model('Reporte_model', 'rep_mod'); // modelo de reporte
-        //Obtiene los filtros para reporte
-        /*$data = $this->rep_mod->get_filtros_generales_reportes();
-        //Quitar lo que no se utiliza
-        $unset = array('buscar_por');
-        foreach ($unset as $k_value) {
-            unset($data[$k_value]);
+        if ($this->session->has_userdata('id')) {
+            $this->load->model('Reporte_model', 'rep_mod'); // modelo de reporte
+            //Obtiene los filtros para reporte
+            /* $data = $this->rep_mod->get_filtros_generales_reportes();
+              //Quitar lo que no se utiliza
+              $unset = array('buscar_por');
+              foreach ($unset as $k_value) {
+              unset($data[$k_value]);
+              }
+              $main_contet = $this->load->view('reporte/detalle/detalle', $data, true); */
+            $main_content = $this->filtrosreportes_tpl->getCuerpo(FiltrosReportes_Tpl::RB_ENCUESTAS_DETALLE, array('js' => array('reporte_detallado.js')));
+            $this->template->setMainTitle('Reporte detalle de encuestas');
+            $this->template->setMainContent($main_content);
+            $this->template->getTemplate();
+        } else {
+            $url_sied = $this->config->item('url_sied');
+            redirect($url_sied);
+            //redirect('http://11.32.41.13/kio/sied');        # code...
         }
-        $main_contet = $this->load->view('reporte/detalle/detalle', $data, true);*/
-        $main_content = $this->filtrosreportes_tpl->getCuerpo(FiltrosReportes_Tpl::RB_ENCUESTAS_DETALLE, array('js'=>array('reporte_detallado.js')));
-        $this->template->setMainTitle('Reporte detalle de encuestas');
-        $this->template->setMainContent($main_content);
-        $this->template->getTemplate();
     }
 
     public function get_buscar_cursos_encuestas($current_row = null) {
@@ -53,7 +59,7 @@ class Reporte_detallado extends CI_Controller {
                 $data = array();
                 //echo "-";pr($filtros);echo "-";
                 $resultado = $this->rep_det_mod->reporte_detalle_encuesta($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
-                
+
                 $data = $filtros;
                 $data['total_empleados'] = $resultado['total'];
                 $data['datos'] = $resultado['data'];
@@ -70,15 +76,14 @@ class Reporte_detallado extends CI_Controller {
         }
     }
 
-    public function reporte_detallado_export(){
-       if ($this->input->post()) {
+    public function reporte_detallado_export() {
+        if ($this->input->post()) {
             $filtros = $this->input->post(null, true);
             //$filtros['current_row'] = (isset($current_row) && !empty($current_row)) ? $current_row : 0;
             $data['export'] = $filtros['export'] = true;
             //$data = array();
             //echo "-";pr($filtros);echo "-";
             $resultado = $this->rep_det_mod->reporte_detalle_encuesta($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
-            
             //$data = $filtros;
             $data['total_empleados'] = $resultado['total'];
             $data['datos'] = $resultado['data'];
@@ -87,7 +92,7 @@ class Reporte_detallado extends CI_Controller {
             //$data['current_row'] = $filtros['current_row'];
             //$data['per_page'] = $this->input->post('per_page');
 
-            $filename="Export_".date("d-m-Y_H-i-s").".xls";
+            $filename = "Export_" . date("d-m-Y_H-i-s") . ".xls";
             header("Content-Type: application/vnd.ms-excel; charset=UTF-8");
             header('Content-Encoding: UTF-8');
             header("Content-Disposition: attachment; filename=$filename");
@@ -95,20 +100,20 @@ class Reporte_detallado extends CI_Controller {
             header("Expires: 0");
             echo "\xEF\xBB\xBF"; // UTF-8 BOM
             $this->listado_resultado($data, array('form_recurso' => '#form_curso', 'elemento_resultado' => '#listado_resultado_empleado')); //Generar listado en caso de obtener datos
-            /*$filtros = $this->input->post();
-            $filtros['current_row'] = 0;
-            $filtros['per_page'] = "5";
-            $filtros['order'] = 'firstname';
-            $filtros['order_type'] = 'DESC';
-            $filtros['bactiva'] = "0";
-            $datos_curso=$this->cur_mod->listado_cursos(array('cur_id'=>$curso));
-            $data = $this->resultadorealizado($filtros, false);
-            $filename="Export_".date("d-m-Y_H-i-s")."_".$datos_curso['data'][0]['cur_id'].".xls";
-            header("Content-Type: application/vnd.ms-excel");
-            header("Content-Disposition: attachment; filename=$filename");
-            header("Pragma: no-cache");
-            header("Expires: 0");
-            $this->load->view('reporte/listado_usuariosrep_xsl', $data);*/
+            /* $filtros = $this->input->post();
+              $filtros['current_row'] = 0;
+              $filtros['per_page'] = "5";
+              $filtros['order'] = 'firstname';
+              $filtros['order_type'] = 'DESC';
+              $filtros['bactiva'] = "0";
+              $datos_curso=$this->cur_mod->listado_cursos(array('cur_id'=>$curso));
+              $data = $this->resultadorealizado($filtros, false);
+              $filename="Export_".date("d-m-Y_H-i-s")."_".$datos_curso['data'][0]['cur_id'].".xls";
+              header("Content-Type: application/vnd.ms-excel");
+              header("Content-Disposition: attachment; filename=$filename");
+              header("Pragma: no-cache");
+              header("Expires: 0");
+              $this->load->view('reporte/listado_usuariosrep_xsl', $data); */
         } else {
             echo data_not_exist('No han sido encontrados datos con los criterios seleccionados. <script> $("#btn_export").hide(); </script>'); //Mostrar mensaje de datos no existentes
         }
@@ -116,15 +121,15 @@ class Reporte_detallado extends CI_Controller {
 
     private function listado_resultado($data, $form) {
         $links = "";
-        if(!isset($data['export']) || (isset($data['export']) && $data['export']==false)) {
+        if (!isset($data['export']) || (isset($data['export']) && $data['export'] == false)) {
             $pagination = $this->template->pagination_data_empleado($data, array('reporte_detallado', 'get_buscar_cursos_encuestas')); //Crear mensaje y links de paginación
-            if($data['total_empleados']>0){
+            if ($data['total_empleados'] > 0) {
                 $links = "<div class='col-sm-5 dataTables_info' style='line-height: 50px;'>" . $pagination['total'] . "</div>
                     <div class='col-sm-7 text-right'>" . $pagination['links'] . "</div>";
             }
         }
         echo $links . $this->load->view('reporte/detalle/tb_result_detalle', $data, TRUE) . $links;
-        if(!isset($data['export']) || (isset($data['export']) && $data['export']==false)) {
+        if (!isset($data['export']) || (isset($data['export']) && $data['export'] == false)) {
             echo '<script>
             $("ul.pagination li a").click(function(event){
                 data_ajax(this, "' . $form['form_recurso'] . '", "' . $form['elemento_resultado'] . '");
@@ -134,7 +139,7 @@ class Reporte_detallado extends CI_Controller {
         }
     }
 
-    public function get_view_ajax($tipo = null){
+    public function get_view_ajax($tipo = null) {
         if ($this->input->is_ajax_request()) { //Sólo se accede al método a través de una petición ajax
             if (!is_null($this->input->post())) { //Se verifica que se haya recibido información por método post
                 $filtros = $this->input->post(null, true);
@@ -142,14 +147,15 @@ class Reporte_detallado extends CI_Controller {
                 switch ($tipo) {
                     case 'e':
                         //instrumento_regla, is_bono, anio
-                        $data = $this->rep_det_mod->reporte_encuesta_data($filtros+array('fields'=>"encuesta_cve, descripcion_encuestas||' ('||cve_corta_encuesta||')' as descripcion_encuestas_completa")); //Datos del formulario se envían para generar la consulta segun los filtros
-                        $data['encuesta'] = dropdown_options($data['data'], 'encuesta_cve', 'descripcion_encuestas_completa');;
+                        $data = $this->rep_det_mod->reporte_encuesta_data($filtros + array('fields' => "encuesta_cve, descripcion_encuestas||' ('||cve_corta_encuesta||')' as descripcion_encuestas_completa")); //Datos del formulario se envían para generar la consulta segun los filtros
+                        $data['encuesta'] = dropdown_options($data['data'], 'encuesta_cve', 'descripcion_encuestas_completa');
+                        ;
                         $vista = 'reporte/vistas_grupos/view_encuesta';
                         break;
                     default:
                         # code...
                         break;
-                }                
+                }
                 echo $this->load->view($vista, $data, TRUE);
             }
         } else {
@@ -164,4 +170,5 @@ class Reporte_detallado extends CI_Controller {
         }
         return $anios;
     }
+
 }

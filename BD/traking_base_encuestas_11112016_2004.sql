@@ -96,3 +96,10 @@ update departments.ssd_cat_delegacion set cve_regiones = 1 where cve_delegacion 
 update departments.ssd_cat_delegacion set cve_regiones = 2 where cve_delegacion in ('05', '08', '10', '20', '25', '29', '34');
 update departments.ssd_cat_delegacion set cve_regiones = 3 where cve_delegacion in ('07', '37', '38', '12', '18', '21', '22', '23', '28', '30', '31', '32');
 update departments.ssd_cat_delegacion set cve_regiones = 4 where cve_delegacion in ('13', '15', '16', '24', '33', '35', '36', '04');
+
+--
+-- Agregar campo de texto de descripción de la encuesta que aplica para las implementaciones
+-- Ejecución LEAS 13/10/2017
+--
+
+alter table encuestas.sse_encuestas add column guia_descripcion_encuesta text null;
