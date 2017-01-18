@@ -16,10 +16,11 @@ if (isset($datos_user_aeva) && !empty($datos_user_aeva)) {
                             </div>';
         }
         ?>
-        
+
     </div>
      <div class="list-group-item">
      <div style="text-align:justify">
+     
      
     <?php 
     $datos_curso['data'][0]['tutorizado']=1;

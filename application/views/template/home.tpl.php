@@ -5,7 +5,7 @@
 		<title>
 			<?php echo (!is_null($title)) ? "{$title}::" : "" ?> Encuestas de satisfacción 
 		</title>
-		
+
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -15,6 +15,7 @@
 
 		<?php echo css("bootstrap.min.css"); ?>
 		<?php echo css("jasny-bootstrap.min.css"); ?>
+		
 		
 		<!-- Custom Theme files -->
 		<?php echo css("mainBody.css"); ?>
