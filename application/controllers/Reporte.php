@@ -26,44 +26,50 @@ class Reporte extends CI_Controller {
     }
 
     public function index() {
-        $anios = $this->lista_anios(2009, date('Y'));
-        $rol = $this->config->item('rol_docente');
-        $adscripcion;
-        $categoria;
+        if ($this->session->has_userdata('id')) {
+            $anios = $this->lista_anios(2009, date('Y'));
+            $rol = $this->config->item('rol_docente');
+            $adscripcion;
+            $categoria;
 
 //$data['categoria']=dropdown_options($categoria, 'cve_categoria','nom_nombre');
 //$data['adscripcion']=dropdown_options($adscripcion, '','');
-        $data['anios'] = dropdown_options($anios, 'anio_id', 'anio_desc');
-        $data['rol'] = dropdown_options($rol, 'rol_id', 'rol_nom');
-        $datos['order_columns'] = array('emp_matricula' => 'Matrícula', 'cve_depto_adscripcion' => 'Adscripción', 'cat_nombre' => 'Categoría', 'grup_nom' => 'BD');
+            $data['anios'] = dropdown_options($anios, 'anio_id', 'anio_desc');
+            $data['rol'] = dropdown_options($rol, 'rol_id', 'rol_nom');
+            $datos['order_columns'] = array('emp_matricula' => 'Matrícula', 'cve_depto_adscripcion' => 'Adscripción', 'cat_nombre' => 'Categoría', 'grup_nom' => 'BD');
 
-        /*
-          [2] => emp_matricula
-          [3] => emp_nombre
-          [11] => cat_nombre
-          [15] => fch_pre_registro
-          [17] => cur_clave
-          [18] => cur_nom_completo
-          [19] => fecha_inicio
-          [20] => horascur
-          [21] => fecha_fin
-          [24] => grup_nom
-          [25] => tutorizado
-          [26] => curso_alcance
-          [27] => rol_nom
-          [28] => tipocur
-         */
+            /*
+              [2] => emp_matricula
+              [3] => emp_nombre
+              [11] => cat_nombre
+              [15] => fch_pre_registro
+              [17] => cur_clave
+              [18] => cur_nom_completo
+              [19] => fecha_inicio
+              [20] => horascur
+              [21] => fecha_fin
+              [24] => grup_nom
+              [25] => tutorizado
+              [26] => curso_alcance
+              [27] => rol_nom
+              [28] => tipocur
+             */
 
-        /*
-          $data['profesores'] = $this->rep_mod->reporte_usuarios(array('per_page'=>10, 'current_row'=>1));
-          pr($data['profesores']);
+            /*
+              $data['profesores'] = $this->rep_mod->reporte_usuarios(array('per_page'=>10, 'current_row'=>1));
+              pr($data['profesores']);
 
-         */
-        $main_contet = $this->filtrosreportes_tpl->getCuerpo(FiltrosReportes_Tpl::RB_RESUMEN_PUNTOS);
+             */
+            $main_contet = $this->filtrosreportes_tpl->getCuerpo(FiltrosReportes_Tpl::RB_RESUMEN_PUNTOS);
 //        $main_contet = $this->load->view('reporte/resumen_bonos/docentes', $data, true);
-        $this->template->setMainTitle('Resumen de bonos');
-        $this->template->setMainContent($main_contet);
-        $this->template->getTemplate();
+            $this->template->setMainTitle('Resumen de bonos');
+            $this->template->setMainContent($main_contet);
+            $this->template->getTemplate();
+        } else {
+            $url_sied = $this->config->item('url_sied');
+            redirect($url_sied);
+            //redirect('http://11.32.41.13/kio/sied');        # code...
+        }
     }
 
 //    public function index()
@@ -289,7 +295,7 @@ class Reporte extends CI_Controller {
 
 //pr($filtros);
 //            $resultado = $this->rep_mod->reporte_usuarios($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
-            $resultado = $this->rep_mod->reporte_usuarios_vista_cursos($filtros); 
+            $resultado = $this->rep_mod->reporte_usuarios_vista_cursos($filtros);
             $data = $filtros;
             $data['total_empleados'] = $resultado['total'];
             $data['empleados'] = $resultado['data'];

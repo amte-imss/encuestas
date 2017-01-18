@@ -62,16 +62,21 @@ class Reporte_bonos extends CI_Controller {
 //        $this->template->getTemplate();
 //         $this->filtrosreportes_tpl->getVista(FiltrosReportes_Tpl::RB_IMPLEMENTACION);
 
-
-        $reglas_evaluacion = $this->rep_mod->get_lista_roles_regla_evaluacion('roles', 'excepcion');
-        $this->session->set_userdata('reglas_evaluacion', $reglas_evaluacion);
+        if ($this->session->has_userdata('id')) {
+            $reglas_evaluacion = $this->rep_mod->get_lista_roles_regla_evaluacion('roles', 'excepcion');
+            $this->session->set_userdata('reglas_evaluacion', $reglas_evaluacion);
 //        pr($reglas_evaluacion);
 //        $this->session->set_userdata('reglas_evaluacion', $reglas_evaluacion);
 
-        $main_contet = $this->filtrosreportes_tpl->getCuerpo(FiltrosReportes_Tpl::RB_IMPLEMENTACION);
-        $this->template->setMainTitle('Reporte de implementación');
-        $this->template->setMainContent($main_contet);
-        $this->template->getTemplate();
+            $main_contet = $this->filtrosreportes_tpl->getCuerpo(FiltrosReportes_Tpl::RB_IMPLEMENTACION);
+            $this->template->setMainTitle('Reporte de implementación');
+            $this->template->setMainContent($main_contet);
+            $this->template->getTemplate();
+        } else {
+            $url_sied = $this->config->item('url_sied');
+            redirect($url_sied);
+            //redirect('http://11.32.41.13/kio/sied');        # code...
+        }
     }
 
     public function get_buscar_cursos_encuestas($current_row = null) {
