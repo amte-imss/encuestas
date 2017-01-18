@@ -17,7 +17,58 @@ if (isset($datos_user_aeva) && !empty($datos_user_aeva)) {
         }
         ?>
     </div>
+     <div class="list-group-item">
+     <div style="text-align:justify">
+     
+    <?php 
+    $datos_curso['data'][0]['tutorizado']=1;
+    if (isset($datos_curso['data'][0]['tutorizado']) && $datos_curso['data'][0]['tutorizado'] == 1) 
+    { 
+       echo "<b>Instrucciones</b> <br><br>
+       A fin de conocer su punto de vista sobre aspectos importantes relativos al presente curso, 
+       enseguida se presentan algunas aseveraciones para conocer su satisfacción en general. 
+       Sus respuestas son de gran relevancia para mejorar los cursos a distancia implementados por la 
+       División de Innovación Educativa por lo que le solicitamos responda con la mayor veracidad posible.
+       <br><br> 
+       Deberá seleccionar “SI” o “No” según se haya presentado o no la situación descrita. En los casos en que no le sea posible dar una opinión, deberá seleccionar No aplica:
+       ";
+    }
+    else
+    {
+       echo "<b>Instrucciones</b> <br><br>
+       Enseguida se presenta una serie de enunciados, todos se refieren a las actividades que desempeña un Coordinador de curso no Tutorizado.
+       <br><br>
+       Coloque una X en el espacio que corresponda, ya sea que el Coordinador de curso llevó a cabo o no la actividad que se describe.
+       <br><br>
+       En los casos en que no es posible evaluar la actividad del Coordinador de curso, por no haberse presentado la situación descrita, deberá colocar una X en el espacio que corresponde  a No aplica";
+    }    
+    
+
+    ?>
+    
+    </div>
+
+     </div>   
+     <div class="col-md-4"></div>
+         <div class="col-md-4">
+           <table id="rayitas" class="text-center">
+             <tr class="border-bottom">
+               <td class="border-lr"></td>
+               <td></td>
+               <td class="border-lr">X</td>
+             </tr>
+             <tr>
+               <td class="no-border">Si</td>
+               <td class="no-border">No</td>
+               <td class="no-border">No aplica</td>
+             </tr>
+           </table>
+         </div>
+         <div class="col-md-4"></div>
+
+
     <div class="panel-heading">  
+        
         <table>
             <tr>
                 <th>

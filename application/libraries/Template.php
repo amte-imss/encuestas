@@ -19,7 +19,7 @@ class Template {
         $this->elements = array(
             "title" => null,
             "menu" => null,
-            "main_title" => 'Encuestas de satisfacción docente',
+            "main_title" => 'Encuestas de satisfacción',
             "main_content" => null,
             "css_files" => null,
             "js_files" => null,
