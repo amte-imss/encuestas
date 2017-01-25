@@ -286,6 +286,8 @@ class Encuestas_model extends CI_Model {
             'reglas_evaluacion_cve' => $valores['regla_evaluacion_cve'],
             'tipo_encuesta' => $valores['tipo_instrumento'],
             'eva_tipo' => $valores['eva_tipo'],
+            'guia_descripcion_encuesta' => ((isset($valores['guia_descripcion_encuesta']) && !empty($valores['guia_descripcion_encuesta'])) ? $valores['guia_descripcion_encuesta'] : '' ),
+            
         );
 
         $this->db->update('encuestas.sse_encuestas', $datos_actualiza);
@@ -820,6 +822,7 @@ class Encuestas_model extends CI_Model {
             'mdl_role.description',
             'mdl_role.sortorder',
             'mdl_role.archetype',
+            'sse_encuestas.guia_descripcion_encuesta',
             '(' . $rol_evaluador . ') AS evaluador'
         );
 

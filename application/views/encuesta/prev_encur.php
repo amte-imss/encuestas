@@ -6,6 +6,40 @@ if ($this->session->flashdata('success') == TRUE) {
     echo html_message($this->session->flashdata('success'), $tipo_msg['SUCCESS']['class']);
 }
 ?>
+     <div class="list-group-item">
+     <div style="text-align:justify">
+     
+     
+    <?php 
+   
+       echo "<b>Instrucciones</b> <br><br>";
+       echo  $instrumento[0]['guia_descripcion_encuesta'];
+         
+
+    ?>
+    
+    </div>
+
+     </div>   
+     <div class="col-md-4"></div>
+         <div class="col-md-4">
+           <table id="rayitas" class="text-center">
+             <tr class="border-bottom">
+               <td class="border-lr"></td>
+               <td></td>
+               <td class="border-lr">X</td>
+             </tr>
+             <tr>
+               <td class="no-border">Si</td>
+               <td class="no-border">No</td>
+               <td class="no-border">No aplica</td>
+             </tr>
+           </table>
+         </div>
+         <div class="col-md-4"></div>
+
+
+
 <div class="row">
     <div class="col-md-12 col-sm-12">
         <div class="panel panel-amarillo">

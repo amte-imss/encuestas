@@ -37,6 +37,7 @@ if (isset($logueado) && !empty($logueado)) {
                             <li><a href="<?php echo site_url('reporte_detallado'); ?>" class="a_menu">Reporte detalle de encuestas</a></li>
                         </ul>
                     </li>
+                    <li><a href="<?php echo site_url('reglas_evaluacion/index'); ?>">Gestión de Reglas de evaluación</a></li>
                     <li>
                         <a href="<?php echo site_url('login/regresar_sied'); ?>" class="a_nav_sied">
                             Regresar a SIED

@@ -98,7 +98,15 @@
                         <?php echo $this->form_complete->create_element(array('id' => 'regla_evaluacion_cve', 'type' => 'dropdown', 'options' => $reglas_evaluacion,'value'=>$instrumento[0]['reglas_evaluacion_cve'], 'first' => array('' => 'Seleccione un rol'), 'attributes' => array('name' => 'rol_id', 'class' => 'form-control', 'placeholder' => 'Rol a evaluar', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Rol a evaluar'))); ?>
                         <span class="text-danger"> <?php echo form_error('regla_evaluacion_cve','','');?> </span>
                         <p class="help-block"></p>
-                    </div>                    
+                    </div>  
+                      <div class="list-group-item">
+                        <label for="rol_a_evaluar">Instrucciones:</label>
+                        <?php echo $this->form_complete->create_element(array('id' => 'guia_descripcion_encuesta', 'type' => 'textarea', 'value'=>$instrumento[0]['guia_descripcion_encuesta'])); ?>
+                        <span class="text-danger"> <?php echo form_error('guia_descripcion_encuesta','','');?> </span>
+                        <p class="help-block"></p>
+                    </div>  
+
+
 	                <div class="list-group-item">
 		                  <?php
 		                      echo $this->form_complete->create_element(array('id'=>'btn_submit', 'type'=>'submit', 'value'=>'Guardar instrumento', 'attributes'=>array('class'=>'btn btn-success btn-block espacio')));
