@@ -772,7 +772,7 @@ class Encuestas_model extends CI_Model {
     }
 
     public function get_instrumento_detalle($id_instrumento = null) {
-        /*
+         /*
           SELECT * FROM encuestas.sse_encuestas en
           LEFT JOIN encuestas.sse_preguntas pre ON en.encuesta_cve=pre.encuesta_cve
           LEFT JOIN encuestas.sse_respuestas res ON res.preguntas_cve=pre.preguntas_cve
@@ -2737,133 +2737,213 @@ class Encuestas_model extends CI_Model {
      * @param type $params
      * @return type
      */
-    public function get_promedio_encuesta_indicador($params = null) {
-        //Entidad de emp_actividad_docente
-        //pr($params);
-        //$group_by_gral = ' ) as calculos_promedio '. ' group by grupo_cve, evaluador, rol_evaluador, evaluado, rol_evaluado ';
-        //$group_by_gral = ' ) as calculos_promedio left join encuestas.sse_indicador ind on ind.indicador_cve=calculos_promedio.tipo_indicador_cve group by tipo_indicador_cve, ind.descripcion ';
-        $group_by_gral = ' ) as calculos_promedio 
-            left join encuestas.sse_indicador ind on ind.indicador_cve=calculos_promedio.tipo_indicador_cve
-            left join mdl_user us_eva on us_eva.id=calculos_promedio.evaluador
-            left join mdl_role rol_eva on rol_eva.id=calculos_promedio.rol_evaluador
-            left join mdl_user us_eval on us_eval.id=calculos_promedio.evaluado
-            left join mdl_role rol_eval on rol_eval.id=calculos_promedio.rol_evaluado
-            group by tipo_indicador_cve, ind.descripcion, evaluador, us_eva.username, us_eva.firstname, us_eva.lastname, rol_evaluador, rol_eva.name, evaluado, us_eval.username, us_eval.firstname, us_eval.lastname, rol_evaluado, rol_eval.name';
-
-        $joins = ' from encuestas.sse_evaluacion ev '
-                . ' join encuestas.sse_respuestas res on res.reactivos_cve = ev.reactivos_cve '
-                . ' join encuestas.sse_preguntas pre on pre.preguntas_cve = ev.preguntas_cve '
-                . ' join encuestas.sse_encuesta_curso encc on encc.encuesta_cve = res.encuesta_cve ';
-
-        $w_p = array('curso_cve' => ' encc.course_cve=' . $params['curso_cve'] . ' ',
-            'is_bono' => '',
-            'identificador' => ''
-                //'grupo_cve' => ' ev.group_id=' . $params['grupo_cve'] . ' ',
-                //'evaluado_user_cve' => ' evaluado_user_cve=' . $params['evaluado_user_cve'] . ' ',
-                //'evaluado_rol_id' => ' evaluado_rol_id=' . $params['evaluado_rol_id'] . ' ',
-        );
-
-        /* if(isset($params['grupo_cve']) && !empty($params['grupo_cve'])){
-          $w_p['grupo_cve'] = ' ev.group_id=' . $params['grupo_cve'] . ' ';
-          }
-
-          if(isset($params['evaluado_user_cve']) && !empty($params['evaluado_user_cve'])){
-          $w_p['evaluado_user_cve'] = ' ev.group_id=' . $params['evaluado_user_cve'] . ' ';
-          }
-
-          if(isset($params['evaluado_rol_id']) && !empty($params['evaluado_rol_id'])){
-          $w_p['evaluado_rol_id'] = ' ev.group_id=' . $params['evaluado_rol_id'] . ' ';
-          } */
-        /* if(isset($params['is_bono']) && $params['is_bono']!=''){
-          $w_p['is_bono'] = ' and pre.is_bono=' . $params['is_bono'] . ' ';
-          } */
-        if (isset($params['tipo_indicador_cve']) && !empty($params['tipo_indicador_cve'][0])) {
-            $w_p['identificador'] = ' and pre.tipo_indicador_cve IN (' . implode(',', $params['tipo_indicador_cve']) . ') ';
-        }
-        $conditions = (isset($params['conditions']) && !empty($params['conditions'])) ? $params['conditions'] : '';
-        //pr($w_p['identificador']);
-        $where = array(
-            'total_si' => " where " . $conditions . " res.texto in('Si', 'Casi siempre', 'Siempre') and " . $w_p['curso_cve'] . $w_p['is_bono'] . $w_p['identificador'],
-            'total_is_bono' => " where " . $conditions . " " . $w_p['curso_cve'] . $w_p['is_bono'] . $w_p['identificador'],
-            'total_no_aplica' => " where " . $conditions . " pre.valido_no_aplica = 1 and res.texto in('No aplica', 'No envió mensaje') and " . $w_p['curso_cve'] . $w_p['is_bono'] . $w_p['identificador'],
-            'total_nos' => " where " . $conditions . " res.texto in('No', 'Casi nunca', 'Nunca', 'Algunas veces') and " . $w_p['curso_cve'] . $w_p['is_bono'] . $w_p['identificador'],
-            'total_no_aplica_val_prom' => " where " . $conditions . " pre.valido_no_aplica = 0 and res.texto in('No aplica', 'No envió mensaje') and " . $w_p['curso_cve'] . $w_p['is_bono'] . $w_p['identificador'],
-        );
-        //Select especifico y repetido
-        //$s_p = ' ev.group_id "grupo_cve", ev.evaluador_user_cve "evaluador", ev.evaluador_rol_id "rol_evaluador", ev.evaluado_user_cve "evaluado", ev.evaluado_rol_id "rol_evaluado" ';
-        //$s_p = ', pre.tipo_indicador_cve';
-        $s_p = ', pre.tipo_indicador_cve, ev.evaluador_user_cve "evaluador", ev.evaluador_rol_id "rol_evaluador", ev.evaluado_user_cve "evaluado", ev.evaluado_rol_id "rol_evaluado" ';
-        $select = array(
-            'total_si' => ' select COUNT(res.texto) as puntua, 0 as no_puntua, 0 as netos, 0 as nos_, 0 as no_aplica_promedio ' . $s_p,
-            'total_is_bono' => ' select 0 as puntua, 0 as no_puntua, COUNT(res.texto) as netos, 0 as nos_, 0 as no_aplica_promedio ' . $s_p,
-            'total_no_aplica' => 'select 0 as puntua, COUNT(res.texto) as no_puntua, 0 as netos, 0 as nos_, 0 as no_aplica_promedio ' . $s_p,
-            'total_nos' => ' select 0 as puntua, 0 as no_puntua, 0 as netos, COUNT(res.texto) as nos_, 0 as no_aplica_promedio ' . $s_p,
-            'total_no_aplica_val_prom' => ' select 0 as puntua, 0 as no_puntua, 0 as netos, 0 as nos_, COUNT(res.texto) as no_aplica_promedio ' . $s_p,
-        );
-        //$g_by = 'group by ev.group_id, ev.evaluador_user_cve, ev.evaluador_rol_id, ev.evaluado_user_cve, ev.evaluado_rol_id';
-        //$g_by = 'group by pre.tipo_indicador_cve';
-        $g_by = 'group by pre.tipo_indicador_cve, ev.evaluador_user_cve, ev.evaluador_rol_id, ev.evaluado_user_cve, ev.evaluado_rol_id';
-
-
-        $string_query = 'SELECT count(*) AS total FROM (SELECT tipo_indicador_cve FROM (';
-        $union = '';
-        foreach ($select as $key => $value) {
-            $string_query .= $union . $value . $joins . $where[$key] . $g_by;
-            $union = ' union ';
-        }
-        $string_query .= $group_by_gral . ") AS t";
-        //pr($string_query);
-        $query0 = $this->db->query($string_query);
-        $num_rows = $query0->result_array();
-        $query0->free_result(); //Libera la memoria
-        //pr($this->db->last_query());
-
-        /* $sq = 'select tipo_indicador_cve, evaluador, rol_evaluador, evaluado, rol_evaluado, sum(netos) as total, '
-          . 'sum(no_puntua) as no_puntua_reg, sum(nos_) total_no, sum(no_aplica_promedio) as total_no_aplica_cuenta_promedio, '
-          . 'sum(puntua) as puntua_reg, (sum(netos) - sum(no_puntua)) as base_reg, '
-          . '(round(sum(puntua)::numeric * 100/(sum(netos) - sum(no_puntua))::numeric,3)) as porcentaje '
-          . ' from ( ';
-          $sq = 'select tipo_indicador_cve, ind.descripcion as indicador, sum(netos) as total, '
-          . 'sum(no_puntua) as no_puntua_reg, sum(nos_) total_no, sum(no_aplica_promedio) as total_no_aplica_cuenta_promedio, '
-          . 'sum(puntua) as puntua_reg, (sum(netos) - sum(no_puntua)) as base_reg, '
-          . '(round(sum(puntua)::numeric * 100/(sum(netos) - sum(no_puntua))::numeric,3)) as porcentaje '
-          . ' from ( '; */
-        $sq = "select tipo_indicador_cve, ind.descripcion as indicador, evaluador, us_eva.username as eva_username, CONCAT(us_eva.firstname,' ',us_eva.lastname) as usu_evaluador, 
-                rol_evaluador, rol_eva.name as rol_nombre_evaluador, evaluado, us_eval.username as eval_username, CONCAT(us_eval.firstname,' ',us_eval.lastname) as usu_evaluado, 
-                rol_evaluado, rol_eval.name as rol_nombre_evaluado, sum(netos) as total, "
-                . 'sum(no_puntua) as no_puntua_reg, sum(nos_) total_no, sum(no_aplica_promedio) as total_no_aplica_cuenta_promedio, '
-                . 'sum(puntua) as puntua_reg, (sum(netos) - sum(no_puntua)) as base_reg, '
-                //. '(round(sum(puntua)::numeric * 100/(sum(netos) - sum(no_puntua))::numeric,3)) as porcentaje '
-                . 'CASE when (sum(netos) - sum(no_puntua)) < 1 then 0 else (round(sum(puntua)::numeric * 100/(sum(netos) - sum(no_puntua))::numeric,3)) end as porcentaje '
-                . ' from ( ';
-        $union = '';
-        foreach ($select as $key => $value) {
-            $sq .= $union . $value . $joins . $where[$key] . $g_by;
-            $union = ' union ';
-        }
-        $sq .= $group_by_gral;
-
-        /* if(isset($params['order']) && !empty($params['order'])){
-          //$tipo_orden = (isset($params['order_type']) && !empty($params['order_type'])) ? $params['order_type'] : "ASC";
-          //$this->db->order_by($params['order'], $tipo_orden);
-          $sq .= ' order by '.$params['order'];
-          } */
-        $sq .= ' order by rol_nombre_evaluado, usu_evaluado, rol_nombre_evaluador, usu_evaluador, indicador';
-        /* if(isset($params['per_page']) && isset($params['current_row'])){ //Establecer límite definido para paginación 
-          //$this->db->limit($params['per_page'], $params['current_row']);
-          $sq .= ' limit '.$params['per_page'].' OFFSET '.$params['current_row'];
-          } */
-
-        $query = $this->db->query($sq);
-        //pr($sq);
-        //pr($this->db->last_query());
-        $result['total'] = $num_rows[0]['total'];
-        $result['columns'] = $query->list_fields();
-        $result['indicadores'] = $this->get_indicador_curso(array('conditions' => array('eva.course_cve' => $params['curso_cve'], 'eva.evaluador_rol_id' => $this->config->item('ENCUESTAS_ROL_EVALUADOR')['ALUMNO']), 'fields' => 'distinct(ind.*)'));
-        $result['data'] = $query->result_array();
+    public function get_promedio_encuesta_indicador($params = null)
+    {
+        $this->db->select(array('indicador_cve', 'descripcion'));
+        $query = $this->db->get('encuestas.sse_indicador'); //Obtener conjunto de registros
+        $indicadores = $query->result_array();
 
         $query->free_result(); //Libera la memoria
-        return $result;
+        $select = array('BLOQUE.bloque as "BLN"', "AA.course_cve", "AA.group_id",
+            "AA.evaluador_user_cve",
+            "AA.evaluador_rol_id",
+            "AA.evaluado_user_cve",
+            "AA.evaluado_rol_id",
+            "AA.grupos_ids_text",
+            'concat("U1".firstname, \' \', "U1".lastname, \' (\',"U1".username, \')\') as "UN1"',
+            "UR1.name URN1",
+            'concat("U2".firstname, \' \', "U2".lastname, \' (\',"U1".username, \')\') as "UN2"',
+            "UR2.name URN2",
+            'CURSO.namec "CN"',
+            'GRUPO.name "GN"',
+            'depto_tut_evaluado.name_region "region_evaluado"',
+            'depto_tut_evaluado.nom_delegacion "delegacion_evaluado"',
+            'depto_tut_evaluado.des_unidad_atencion "unidad_evaluado"',
+            'cat_tut_evaluado.nom_nombre "categoria_evaluado"',
+            'depto_pre_evaluador.name_region "region_evaluador1"',
+            'depto_pre_evaluador.nom_delegacion "delegacion_evaluador1"',
+            'depto_pre_evaluador.des_unidad_atencion "unidad_evaluador1"',
+            'cat_pre_evaluador.nom_nombre "categoria_evaluador1"',
+            'depto_tut_evaluador.name_region "region_evaluador2"',
+            'depto_tut_evaluador.nom_delegacion "delegacion_evaluador2"',
+            'depto_tut_evaluador.des_unidad_atencion "unidad_evaluador2"',
+            'cat_tut_evaluador.nom_nombre "categoria_evaluador2"');
+
+        $this->db->flush_cache();
+
+        $this->db->start_cache();
+
+        $this->db->select('case when count(*) = sum(encuestas.get_value_reactivo(3,C.valido_no_aplica, "B".texto)) then 0 else 100*(sum(encuestas.get_value_reactivo(1,"C".valido_no_aplica, "B".texto))::numeric/(count(*)::numeric - sum(encuestas.get_value_reactivo(3,"C".valido_no_aplica, "B".texto))::numeric)) end');
+        $this->db->join('encuestas.sse_respuestas as "B"', 'A.encuesta_cve = "B".encuesta_cve and A.reactivos_cve = "B".reactivos_cve and A.preguntas_cve = "B".preguntas_cve', 'inner');
+        $this->db->join('encuestas.sse_preguntas as "C"', ' C.encuesta_cve = "B".encuesta_cve and C.preguntas_cve = "B".preguntas_cve', 'inner');
+        $this->db->where('"A".course_cve = "AA".course_cve and "A".group_id = "AA".group_id AND "A".evaluador_user_cve = "AA".evaluador_user_cve and "A".evaluador_rol_id = "AA".evaluador_rol_id and "A".evaluado_user_cve = "AA".evaluado_user_cve and "A".evaluado_rol_id = "AA".evaluado_rol_id and "AA".grupos_ids_text = "A".grupos_ids_text');
+        $this->db->group_by('"A".course_cve, "A".group_id, "A".evaluador_user_cve, "A".evaluador_rol_id, "A".evaluado_user_cve, "A".evaluado_rol_id, "A".grupos_ids_text');
+        $this->db->order_by('"A".course_cve, "A".group_id, "A".evaluador_user_cve, "A".evaluador_rol_id, "A".evaluado_user_cve, "A".evaluado_rol_id, "A".grupos_ids_text');
+        $this->db->stop_cache();
+
+        foreach ($indicadores as $indicador)
+        {
+            $this->db->where('"C".tipo_indicador_cve', $indicador['indicador_cve']);
+            $tmp_q = '(' . $this->db->get_compiled_select('encuestas.sse_evaluacion as "A"') . ') as "indP' . $indicador['indicador_cve'] . '"';
+            $select[] = $tmp_q;
+            $this->db->reset_query();
+        }
+
+        $this->db->flush_cache();
+
+        $this->db->reset_query();
+
+        $this->db->select('array_to_string(array_agg("C".tipo_indicador_cve), \',\')');
+        $this->db->join('encuestas.sse_respuestas as "B"', 'A.encuesta_cve = "B".encuesta_cve and A.reactivos_cve = "B".reactivos_cve and A.preguntas_cve = "B".preguntas_cve', 'inner');
+        $this->db->join('encuestas.sse_preguntas as "C"', ' C.encuesta_cve = "B".encuesta_cve and C.preguntas_cve = "B".preguntas_cve', 'inner');
+        $this->db->where('"A".course_cve = "AA".course_cve and "A".group_id = "AA".group_id AND "A".evaluador_user_cve = "AA".evaluador_user_cve and "A".evaluador_rol_id = "AA".evaluador_rol_id and "A".evaluado_user_cve = "AA".evaluado_user_cve and "A".evaluado_rol_id = "AA".evaluado_rol_id and "AA".grupos_ids_text = "A".grupos_ids_text');
+        $this->db->group_by('"A".course_cve, "A".group_id, "A".evaluador_user_cve, "A".evaluador_rol_id, "A".evaluado_user_cve, "A".evaluado_rol_id, "A".grupos_ids_text');
+        $this->db->order_by('"A".course_cve, "A".group_id, "A".evaluador_user_cve, "A".evaluador_rol_id, "A".evaluado_user_cve, "A".evaluado_rol_id, "A".grupos_ids_text');
+        $tmp_q = '(' . $this->db->get_compiled_select('encuestas.sse_evaluacion as "A"') . ') as "indicadores_s"';
+        $select[] = $tmp_q;
+
+        $this->db->reset_query();
+
+        $this->db->start_cache();
+        $this->db->join("public.mdl_user U1", "AA.evaluador_user_cve = U1.id", 'inner');
+        $this->db->join("public.mdl_user U2", "AA.evaluado_user_cve = U2.id", "inner");
+        $this->db->join("public.mdl_role UR1", "AA.evaluador_rol_id = UR1.id", "inner");
+        $this->db->join("public.mdl_role UR2", "AA.evaluado_rol_id = UR2.id", "inner");
+        $this->db->join("encuestas.view_datos_curso as CURSO", "CURSO.idc = AA.course_cve", "inner");
+        $this->db->join("public.mdl_groups as GRUPO", "GRUPO.id = AA.group_id and AA.group_id > 0", "left");
+        $this->db->join('"tutorias"."mdl_usertutor" "tut_evaluado"', '"tut_evaluado"."nom_usuario" = "U2"."username" and "tut_evaluado"."id_curso" = "AA"."course_cve" and "AA"."evaluado_rol_id" <> 5', "left");
+        $this->db->join('"nomina"."ssn_categoria" cat_tut_evaluado', '"cat_tut_evaluado"."cve_categoria" = "tut_evaluado"."cve_categoria"', "left");
+        $this->db->join('"departments"."ssv_departamentos" depto_tut_evaluado', '"depto_tut_evaluado"."cve_depto_adscripcion"="tut_evaluado"."cve_departamento"', "left");
+        $this->db->join('"gestion"."sgp_tab_preregistro_al" as prereg_evaluador', '"prereg_evaluador"."nom_usuario" = "U1"."username" and "prereg_evaluador"."cve_curso" = "AA"."course_cve" and "AA"."evaluador_rol_id" = 5', "left");
+        $this->db->join('"tutorias"."mdl_usertutor" as tut_evaluador', '"tut_evaluador"."nom_usuario"="U1"."username" and "tut_evaluador"."id_curso" = "AA"."course_cve" and "AA"."evaluador_rol_id" <> 5', "left");
+        $this->db->join('"nomina"."ssn_categoria" cat_pre_evaluador', '"cat_pre_evaluador"."cve_categoria" = "prereg_evaluador"."cve_cat"', "left");
+        $this->db->join('"nomina"."ssn_categoria" cat_tut_evaluador', '"cat_tut_evaluador"."cve_categoria" = "tut_evaluador"."cve_categoria"', "left");
+        $this->db->join('"departments"."ssv_departamentos" depto_pre_evaluador', '"depto_pre_evaluador"."cve_depto_adscripcion"="prereg_evaluador"."cve_departamental"', "left");
+        $this->db->join('"departments"."ssv_departamentos" depto_tut_evaluador', '"depto_tut_evaluador"."cve_depto_adscripcion"="tut_evaluador"."cve_departamento"  ', "left");
+        $this->db->join('"encuestas.sse_curso_bloque_grupo" "BLOQUE"', '(BLOQUE.course_cve = "AA"."course_cve" and "AA"."group_id" = "BLOQUE".mdl_groups_cve) OR (BLOQUE.course_cve = "AA"."course_cve" AND BLOQUE.mdl_groups_cve = ANY (string_to_array("AA".grupos_ids_text, \', \')::int[]))', 'inner');
+        
+        //espacio para filtros
+        if (isset($params['grupo']) && !empty($params['grupo']))
+        {
+            $this->db->like('"GRUPO".name', $params['grupo']);
+        }
+
+        if (isset($params['tipo_buscar_docente_evaluado']) && $params['tipo_buscar_docente_evaluado'] == 'matriculado' && isset($params['text_buscar_docente_evaluado']) && !empty($params['text_buscar_docente_evaluado']))
+        {
+            $this->db->where('"U1".username', $params['text_buscar_docente_evaluado']);
+        }
+
+        if (isset($params['tipo_buscar_adscripcion']) && $params['tipo_buscar_adscripcion'] == 'claveadscripcion' && isset($params['text_buscar_adscripcion']) && !empty($params['text_buscar_adscripcion']))
+        {
+            $this->db->where('"depto_pre_evaluador".cve_departamento = \'' . $params['text_buscar_adscripcion'] . '\' OR depto_tut_evaluador".cve_departamento = \'' . $params['text_buscar_adscripcion'] . '\'');
+        }
+
+        if (isset($params['tipo_buscar_categoria']) && $params['tipo_buscar_categoria'] == 'categoria' && isset($params['text_buscar_categoria']) && !empty($params['text_buscar_categoria']))
+        {
+            $this->db->where('"cat_pre_evaluador".cve_categoria = ' . $params['text_buscar_categoria'] . ' OR cat_tut_evaluador".cve_categoria = ' . $params['text_buscar_adscripcion']);
+        }
+
+        if (isset($params['delg_umae']) && !empty($params['delg_umae']))
+        {
+            $this->db->where('depto_pre_evaluador.cve_delegacion  = \'' . $params['delg_umae'] . '\' OR depto_tut_evaluador.cve_delegacion  = \'' . $params['delg_umae'] . '\'');
+        }
+        
+        if (isset($params['bloque']) && !empty($params['bloque']))
+        {
+            $this->db->where('BLOQUE.bloque', $params['bloque']);
+        }
+        
+        if (isset($params['curso']) && !empty($params['curso']))
+        {
+            $this->db->where('AA.course_cve', $params['curso']);
+        }
+        
+        $this->db->stop_cache();
+
+        $count = 10;
+
+        $group_by = array('AA.course_cve', 'AA.group_id', 'AA.evaluador_user_cve',
+            'AA.evaluador_rol_id', 'AA.evaluado_user_cve', 'AA.evaluado_rol_id',
+            'AA.grupos_ids_text');
+        $this->db->select($group_by);
+        $this->db->group_by($group_by);
+        $this->db->from('encuestas.sse_evaluacion AA');
+        $count = $this->db->query("select count(*) from (" . $this->db->get_compiled_select() . ") TMP")->result_array()[0]['count'];
+        $this->db->reset_query();
+        $group_by = array('BLOQUE.bloque', 'AA.course_cve', 'AA.group_id', 'AA.evaluador_user_cve',
+            'AA.evaluador_rol_id', 'AA.evaluado_user_cve', 'AA.evaluado_rol_id',
+            'AA.grupos_ids_text', 'UN1','"U1".username',  'URN1', 'UN2', 'URN2', 'CN', 'GN',
+            'depto_tut_evaluado.name_region', ' depto_tut_evaluado.nom_delegacion',
+            'depto_tut_evaluado.des_unidad_atencion', 'cat_tut_evaluado.nom_nombre',
+            'depto_pre_evaluador.name_region', 'depto_pre_evaluador.nom_delegacion',
+            'depto_pre_evaluador.des_unidad_atencion', 'cat_pre_evaluador.nom_nombre',
+            'depto_tut_evaluador.name_region', 'depto_tut_evaluador.nom_delegacion',
+            'depto_tut_evaluador.des_unidad_atencion', 'cat_tut_evaluador.nom_nombre');
+        $this->db->group_by($group_by);
+        
+        
+        
+        if(isset($params['order']))
+        {
+            $type_order = (isset($params['order_type']) && strtolower($params['order_type']) == 'desc')? 'DESC' : 'ASC';
+            switch($params['order'])
+            {
+                case 'emp_matricula':
+                    $this->db->order_by('"U1".username', $type_order);
+                    break;
+                case 'emp_nombre':
+                    $this->db->order_by('"UN1"', $type_order);
+                    break;
+                case 'cur_clave':
+                    $this->db->order_by('"AA"."course_cve"', $type_order);
+                    break;
+                case 'cur_nom_completo':
+                    $this->db->order_by('"CN"', $type_order);
+                    break;
+                case 'rol_nom':
+                    $this->db->order_by('"URN2"', $type_order);
+                    break;
+                case 'rol_nom_edor':
+                    $this->db->order_by('"URN1"', $type_order);
+                    break;
+            }
+        }
+        
+        
+        $this->db->select($select);
+
+        if (isset($params['per_page']) && !empty($params['per_page']) && isset($params['current_row']))
+        {
+            $this->db->limit($params['per_page'], $params['current_row']);
+        }
+        
+        
+
+        $query = $this->db->get_compiled_select('encuestas.sse_evaluacion AA');
+
+        //pr($query);
+        
+        $resultado = $this->db->query($query)->result_array();
+        $this->db->reset_query();
+        $this->db->flush_cache();
+        $salida['total'] = $count;
+        $salida['data'] = $resultado;
+        $salida['indicadores'] = $indicadores;
+
+        $indicadores_disponibles = [];
+        foreach ($resultado as $r)
+        {
+            $arreglo = explode(',', str_replace(' ', '', $r["indicadores_s"])); //lo pongo ya que por alguna extraña razon esta agregando espacios en blanco que solo estorban
+            foreach ($arreglo as $val)
+            {
+                if (!isset($indicadores_disponibles['ind' . $val]))
+                {
+                    $indicadores_disponibles['ind' . $val] = true;
+                }
+            }
+        }
+        $salida['indicadores_disponibles'] = $indicadores_disponibles;
+        return $salida;
     }
 
     public function get_indicador_curso($params = null) {

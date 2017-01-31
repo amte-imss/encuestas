@@ -1,3 +1,4 @@
+<?php echo js("Curso/curso.js"); ?>
 <?php
 echo form_open('reporte/index', array('id' => 'form_curso'));
 ?>
@@ -19,6 +20,25 @@ echo form_open('reporte/index', array('id' => 'form_curso'));
             <div class="panel-body  input-group input-group-sm">
                 <label for="categoriaa">Clave implementación</label>
                 <?php echo $this->form_complete->create_element(array('id' => 'cur_clave', 'type' => 'text', 'attributes' => array('class' => 'form-control', 'placeholder' => 'Clave de implementación', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Clave de implementación', 'onkeyup' =>  "data_ajax(site_url+'/curso/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
+            </div>
+        </div>
+        <div class="col-lg-4 col-sm-4"><!-- --></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="col-lg-4 col-sm-4">
+            <div class="panel-body input-group input-group-sm">
+                <!--<span class="input-group-addon">Delegación:</span>-->
+                <label for="delegacionn">Tipo de curso</label>
+                <?php echo $this->form_complete->create_element(array('id' => 'tutorizado', 'type' => 'dropdown', 'options' => array(0=>'No Tutorizados', 1=>'Tutorizados'), 'first' => array('' => 'Seleccione una opción'), 'attributes' => array('name' => 'delegacion', 'class' => 'form-control', 'placeholder' => 'Tipo de curso', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Tipo de curso', 'onchange' => 'display_en_bloque()'))); ?>
+            </div>
+        </div>
+        <div id="div_en_bloques" class="col-lg-4 col-sm-4">
+            <div class="panel-body  input-group input-group-sm">
+                <label for="categoriaa">Bloques asignados</label>
+                <?php echo $this->form_complete->create_element(array('id' => 'en_bloque', 'type' => 'dropdown', 'options' => array(1=>'Asignados', 2=>'Por Asignar'), 'first' => array('' => 'Seleccione una opción'), 'attributes' => array('name' => 'delegacion', 'class' => 'form-control', 'placeholder' => 'Bloques asignados', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Bloques asignados', 'onchange' => "data_ajax(site_url+'/curso/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
             </div>
         </div>
         <div class="col-lg-4 col-sm-4"><!-- --></div>

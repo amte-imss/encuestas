@@ -2,16 +2,19 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Curso_model extends CI_Model {
+class Curso_model extends CI_Model
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         // Call the CI_Model constructor
         parent::__construct();
         $this->config->load('general');
         // $this->load->database();
     }
 
-    public function listado_cursos($params = null) {
+    public function listado_cursos($params = null)
+    {
         $resultado = array();
 
         //$guarda_busqueda = false;
@@ -33,7 +36,8 @@ class Curso_model extends CI_Model {
         $this->db->start_cache();
         $this->db->select('mdl_course.id');
 
-        if (isset($params['cur_clave']) && !empty($params['cur_clave'])) { ////// Ejemplo - Like 
+        if (isset($params['cur_clave']) && !empty($params['cur_clave']))
+        { ////// Ejemplo - Like 
             $this->db->like('mdl_course.shortname', $params['cur_clave']);
             //$guarda_busqueda = true;
         }/*
@@ -42,14 +46,29 @@ class Curso_model extends CI_Model {
           //$guarda_busqueda = true;
           $this->db->where('mdl_course_config.tipocur',$params['tipo_curso']);
           } */
-        if (isset($params['cur_id']) && !empty($params['cur_id'])) {
+        if (isset($params['cur_id']) && !empty($params['cur_id']))
+        {
             //$guarda_busqueda = true;
             $this->db->where('mdl_course.id', $params['cur_id']);
         }
-        if (isset($params['anio']) && !empty($params['anio'])) {
+        if (isset($params['anio']) && !empty($params['anio']))
+        {
             //$guarda_busqueda = true;
             $this->db->where("TO_CHAR(TO_TIMESTAMP(mdl_course.startdate),'YYYY')='" . $params['anio'] . "'");
         }/**/
+
+        if (isset($params['tutorizado']) && $params['tutorizado'] != '')
+        {
+            $this->db->where('mdl_course_config.tutorizado', $params['tutorizado']);
+        }
+
+        if (isset($params['en_bloque']) && $params['en_bloque'] == 1)
+        {
+            $this->db->where('(mdl_course.id in (select course_cve  from encuestas.sse_curso_bloque_grupo as tmp_c_c where tmp_c_c.course_cve = mdl_course.id))');
+        } else if (isset($params['en_bloque']) && $params['en_bloque'] == 2)
+        {
+            $this->db->where('(mdl_course.id not in (select course_cve  from encuestas.sse_curso_bloque_grupo as tmp_c_c where tmp_c_c.course_cve = mdl_course.id))');
+        }
 
         //pr($params);
         $this->db->join('public.mdl_course_config', 'mdl_course_config.course=mdl_course.id');
@@ -60,6 +79,7 @@ class Curso_model extends CI_Model {
         /////////////////////// Fin almacenado de parámetros en cache ///////////////////////////
         ///////////////////////////// Obtener número de registros ///////////////////////////////
         $nr = $this->db->get_compiled_select('mdl_course'); //Obtener el total de registros
+        //pr($nr);
         $num_rows = $this->db->query("SELECT count(*) AS total FROM (" . $nr . ") AS temp")->result();
         //pr($this->db1->last_query());
         /////////////////////////////// FIN número de registros /////////////////////////////////
@@ -76,6 +96,7 @@ class Curso_model extends CI_Model {
             'mdl_course_config.tipocur',
             'mdl_course_config.startdatepre',
             'mdl_course_config.tutorizado',
+            '(mdl_course.id in (select course_cve  from encuestas.sse_curso_bloque_grupo as tmp_c_c where tmp_c_c.course_cve = mdl_course.id)) en_bloque'
                 //'mdl_course_config.curso_alcance'
         );
 
@@ -96,11 +117,13 @@ class Curso_model extends CI_Model {
 
          */
         $this->db->select($busqueda);
-        if (isset($params['order']) && !empty($params['order'])) {
+        if (isset($params['order']) && !empty($params['order']))
+        {
             $tipo_orden = (isset($params['order_type']) && !empty($params['order_type'])) ? $params['order_type'] : "ASC";
             $this->db->order_by($params['order'], $tipo_orden);
         }
-        if (isset($params['per_page']) && isset($params['current_row'])) { //Establecer límite definido para paginación 
+        if (isset($params['per_page']) && isset($params['current_row']))
+        { //Establecer límite definido para paginación 
             $this->db->limit($params['per_page'], $params['current_row']);
         }
 
@@ -122,7 +145,8 @@ class Curso_model extends CI_Model {
         return $resultado;
     }
 
-    public function listar_roles_curso($params = null) {
+    public function listar_roles_curso($params = null)
+    {
         $resultado = array();
         //pr($params); exit();
         $this->db->start_cache(); // inicia historial de busqueda
@@ -167,7 +191,8 @@ class Curso_model extends CI_Model {
         return $resultado;
     }
 
-    public function listar_grupos_curso($params = null) {
+    public function listar_grupos_curso($params = null)
+    {
         $resultado = array();
         //pr($params); exit();
 
@@ -197,7 +222,8 @@ class Curso_model extends CI_Model {
         return $resultado;
     }
 
-    public function listar_usuarios_grupo($params = null) {
+    public function listar_usuarios_grupo($params = null)
+    {
         $resultado = array();
         //pr($params); exit();
 
@@ -238,36 +264,37 @@ class Curso_model extends CI_Model {
      * $result['total_grupos'] = 20;
      * $result['max_boque'] = 5;
      */
-    function getGruposBloques($param) {
+    function getGruposBloques($param, $opciones = null)
+    {
+        $this->db->start_cache(); //Inicio cache -------------------------------
         //Obtiene información del coordinador de tutores 
-        $select_ct = array("concat(muser.firstname,' ', muser.lastname,' (',muser.username,')') as name_ct",
-            "mg.id as grupoid", "cursoid", "expe.id userid"
+        $select_ct = array("array_to_string(array_agg(concat(muser.firstname,' ', muser.lastname,' (',muser.username,')')),', ') as name_ct"
         );
         $this->db->join('public.mdl_user muser', 'muser.id= expe.userid');
-        $this->db->join('public.mdl_role mr', 'mr.id= expe.role and mr.id IN(18)');
+        
         $this->db->join('public.mdl_course c', 'c.id=expe.cursoid ');
         $this->db->join('public.mdl_groups mg', 'mg.id=expe.grupoid and c.id = mg.courseid');
         $this->db->select($select_ct);
         $this->db->where('expe.cursoid', $param['vdc.idc']);
+        $this->db->where('"expe"."grupoid" = "mdlg"."id"');
+        $this->db->group_by("grupoid, mg.id");
         $this->db->order_by('grupoid');
-        $expediente = $this->db->get('tutorias.mdl_userexp expe');
+        $this->db->stop_cache();
+        $this->db->join('public.mdl_role mr', 'mr.id= expe.role and mr.id IN(18)');
+        $ctsq = $this->db->get_compiled_select('tutorias.mdl_userexp expe');
         $this->db->reset_query();
-        $expe_p = array();
-        foreach ($expediente->result_array() as $value) {
-            if (isset($expe_p[$value['grupoid']])) {
-                $tmp = $expe_p[$value['grupoid']];
-                $tmp_cts = $tmp . ', ' . $value['name_ct'];
-                $expe_p[$value['grupoid']] = $tmp_cts;
-            } else {
-                $expe_p[$value['grupoid']] = $value['name_ct'];
-            }
-        }
-
-
+        $this->db->join('public.mdl_role mr', 'mr.id= expe.role and mr.id IN(32)');
+        $ttsq = $this->db->get_compiled_select('tutorias.mdl_userexp expe');
+        $this->db->reset_query();
+        $this->db->join('public.mdl_role mr', 'mr.id= expe.role and mr.id IN(14)');
+        $ccsq = $this->db->get_compiled_select('tutorias.mdl_userexp expe');
+        $this->db->reset_query();
+        
+        $this->db->flush_cache();
 
         $select = array(
             'vdc.idc', 'vdc.clave',
-            'cbg.bloque', 'mdlg.id', 'mdlg."name"'
+            'cbg.bloque', 'mdlg.id', 'mdlg."name"', '('.$ctsq.') cts', '('.$ttsq.') tts', '('.$ccsq.') ccs'
         );
         $group_by = array(
             'vdc.idc, vdc.clave',
@@ -277,36 +304,74 @@ class Curso_model extends CI_Model {
 
         $this->db->join('public.mdl_groups mdlg', 'mdlg.courseid = vdc.idc');
         $this->db->join('encuestas.sse_curso_bloque_grupo cbg', 'cbg.course_cve = vdc.idc and cbg.mdl_groups_cve = mdlg.id', 'left');
-        foreach ($param as $key => $value) {
+        foreach ($param as $key => $value)
+        {
             $this->db->where($key, $value);
         }
-
+        if(isset($opciones['ccs']) && !empty($opciones['ccs']))
+        {
+            $this->db->like('('.$ccsq.')', $opciones['ccs']);
+        }
+        if(isset($opciones['cts']) && !empty($opciones['cts']))
+        {
+            $this->db->like('('.$ctsq.')', $opciones['cts']);
+        }
+        if(isset($opciones['tts']) && !empty($opciones['tts']))
+        {
+            $this->db->like('('.$ttsq.')', $opciones['tts']);
+        }
         $this->db->stop_cache(); //Fin cache ------------------------------------
         $num_rows = $this->db->query($this->db->select('count(*) as total')->get_compiled_select('encuestas.view_datos_curso vdc'))->result_array();
         $this->db->reset_query(); //Reset de query 
         $max_bloque = $this->db->query($this->db->select('max(cbg.bloque) as max_bloque')->get_compiled_select('encuestas.view_datos_curso vdc'))->result_array();
         $this->db->reset_query(); //Reset de query 
         //Agrega los agrupamientos
-        foreach ($group_by as $g) {
+        foreach ($group_by as $g)
+        {
             $this->db->group_by($g);
         }
         //Agrega el order by
-        $this->db->order_by('mdlg."name"');
+        
 //      pr($max_bloque);
 //      pr($num_rows);
+        if (isset($opciones['order_type']) && !empty($opciones['order_type']))
+        {
+            $this->db->order_by('mdlg."name"', $opciones['order_type']);
+        } else
+        {
+            $this->db->order_by('mdlg."name"');
+        }
+        if (isset($opciones['limit']) && !empty($opciones['limit']) && 
+                isset($opciones['current_row']))
+        {
+           $this->db->limit($opciones['limit'], $opciones['current_row']);
+        }
         $this->db->select($select);
         $query = $this->db->get('encuestas.view_datos_curso vdc');
         $result['grupos'] = $query->result_array();
-        $result['cts'] = $expe_p;
+        $result['cts'] = [];
+        $result['tts'] = [];
+        $result['ccs'] = [];
         $result['total_grupos'] = $num_rows[0]['total'];
         $result['max_boque'] = (!empty($max_bloque[0]['max_bloque'])) ? $max_bloque[0]['max_bloque'] : 0;
+        $this->db->flush_cache();
+        $result['bloques'] = [];
+        foreach ($result['grupos'] as $row)
+        {
+            if (!isset($result['bloques'][$row['bloque']]))
+            {
+                $result['bloques'][$row['bloque']] = $row['bloque'];
+            }
+        }
         return $result;
     }
 
-    public function detalle_curso($where) {
+    public function detalle_curso($where)
+    {
         $select = array('vdc.idc', "CONCAT(vdc.clave,'-',vdc.namec) as name_curso", 'vdc.tex_tutorizado', 'vdc.tipo_curso');
         $this->db->select($select);
-        foreach ($where as $campo => $idc) {
+        foreach ($where as $campo => $idc)
+        {
             $this->db->where($campo, $idc);
         }
         $query = $this->db->get('encuestas.view_datos_curso vdc');
@@ -314,8 +379,10 @@ class Curso_model extends CI_Model {
         return $query->result_array();
     }
 
-    public function insertUpdate_CursoBloqueGrupo($post) {
-        if (!isset($post['curso']) AND empty($post['curso']) AND ! is_numeric($post['curso'])) {
+    public function insertUpdate_CursoBloqueGrupo($post)
+    {
+        if (!isset($post['curso']) AND empty($post['curso']) AND ! is_numeric($post['curso']))
+        {
             return 0;
         }
         $curso = $post['curso'];
@@ -323,31 +390,38 @@ class Curso_model extends CI_Model {
         unset($post['curso']);
         unset($post['max_bloques']);
         $this->db->trans_begin();
-        foreach ($post as $key => $value) {
+        foreach ($post as $key => $value)
+        {
             $explode = explode("_", $key);
             $grup = $explode[1];
             $result = $this->get_existBloqueGrupo(array('course_cve' => $curso, 'mdl_groups_cve' => $grup));
-            if (!empty($result)) {//Actualización
+            if (!empty($result))
+            {//Actualización
                 $this->db->where('course_cve', $curso);
                 $this->db->where('mdl_groups_cve', $grup);
                 $this->db->update('encuestas.sse_curso_bloque_grupo', array('bloque' => $value));
-            } else {//Inserta
+            } else
+            {//Inserta
                 $datos = array('course_cve' => $curso, 'mdl_groups_cve' => $grup, 'bloque' => $value);
                 $this->db->insert('encuestas.sse_curso_bloque_grupo', $datos); //Almacena usuario
             }
         }
 
-        if ($this->db->trans_status() === FALSE) {
+        if ($this->db->trans_status() === FALSE)
+        {
             $this->db->trans_rollback();
             return 0;
-        } else {
+        } else
+        {
             $this->db->trans_commit();
             return 1;
         }
     }
 
-    public function get_existBloqueGrupo($where) {
-        foreach ($where as $key => $value) {
+    public function get_existBloqueGrupo($where)
+    {
+        foreach ($where as $key => $value)
+        {
             $this->db->where($key, $value);
         }
         $query = $this->db->get('encuestas.sse_curso_bloque_grupo');

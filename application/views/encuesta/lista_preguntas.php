@@ -68,7 +68,7 @@ $(document).ready(function() {
                             $color_li = ($val['orden'] == 0 ) ? 'active' : '';
                         ?>
                         <li id="pregunta-<?php echo $val['preguntas_cve']; ?>" class="list-group-item <?php echo $color_li;?>">                            
-                            <p class="list-group-item-text"><span class="badge"><?php echo $val['orden']; ?></span><?php echo "¿". $val['pregunta']."?"; ?></p>
+                            <p class="list-group-item-text"><span class="badge"><?php echo $val['orden']; ?></span><?php echo "". $val['pregunta'].""; ?></p>
                         </li>                    
 
                         <?php

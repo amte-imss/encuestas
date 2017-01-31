@@ -12,6 +12,7 @@
             <tr>
                 <th>Coordinador de tutores</th>
                 <th>Grupo</th>
+                <th>Titular</th>
                 <th>Bloque</th>
             </tr>
         </thead>
@@ -21,10 +22,12 @@
                 foreach ($grupos as $key_g => $grupo) {
                     $idgrupo = trim($grupo['id']);
                     $ct = (isset($cts[$idgrupo])) ? $cts[$idgrupo] : '--';
+                    $tt = (isset($tts[$idgrupo])) ? $tts[$idgrupo] : '--';
                     echo '<tr>';
 //                    echo '<td>' . $grupo['ct_bloque'] . '</td>';
-                    echo '<td>' . $ct . '</td>';
+                    echo '<td>' . $ct . '</td>';                    
                     echo '<td>' . $grupo['name'] . '</td>';
+                    echo '<td>' . $tt . '</td>';
                     echo '<td>';
                     echo $this->form_complete->create_element(array('id' => 'b_' . $grupo['id'],
                         'type' => 'dropdown', 'options' => $bloques,

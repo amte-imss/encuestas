@@ -1,5 +1,5 @@
 <?php
-class Grocery_crud_model_PDO extends grocery_CRUD_Generic_Model{
+class Grocery_crud_model_PDO extends Grocery_CRUD_Generic_Model{
 
     public $subdriver = '';
 

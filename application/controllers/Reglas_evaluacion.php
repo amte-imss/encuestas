@@ -28,14 +28,14 @@ class Reglas_evaluacion extends CI_Controller {
 
     public function new_crud(){
         $db_driver = $this->db->platform();
-        $model_name = 'grocery_crud_model_'.$db_driver;
+        $model_name = 'Grocery_crud_model_'.$db_driver;
         $model_alias = 'm'.substr(md5(rand()), 0, rand(4,15) );
         unset($this->{$model_name});
         $this->load->library('grocery_CRUD');
         $crud = new Grocery_CRUD();
         if (file_exists(APPPATH.'/models/'.$model_name.'.php')){
-            $this->load->model('grocery_crud_model');
-            $this->load->model('grocery_crud_generic_model');
+            $this->load->model('Grocery_crud_model');
+            $this->load->model('Grocery_crud_generic_model');
             $this->load->model($model_name,$model_alias);
             $crud->basic_model = $this->{$model_alias};
         }

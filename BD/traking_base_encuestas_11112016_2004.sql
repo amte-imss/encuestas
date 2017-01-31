@@ -103,3 +103,36 @@ update departments.ssd_cat_delegacion set cve_regiones = 4 where cve_delegacion 
 --
 
 alter table encuestas.sse_encuestas add column guia_descripcion_encuesta text null;
+
+
+/* funcion almacenada para facilitar el conteo de indicadores */
+drop function if exists encuestas.get_value_reactivo(numeric, numeric, character varying);
+
+
+create function encuestas.get_value_reactivo(tipo_conteo numeric, valido_no_aplica numeric, respuesta character varying) returns int 
+as $$
+declare salida smallint;
+begin
+	salida:=0;
+	if tipo_conteo = 1 and lower(respuesta) in  ('si', 'casi siempre','siempre') then
+		salida:=1;
+	else if tipo_conteo = 1 and lower(respuesta) in ('no','casi nunca','nunca','algunas veces') then 
+		salida:=0;
+	else if tipo_conteo = 2 and lower(respuesta) in ('si', 'casi siempre','siempre') then
+		salida:=0;
+	else if tipo_conteo = 2 and lower(respuesta) in ('no','casi nunca','nunca','algunas veces') then
+		salida:=1;
+	end if;
+	end if;
+	end if;
+	end if;
+	
+	if tipo_conteo = 1 and valido_no_aplica = 1 and lower(respuesta) in ('no aplica', 'no envió mensaje') then
+		salida:=1;
+	else if tipo_conteo = 3 and valido_no_aplica != 1 and lower(respuesta) in ('no aplica', 'no envió mensaje') then
+		salida:=1;
+	end if;
+	end if;
+	return salida;
+end;
+$$ LANGUAGE plpgsql;

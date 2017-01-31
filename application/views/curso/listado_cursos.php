@@ -19,7 +19,7 @@ $check_no = '<h4><span class="glyphicon glyphicon-remove" aria-hidden="true" sty
                     <!--<th>Tipo curso</th>-->
                     <!--<th>Modalidad</th>-->
                     <th>Tutorizado</th>
-                    <!--<th>Bloques</th>-->
+                    <th>Bloques</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -50,8 +50,15 @@ $check_no = '<h4><span class="glyphicon glyphicon-remove" aria-hidden="true" sty
                     <td >' . $val['cur_nom_completo'].'</td > 
                     <td >' . $val['anio'] . '</td>
                     <td >' . $val['horascur']. '</td > 
-                    <td >' . ((isset($val['tutorizado']) && $val['tutorizado'] == '1') ? $check_ok : $check_no) . '</td >
-                    <td>
+                    <td >' . ((isset($val['tutorizado']) && $val['tutorizado'] == '1') ? $check_ok : $check_no) . '</td ><td>';
+                    if($val['tutorizado'] == '1' && $val['en_bloque'] == 1){
+                        echo 'Asignados';
+                    }else if($val['tutorizado'] == '1' && $val['en_bloque'] == 0){
+                        echo 'Sin Asignar';
+                    }else{
+                        echo 'NA';
+                    }
+                    echo '</td><td>
                         <a href="'.site_url('curso/info_curso/'.$val['cur_id']).'" class="btn btn-info btn-block">
                             <span class="glyphicon glyphicon-search"></span>
                         </a>

@@ -21,6 +21,7 @@ class FiltrosReportes_Tpl extends Template {
             RB_ENCUESTAS_DETALLE = 3,
             RE_INDICADORES = 4,
             RE_CONTESTADAS_NO_CONTESTADAS_PROMEDIO = 5,
+            RE_MATRIZ_BLOQUES_CURSO = 6,
             C_VIEW_FILTRO = 'viewFiltro',
             C_VIEW_RESULT = 'viewResult',
             C_CONTROL_FILTRO = 'controlFiltro',
@@ -94,6 +95,19 @@ class FiltrosReportes_Tpl extends Template {
                 FiltrosReportes_Tpl::C_NAME_DIV_RESULTADO => "#listado_resultado",
                 FiltrosReportes_Tpl::C_LINK_EXPORTAR => "resultadocursoencuesta/exportar_enc_contestadas/",
             ),
+            FiltrosReportes_Tpl::RE_MATRIZ_BLOQUES_CURSO => array(
+                FiltrosReportes_Tpl::C_TITULO => 'Reporte de bloques',
+                FiltrosReportes_Tpl::C_VIEW_RESULT => 'reporte/',
+                FiltrosReportes_Tpl::C_SUBTITULO => '',
+                FiltrosReportes_Tpl::C_URL_CONTROL => "'Reporte_matriz_bloques/get_data_ajax', '#form_curso', '#listado_resultado'",
+                FiltrosReportes_Tpl::C_NAME_FORMULARIO => "#form_curso",
+                FiltrosReportes_Tpl::C_NAME_DIV_RESULTADO => "#listado_resultado",
+                FiltrosReportes_Tpl::C_VIEW_FILTRO => 'curso/filter_matriz_bloques',
+                FiltrosReportes_Tpl::C_CONTROL_FILTRO => 'Reporte_matriz_bloques/get_data_ajax',
+                FiltrosReportes_Tpl::C_CONTROL_RESULT => '',
+                FiltrosReportes_Tpl::C_GRUPO_DATOS_ARRAY => array(Reporte_model::GF_BLOQUES_CURSO),
+                FiltrosReportes_Tpl::C_LINK_EXPORTAR => "Reporte_matriz_bloques/export_by_curso/",
+            ),                
             FiltrosReportes_Tpl::RB_ENCUESTAS_DETALLE => array(
                 FiltrosReportes_Tpl::C_VIEW_FILTRO => 'reporte/detalle/detalle',
                 FiltrosReportes_Tpl::C_VIEW_RESULT => 'reporte/detalle/tb_result_detalle',
@@ -128,6 +142,7 @@ class FiltrosReportes_Tpl extends Template {
                 return 2;
             case Reporte_model::GF_EVALUADO_P:
                 return 2;
+            case Reporte_model::GF_BLOQUES_CURSO:
             case Reporte_model::GF_EVALUADOR: case Reporte_model::GF_EVALUADOR_DETALLE:
                 return 2;
             default :
@@ -218,6 +233,10 @@ class FiltrosReportes_Tpl extends Template {
             $data['vistas'] = array(); //Carga datos para ver en grupo
             $data['exportar'] = $prop[FiltrosReportes_Tpl::C_LINK_EXPORTAR]; //Carga datos para ver en grupo
             $data['formulario'] = $prop[FiltrosReportes_Tpl::C_NAME_FORMULARIO]; //Carga datos para ver en grupo
+            if(isset($data_extra['info_extra']))
+            {
+                $data_info['info_extra'] = $data_extra['info_extra'];
+            }
 //            pr($grupos_filtro_vista);
             foreach ($grupos_filtro_vista as $view) {
 //                $r = $this->getNumEspaciosVistaGrupos($view);

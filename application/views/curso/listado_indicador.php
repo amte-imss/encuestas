@@ -1,72 +1,99 @@
-<?php if (isset($registros) && !empty($registros)) { 
+<?php
+if (isset($registros) && !empty($registros))
+{
 //echo form_open('cursoencuesta/guardar_asociacion', array('id'=>'form_asignar', 'class'=>'form-horizontal'));
-//pr($empleado);
-
-  ?>
-    <div class="table-responsive">
-        <table class="table table-striped table-hover table-bordered">
-            <thead>
-                <tr>
-                    <th rowspan="2">Bloque</th>
-                    <th rowspan="2">Grupo</th>
-                    <th rowspan="2">Nombre del evaluador</th>
-                    <th rowspan="2">Delegación / UMAE</th>
-                    <th rowspan="2">Departamento</th>
-                    <th rowspan="2">Categoría</th>
-                    <?php $html_head = '';
-                    foreach ($indicadores as $key_ind => $indicador) {
-                        $html_head .= '<th style="text-align:center;">'.$indicador['descripcion'].'</th>';
-                    } 
-                    echo '<th colspan="'.(isset($key_ind) ? ($key_ind+1) : 1).'">Indicadores</th>';
-                    ?>
-                </tr>
-                <?php echo $html_head; ?>
-            </thead>
-            <tbody>
-                <?php
-                $registro_temp = array();
-                foreach ($registros as $key => $val) { //Refinar datos para presentación
-                    //$registro_temp[$val['evaluador']][$val['rol_evaluador']][$val['evaluado']][$val['rol_evaluado']][$val['tipo_indicador_cve']] = $val['porcentaje'];
-                    $registro_temp[$val['usu_evaluador']][$val['rol_nombre_evaluador']][$val['usu_evaluado']][$val['rol_nombre_evaluado']][$val['tipo_indicador_cve']] = $val['porcentaje'];
-                }
-                //pr($registro_temp);
-                //pr($registros);
-                $temp_grupo = array('GUANAJUATO', 'AGUASCALIENTES', 'MICHOACAN', 'MORELOS', 'NUEVO LEON 1', 'NUEVO LEON 2', 'PUEBLA', 'QUINTANA ROO');
-                $temp_delegacion = array('GUANAJUATO', 'AGUASCALIENTES', 'MICHOACAN', 'MORELOS', 'NUEVO LEON', 'NUEVO LEON', 'PUEBLA', 'QUINTANA ROO');
-                $temp_depto = array('HOSP GRAL ZONA C/MF 7','UNIDAD MEDICINA FAM 16 AGUASCALIENTES', 'UNIDAD MEDICINA FAM 75 (MORELIA)', 'HOSP GRAL ZONA C/MF 17 MORELOS', 'HOSP GRAL ZONA NL 1', 'HOSP GRAL ZONA NL 1', 'HOSP GRAL ZONA PUEBLA', 'HOSP GRAL ZONA CANCUN');
-                $temp_cat = array('N51 JEFE SERVICIOS UMF', 'MEDICO FAMILIAR', 'MEDICO NO FAMILIAR');
-                foreach ($registro_temp as $key_eva => $evaluador) {
-                    foreach ($evaluador as $key_rol => $rol_evaluador) {
-                        foreach ($rol_evaluador as $key_eval => $evaluado) {
-                            foreach ($evaluado as $key_rol_e => $rol_evaluado) {
-                                //if($)
-                                //<td>'.$key_eval.'</td><td>'.$key_rol_e.'</td>
-                                $random = rand(0, count($temp_grupo)-1);
-                                echo '<tr>
-                                <td>Bloque '.rand(1,5).'</td>
-                                <td>'.$temp_grupo[$random].'</td>
-                                <td>'.$key_eva.'</td>
-                                <td>'.$temp_delegacion[$random].'</td>
-                                <td>'.$temp_depto[$random].'</td>
-                                <td>'.$temp_cat[rand(0, count($temp_cat)-1)].'</td>';
-                                //pr($rol_evaluado)
-                                foreach ($indicadores as $key_ind => $indicador) {
-                                    if(isset($rol_evaluado[$indicador['indicador_cve']])){
-                                        echo '<td >'.$rol_evaluado[$indicador['indicador_cve']].'</td >';
-                                    } else {
-                                        echo '<td ></td >';
-                                    }
-                                }
-                                echo '</tr>';
+    ?>
+    <div>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Bloque</th>
+                        <th rowspan="2">Curso</th>
+                        <th rowspan="2">Grupo</th>
+                        <th rowspan="2">Nombre del evaluador</th>
+                        <th rowspan="2">Rol del evaluador</th>
+                        <th rowspan="2">Región del evaluador</th>
+                        <th rowspan="2">Delegación / UMAE del evaluador</th>
+                        <th rowspan="2">Departamento del evaluador</th>
+                        <th rowspan="2">Categoría del evaluador</th>
+                        <th rowspan="2">Nombre del evaluado</th>
+                        <th rowspan="2">Rol del evaluado</th>
+                        <th rowspan="2">Región del evaluado</th>
+                        <th rowspan="2">Delegación / UMAE del evaluado</th>
+                        <th rowspan="2">Departamento del evaluado</th>
+                        <th rowspan="2">Categoría del evaluado</th>
+                        <?php
+                        $html_head = '';
+                        foreach ($indicadores as $indicador)
+                        {
+                            if (isset($indicadores_disponibles['ind' . $indicador['indicador_cve']]))
+                            {
+                                $html_head .= '<th class="indicador_column' . $indicador['indicador_cve'] . '" style="text-align:center;">' . $indicador['descripcion'] . '</th>';
                             }
                         }
+                        echo '<th colspan="' . count($indicadores) . '">Indicadores</th>';
+                        ?>
+                    </tr>
+                    <?php echo $html_head; ?>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach ($registros as $registro)
+                    {
+                        ?>
+                        <tr>
+                            <td><?php echo $registro['BLN']; ?></td>
+                            <td><?php echo $registro['CN']; ?></td>
+                            <td><?php echo $registro['GN']; ?></td>
+                            <td><?php echo $registro['UN1']; ?></td>
+                            <td><?php echo $registro['URN1']; ?></td>
+                            <td><?php echo $registro['evaluador_rol_id'] == 5 ? $registro['region_evaluador1'] : $registro['region_evaluador2']; ?></td>
+                            <td><?php echo $registro['evaluador_rol_id'] == 5 ? $registro['delegacion_evaluador1'] : $registro['delegacion_evaluador2']; ?></td>
+                            <td><?php echo $registro['evaluador_rol_id'] == 5 ? $registro['unidad_evaluador1'] : $registro['unidad_evaluador2']; ?></td>
+                            <td><?php echo $registro['evaluador_rol_id'] == 5 ? $registro['categoria_evaluador1'] : $registro['categoria_evaluador2']; ?></td>
+                            <td><?php echo $registro['UN2']; ?></td>
+                            <td><?php echo $registro['URN2']; ?></td>
+                            <td><?php echo $registro['region_evaluado']; ?></td>
+                            <td><?php echo $registro['delegacion_evaluado']; ?></td>
+                            <td><?php echo $registro['unidad_evaluado']; ?></td>
+                            <td><?php echo $registro['categoria_evaluado']; ?></td>
+                            <?php
+                            foreach ($indicadores as $indicador)
+                            {
+                                ?>
+                                <?php
+                                if (isset($indicadores_disponibles['ind' . $indicador['indicador_cve']]))
+                                {
+                                    echo '<td>';
+                                    if (!empty($registro['indP' . $indicador['indicador_cve']]))
+                                    {
+                                        echo round($registro['indP' . $indicador['indicador_cve']], 2);
+                                    } else if ($registro['indP' . $indicador['indicador_cve']] != "")
+                                    {
+                                        echo '0';
+                                    } else
+                                    {
+                                        echo '--';
+                                    }
+                                    echo '</td>';
+                                }
+                                ?>
+                                <?php
+                            }
+                            ?>
+                        </tr>
+                        <?php
                     }
-                }
-                ?>
-            </tbody>
-        </table>
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
-<?php } else { ?>
+    <?php
+} else
+{
+    ?>
     <br><br>
     <div class="row">
         <div class="jumbotron"><div class="container"> <p class="text_center">No se encontraron datos registrados con esta busqueda</p> </div></div>
@@ -74,8 +101,8 @@
 <?php } ?>
 
 <script type="text/javascript">
-$(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();
-    $('#btn_export').show();
-});
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+        $('#btn_export').show();
+    });
 </script>

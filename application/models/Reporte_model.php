@@ -17,8 +17,8 @@ class Reporte_model extends CI_Model {
             GF_CURSO = 'curso',
             GF_CURSO_DETALLE = 'curso_detalle',
             GF_GENERAL = 'general',
-            GF_GENERAL_CNCE = 'general_enc_connoc'
-
+            GF_GENERAL_CNCE = 'general_enc_connoc', 
+            GF_BLOQUES_CURSO = 'filter_matriz_bloques'
     ;
 
     public function __construct() {
@@ -594,6 +594,7 @@ class Reporte_model extends CI_Model {
             Reporte_model::GF_CURSO_DETALLE => array('buscar_instrumento', 'anios', 'tipo_implementacion', 'order_by'),
             Reporte_model::GF_GENERAL => array('ordenar_detalle_por'),
             Reporte_model::GF_GENERAL_CNCE => array('ordenar_por', 'order_by'),
+            Reporte_model::GF_BLOQUES_CURSO => array('order_by'),
         );
         return $array;
     }
@@ -612,10 +613,13 @@ class Reporte_model extends CI_Model {
         switch ($tipo) {
             case 'normal':
                 foreach ($reglas_db as $value) {
-//                    pr($value);
-                    $rol_evaluado = $roles_prop[$value['rol_evaluado_cve']]['ab'];
-                    $rol_evaluador = $roles_prop[$value['rol_evaluador_cve']]['ab'];
-                    $result[$value['reglas_evaluacion_cve']] = $rol_evaluador . ' a ' . $rol_evaluado . ' -' . $value['text_tutorizado'];
+                    //pr($value);
+                    if(isset($roles_prop[$value['rol_evaluado_cve']]))
+                        {
+                        $rol_evaluado = $roles_prop[$value['rol_evaluado_cve']]['ab'];
+                        $rol_evaluador = $roles_prop[$value['rol_evaluador_cve']]['ab'];
+                        $result[$value['reglas_evaluacion_cve']] = $rol_evaluador . ' a ' . $rol_evaluado . ' -' . $value['text_tutorizado'];
+                    }
                 }
                 break;
             case 'roles':

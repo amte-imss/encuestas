@@ -35,6 +35,7 @@ if (isset($logueado) && !empty($logueado)) {
                             <li><a href="<?php echo site_url('reporte'); ?>" class="a_menu">Reporte resumen de bonos</a></li>
                             <li><a href="<?php echo site_url('reporte_bonos'); ?>" class="a_menu">Reporte de implementación</a></li>
                             <li><a href="<?php echo site_url('reporte_detallado'); ?>" class="a_menu">Reporte detalle de encuestas</a></li>
+                            <li><a href="<?php echo site_url('Resultadocursoindicador'); ?>" class="a_menu">Reporte por indicadores</a></li>
                         </ul>
                     </li>
                     <li><a href="<?php echo site_url('reglas_evaluacion/index'); ?>">Gestión de Reglas de evaluación</a></li>
@@ -55,7 +56,9 @@ if (isset($logueado) && !empty($logueado)) {
     </nav>
 
     <?php if ($valida_menu) { ?>
-        <div style="text-align:right"><small><?php echo $nombre; ?> | </small></div>
+        <div class="row">
+            <div style="text-align:right; margin-right: 15px;"><?php echo $nombre; ?></div>
+        </div>        
         <div class="clearfix"></div>
     <?php } ?>
     <?php

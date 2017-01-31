@@ -59,7 +59,7 @@
 
                     if ($pregunta !== $val['preguntas_cve']) {
                         echo '<br><b>
-                            <h5>'.$no_pregunta.' - ¿'.$val['pregunta'].'?</h5>
+                            <h5>'.$no_pregunta.' - '.$val['pregunta'].'</h5>
                             </b>
                             <a href="'.site_url('encuestas/edita_pregunta/'.$val['preguntas_cve'].'/'.$val['encuesta_cve']).'" class="text-warning">'.$pencil.' Editar</a>
                             |<a class="text-danger" onclick="elimina_pregunta('.$val['preguntas_cve'].','.$val['encuesta_cve'].');">'.$remove.' Eliminar</a>
