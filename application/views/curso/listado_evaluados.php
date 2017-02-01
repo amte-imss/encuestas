@@ -1,4 +1,4 @@
-<?php if (isset($empleados) && !empty($empleados)) { 
+<?php if (isset($evaluaciones) && !empty($evaluaciones)) { 
 //echo form_open('cursoencuesta/guardar_asociacion', array('id'=>'form_asignar', 'class'=>'form-horizontal'));
 //pr($empleado);
 
@@ -22,7 +22,7 @@
 //                    <th>Bloque</th>
 //                    <td > ' . $val['bloque'] . '</td >
                 
-                foreach ($empleados as $key => $val) {
+                foreach ($evaluaciones as $key => $val) {
                     echo '<tr>
                     <td >' .htmlentities($val['nombreevaluador']) . '</td>
                     <td >' . $val['nrolevaluador'].'</td >

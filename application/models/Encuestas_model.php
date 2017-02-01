@@ -1903,8 +1903,8 @@ class Encuestas_model extends CI_Model {
         //return $insert_id;
     }
 
-    public function guarda_reactivos_evaluacion($params = null) {
-        
+ public function guarda_reactivos_evaluacion($params = null) {
+
 //        pr($params);
 //        exit();
         $encuesta_cve = $params['encuesta_cve'];
@@ -2003,10 +2003,11 @@ class Encuestas_model extends CI_Model {
                     )
             ;
 
-            $promedio = $this->get_promedio_encuesta_encuesta($parametrosp, $bloque_, $grupos_text);
+            $promedio_de_bono = $this->get_promedio_encuesta_encuesta($parametrosp, $bloque_, $grupos_text); //Promedio de la encuesta que aplica para bono
+            $promedio_snb = $this->get_promedio_encuesta_encuesta($parametrosp, $bloque_, $grupos_text, 0); //Promedio de la encuesta que aplica para bono
 //            $grupos_text = (isset($data['grupos_ids_text'])) ? $data['grupos_ids_text'] : '';
 //            pr($promedio);
-            if (!empty($promedio)) {//No encontro información guardada
+            if (!empty($promedio_of_bono)) {//No encontro información guardada
                 //GUARDAR EN RESUL_ENCUESTA
                 $datares = array(
                     'encuesta_cve' => $encuesta_cve,
@@ -2014,13 +2015,22 @@ class Encuestas_model extends CI_Model {
                     'group_id' => $group_id,
                     'evaluado_user_cve' => $evaluado_user_cve,
                     'evaluador_user_cve' => $evaluador_user_cve,
-                    'total_puntua_si' => $promedio[0]['puntua_reg'],
-                    'total_nos' => $promedio[0]['total_no'],
-                    'total_no_puntua_napv' => $promedio[0]['total_no_aplica_cuenta_promedio'],
-                    'total_reactivos_bono' => $promedio[0]['total'],
-                    'base' => $promedio[0]['base_reg'],
-                    'calif_emitida' => $promedio[0]['porcentaje'],
-                    'grupos_ids_text' => $grupos_text
+                    'total_puntua_si' => $promedio_of_bono[0]['puntua_reg'],
+                    'total_nos' => $promedio_of_bono[0]['total_no'],
+                    'total_no_puntua_napv' => $promedio_of_bono[0]['total_no_aplica_no_cuenta_promedio'],
+                    'total_no_puntua_apv' => $promedio_of_bono[0]['total_no_aplica_cuenta_promedio'],
+                    'total_reactivos_bono' => $promedio_of_bono[0]['total'],
+                    'base' => $promedio_of_bono[0]['base_reg'],
+                    'calif_emitida' => $promedio_of_bono[0]['porcentaje'],
+                    'grupos_ids_text' => $grupos_text,
+                    //No promedio que no aplica para bono
+                    'total_puntua_si_napb' => $promedio_snb[0]['puntua_reg'],
+                    'total_nos_napb' => $promedio_snb[0]['total_no'],
+                    'total_no_puntua_napv_napb' => $promedio_snb[0]['total_no_aplica_no_cuenta_promedio'],
+                    'total_no_puntua_apv_napb' => $promedio_snb[0]['total_no_aplica_cuenta_promedio'],
+                    'base_napb' => $promedio_snb[0]['base_reg'],
+                    'total_reactivos_napb' => $promedio_snb[0]['total'],
+                    'calif_emitida_napb' => $promedio_snb[0]['porcentaje'],
                 );
             } else {
                 $datares = array(
@@ -2032,10 +2042,19 @@ class Encuestas_model extends CI_Model {
                     'total_puntua_si' => 0,
                     'total_nos' => 0,
                     'total_no_puntua_napv' => 0,
+                    'total_no_puntua_apv' => 0,
                     'total_reactivos_bono' => 0,
                     'base' => 0,
                     'calif_emitida' => 0,
-                    'grupos_ids_text' => $grupos_text
+                    'grupos_ids_text' => $grupos_text,
+                    //No promedio que no aplica para bono
+                    'total_puntua_si_napb' => $promedio_snb[0]['puntua_reg'],
+                    'total_nos_napb' => $promedio_snb[0]['total_no'],
+                    'total_no_puntua_napv_napb' => $promedio_snb[0]['total_no_aplica_no_cuenta_promedio'],
+                    'total_no_puntua_apv_napb' => $promedio_snb[0]['total_no_aplica_cuenta_promedio'],
+                    'base_napb' => $promedio_snb[0]['base_reg'],
+                    'total_reactivos_napb' => $promedio_snb[0]['total'],
+                    'calif_emitida_napb' => $promedio_snb[0]['porcentaje'],
                 );
 //s                pr('No seencontro información para gardar un promedio');
             }
@@ -2101,10 +2120,12 @@ class Encuestas_model extends CI_Model {
 
 
      */
-    public function get_promedio_encuesta_encuesta($params = null, $bloque = 0, $grupos_ids_text = '') {
+    public function get_promedio_encuesta_encuesta($params = null, $bloque = 0, $grupos_ids_text = '', $is_bono = 1) {
         //Entidad de emp_actividad_docente 
         $select_gral = 'select grupo_cve, evaluador, rol_evaluador, evaluado, rol_evaluado, sum(netos) as total, '
-                . 'sum(no_puntua) as no_puntua_reg, sum(nos_) total_no, sum(no_aplica_promedio) as total_no_aplica_cuenta_promedio, '
+                . 'sum(no_puntua) as no_puntua_reg, sum(nos_) total_no, '
+                . 'sum(no_aplica_promedio) as total_no_aplica_cuenta_promedio, '
+                . 'sum(no_puntua) as total_no_aplica_no_cuenta_promedio, '
                 . 'sum(puntua) as puntua_reg, (sum(netos) - sum(no_puntua)) as base_reg, '
                 . '(round(sum(puntua)::numeric * 100/(sum(netos) - sum(no_puntua))::numeric,3)) as porcentaje '
                 . ' from ( '
@@ -2119,10 +2140,10 @@ class Encuestas_model extends CI_Model {
 
 
         $join_bloque = '';
-        if($bloque>0){
+        if ($bloque > 0) {
             $join_bloque = 'join encuestas.sse_curso_bloque_grupo cbg on 
             cbg.course_cve = ev.course_cve 
-            and cbg.mdl_groups_cve IN ('.$grupos_ids_text.') 
+            and cbg.mdl_groups_cve IN (' . $grupos_ids_text . ') 
             and cbg.mdl_groups_cve = ANY (string_to_array(ev.grupos_ids_text, \',\')::int[])
             and cbg.bloque = ' . $bloque . ' ';
         }
@@ -2131,7 +2152,7 @@ class Encuestas_model extends CI_Model {
                 . ' join encuestas.sse_respuestas res on res.reactivos_cve = ev.reactivos_cve '
                 . ' join encuestas.sse_preguntas pre on pre.preguntas_cve = ev.preguntas_cve '
                 . ' join encuestas.sse_encuesta_curso encc on encc.encuesta_cve = res.encuesta_cve '
-                .$join_bloque
+                . $join_bloque
         ;
 
 
@@ -2149,12 +2170,18 @@ class Encuestas_model extends CI_Model {
             'is_bono' => ' pre.is_bono=' . $params['is_bono'] . ' ',
         );
 
+        //
+        $wbono = ""; //si $is_bono = 0, el cálculo del promedio deberá ser para las encuestas que no plican para bono
+        if ($is_bono) {//promedio de encuesta que apliaca para bono 
+            $wbono = $w_p ['is_bono'] . " and ";
+        }
+
         $where = array(
-            'total_si' => " where " . $w_p ['is_bono'] . " and " . $w_p['curso_cve'] . " and res.texto in('Si', 'Casi siempre', 'Siempre') and " . $w_p['evaluador_user_cve'] . " and " . $w_p['evaluador_rol_id'] . " and " . $w_p['evaluado_rol_id'] . " and " . $w_p['evaluado_user_cve'] . $w_p['grupo_cve'],
-            'total_is_bono' => " where " . $w_p ['is_bono'] . " and " . $w_p['curso_cve'] . " and " . $w_p['evaluador_user_cve'] . " and " . $w_p['evaluador_rol_id'] . " and " . $w_p['evaluado_rol_id'] . " and " . $w_p['evaluado_user_cve'] . $w_p['grupo_cve'],
-            'total_no_aplica' => " where " . $w_p ['is_bono'] . " and " . $w_p['curso_cve'] . " and pre.valido_no_aplica = 1 and res.texto in('No aplica', 'No envió mensaje') and " . $w_p['evaluador_user_cve'] . " and " . $w_p['evaluador_rol_id'] . " and " . $w_p['evaluado_rol_id'] . " and " . $w_p['evaluado_user_cve'] . $w_p['grupo_cve'],
-            'total_nos' => " where " . $w_p ['is_bono'] . " and " . $w_p['curso_cve'] . " and res.texto in('No', 'Casi nunca', 'Nunca', 'Algunas veces') and " . $w_p['evaluador_user_cve'] . " and " . $w_p['evaluador_rol_id'] . " and " . $w_p['evaluado_rol_id'] . " and " . $w_p['evaluado_user_cve'] . $w_p['grupo_cve'],
-            'total_no_aplica_val_prom' => " where " . $w_p ['is_bono'] . " and " . $w_p['curso_cve'] . " and pre.valido_no_aplica = 0 and res.texto in('No aplica', 'No envió mensaje') and " . $w_p['evaluador_user_cve'] . " and " . $w_p['evaluador_rol_id'] . " and " . $w_p['evaluado_rol_id'] . " and " . $w_p['evaluado_user_cve'] . $w_p['grupo_cve'],
+            'total_si' => " where " . $wbono . $w_p['curso_cve'] . " and res.texto in('Si', 'Casi siempre', 'Siempre') and " . $w_p['evaluador_user_cve'] . " and " . $w_p['evaluador_rol_id'] . " and " . $w_p['evaluado_rol_id'] . " and " . $w_p['evaluado_user_cve'] . $w_p['grupo_cve'],
+            'total_is_bono' => " where " . $wbono . $w_p['curso_cve'] . " and " . $w_p['evaluador_user_cve'] . " and " . $w_p['evaluador_rol_id'] . " and " . $w_p['evaluado_rol_id'] . " and " . $w_p['evaluado_user_cve'] . $w_p['grupo_cve'],
+            'total_no_aplica' => " where " . $wbono . $w_p['curso_cve'] . " and pre.valido_no_aplica = 1 and res.texto in('No aplica', 'No envió mensaje') and " . $w_p['evaluador_user_cve'] . " and " . $w_p['evaluador_rol_id'] . " and " . $w_p['evaluado_rol_id'] . " and " . $w_p['evaluado_user_cve'] . $w_p['grupo_cve'],
+            'total_nos' => " where " . $wbono . $w_p['curso_cve'] . " and res.texto in('No', 'Casi nunca', 'Nunca', 'Algunas veces') and " . $w_p['evaluador_user_cve'] . " and " . $w_p['evaluador_rol_id'] . " and " . $w_p['evaluado_rol_id'] . " and " . $w_p['evaluado_user_cve'] . $w_p['grupo_cve'],
+            'total_no_aplica_val_prom' => " where " . $wbono . $w_p['curso_cve'] . " and pre.valido_no_aplica = 0 and res.texto in('No aplica', 'No envió mensaje') and " . $w_p['evaluador_user_cve'] . " and " . $w_p['evaluador_rol_id'] . " and " . $w_p['evaluado_rol_id'] . " and " . $w_p['evaluado_user_cve'] . $w_p['grupo_cve'],
         );
         //Select especifico y repetido
         $s_p = ' ev.evaluador_user_cve "evaluador", ev.evaluador_rol_id "rol_evaluador", ev.evaluado_user_cve "evaluado", ev.evaluado_rol_id "rol_evaluado" ';

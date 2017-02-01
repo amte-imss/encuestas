@@ -10,9 +10,12 @@ menu_busqueda_filtros["clavecurso"] = {text: 'Clave instrumento', btn: 'btn_tipo
 menu_busqueda_filtros["nombrecurso"] = {text: 'Nombre instrumento', btn: 'btn_tipo_buscar_instrumento', hidd: 'menu_instrumento'};
 menu_busqueda_filtros["matriculado"] = {text: 'Matricula', btn: 'btn_buscar_docente_evaluado', hidd: 'menu_evaluado'};
 menu_busqueda_filtros["namedocentedo"] = {text: 'Nombre docente', btn: 'btn_buscar_docente_evaluado', hidd: 'menu_evaluado'};
+menu_busqueda_filtros["matriculador"] = {text: 'Matricula', btn: 'btn_buscar_docente_evaluador', hidd: 'menu_evaluador'};
+menu_busqueda_filtros["namedocentedor"] = {text: 'Nombre docente', btn: 'btn_buscar_docente_evaluador', hidd: 'menu_evaluador'};
 menu_busqueda_filtros["categoria"] = {text: 'Categoría', btn: 'btn_buscar_categoria', hidd: 'menu_categoria'};
 menu_busqueda_filtros["claveadscripcion"] = {text: 'Clave departamental', btn: 'btn_buscar_adscripcion', hidd: 'menu_adscripcion'};
 menu_busqueda_filtros["nameadscripcion"] = {text: 'Nombre departamento', btn: 'btn_buscar_adscripcion', hidd: 'menu_adscripcion'};
+menu_busqueda_filtros["categoriar"] = {text: 'Categoría', btn: 'btn_buscar_categoriar', hidd: 'menu_categoriar'};
 
 
 /**

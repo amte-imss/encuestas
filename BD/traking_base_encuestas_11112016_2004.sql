@@ -136,3 +136,21 @@ begin
 	return salida;
 end;
 $$ LANGUAGE plpgsql;
+
+--
+-- Modifica entidad que almacena el promedio de las encuestas para guardar encuestas y preguntas que no aplican para bono
+--  Ejecución LEAS 18/01/2017
+alter table encuestas.sse_result_evaluacion_encuesta_curso add column total_puntua_si_napb int4 NOT NULL DEFAULT 0;
+alter table encuestas.sse_result_evaluacion_encuesta_curso add column total_nos_napb int4 NOT NULL DEFAULT 0;
+alter table encuestas.sse_result_evaluacion_encuesta_curso add column total_no_puntua_napv_napb int4 NOT NULL DEFAULT 0;-- Los "no aplica" que no forman parte de la evaluación de la encuesta, es decir, no_aplican = 1
+alter table encuestas.sse_result_evaluacion_encuesta_curso add column base_napb int4 NOT NULL DEFAULT 0;
+alter table encuestas.sse_result_evaluacion_encuesta_curso add column calif_emitida_napb numeric(6,3) NOT NULL DEFAULT 0;
+alter table encuestas.sse_result_evaluacion_encuesta_curso add column total_reactivos_napb int4 NOT NULL DEFAULT 0;
+alter table encuestas.sse_result_evaluacion_encuesta_curso add column total_no_puntua_apv int4 NOT NULL DEFAULT 0; -- Los "no aplica" que forman parte de la evaluación de la encuesta, es decir, no_aplican = 0
+alter table encuestas.sse_result_evaluacion_encuesta_curso add column total_no_puntua_apv_napb int4 NOT NULL DEFAULT 0 ; -- Los "no aplica" que forman parte de la evaluación de la encuesta, es decir, no_aplican = 0
+
+--
+-- Modifica default de colmna del campo orden de priorida en las reglas de evaluación
+--   Ejecución LEAS 23/01/2017
+ALTER TABLE encuestas.sse_reglas_evaluacion ALTER COLUMN ord_prioridad SET DEFAULT 1;
+

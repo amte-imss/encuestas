@@ -75,7 +75,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $active_group = 'default';
 $query_builder = TRUE;
 
-$db['default1'] = array(
+$db['default2'] = array(
     'dsn' => 'pgsql:host=172.22.159.26;dbname=pwces_db',// se agrego la base de datos correctamente kio_prod201 -> pwces_db
     'hostname' => '172.22.159.26',
     'username' => 'innovaedu',
@@ -100,7 +100,7 @@ $db['default1'] = array(
     'save_queries' => TRUE
 );
 
-$db['default'] = array(
+$db['default2'] = array(
     'dsn' => 'pgsql:host=11.32.41.92;dbname=nueva_kio',// se agrego la base de datos correctamente kio_prod201 -> nueva_kio
     'hostname' => '11.32.41.92',
     'username' => 'innovaedu',
@@ -125,7 +125,7 @@ $db['default'] = array(
     'save_queries' => TRUE
 );
 
-$db['default1'] = array(
+$db['default2'] = array(
     'dsn' => 'pgsql:host=11.32.41.30;dbname=sied30_2016',// se agrego la base de datos correctamente kio_prod201 -> pwces_db
 //    'dsn' => 'pgsql:host=11.32.41.30;dbname=nueva_kio2',// se agrego la base de datos correctamente kio_prod201 -> pwces_db
     'hostname' => '11.32.41.30',
@@ -133,6 +133,55 @@ $db['default1'] = array(
     'password' => 'postgres',
     'database' => 'sied30_2016',
 //    'database' => 'nueva_kio2',
+    'dbdriver' => 'pdo',
+    'port' => '5432',
+    'dbprefix' => '',
+    'pconnect' => TRUE,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => FALSE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'autoinit' => TRUE,
+    'schema' => 'encuestas',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => TRUE
+);
+
+$db['default2'] = array(
+    'dsn' => 'pgsql:host=11.32.41.19;dbname=nueva_kio',// se agrego la base de datos correctamente kio_prod201 -> nueva_kio
+    'hostname' => '11.32.41.19',
+    'username' => 'innovaedu',
+    'password' => 'nPgEoXCqd/?gV.,',
+    'database' => 'nueva_kio',
+    'dbdriver' => 'pdo',
+    'port' => '5432',
+    'dbprefix' => '',
+    'pconnect' => TRUE,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => FALSE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'autoinit' => TRUE,
+    'schema' => 'encuestas',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => TRUE
+);
+$db['default'] = array(
+    'dsn' => 'pgsql:host=localhost;dbname=nueva_kio',// se agrego la base de datos correctamente kio_prod201 -> nueva_kio
+    'hostname' => 'localhost',
+    'username' => 'postgres',
+    'password' => 'postgresql',
+    'database' => 'nueva_kio',
     'dbdriver' => 'pdo',
     'port' => '5432',
     'dbprefix' => '',

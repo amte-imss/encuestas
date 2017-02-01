@@ -50,12 +50,16 @@ class Resultadocursoencuesta extends CI_Controller {
             $data_post['current_row'] = 0;
             unset($data_post['per_page']);
 
-            $resultado = $this->encur_mod->listado_evaluados($data_post); //Datos del formulario se envían para generar la consulta segun los filtros
+//            $resultado = $this->encur_mod->listado_evaluados($data_post); //Datos del formulario se envían para generar la consulta segun los filtros
 
-            $data['total_empleados'] = $resultado['total'];
-            $data['empleados'] = $resultado['data'];
+            $this->load->model('Reporte_encuestas_contestadas', 'r_enc_cont'); // modelo de cursos
+            $resultado = $this->r_enc_cont->getBusquedaEncContNoCont($data_post); //Datos del formulario se envían para generar la consulta segun los filtros
 
-            $filename = "ExpEncuestasContestadas_" . date("d-m-Y_H-i-s") . ".xls";
+            $data['total'] = $resultado['total'];
+            $data['evaluaciones'] = $resultado['data'];
+            $data['tutorizado'] = $resultado['tutorizado'];
+
+            $filename = $resultado["text_export"] . date("d-m-Y_H-i-s") . ".xls";
             header("Content-Type: application/vnd.ms-excel; charset=UTF-8;");
 //            header("Content-Type: application/octet-stream; charset=UTF-8;");
             header("Content-Encoding: UTF-8");
@@ -63,7 +67,7 @@ class Resultadocursoencuesta extends CI_Controller {
             header("Pragma: no-cache");
             header("Expires: 0");
             echo "\xEF\xBB\xBF"; // UTF-8 BOM
-            echo $this->load->view('curso/listado_evaluados', $data, TRUE);
+            echo $this->load->view($resultado["view_res"], $data, TRUE);
 //            $this->load->view('reporte/listado_usuariosrep_xsl', $data);
             //Mostrar resultados
         } else {
@@ -86,23 +90,24 @@ class Resultadocursoencuesta extends CI_Controller {
                     $data = $filtros;
                     $data['current_row'] = $filtros['current_row'];
                     $data['per_page'] = $this->input->post('per_page');
-                    $data['curso'] = $filtros['curso'];
-                    //$data['encuestacve']='';
-                    $error = "";
-                    $data['error'] = $error;
 
                     //Checar el tipo de curso
 //                    $datos_curso = $this->cur_mod->listado_cursos(array('cur_id' => $curso));
-
-                    $resultado = $this->encur_mod->listado_evaluados($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
+                    $this->load->model('Reporte_encuestas_contestadas', 'r_enc_cont'); // modelo de cursos
+//                    $n_resultado = $this->r_enc_cont->listado_evaluados_($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
+                    $resultado = $this->r_enc_cont->getBusquedaEncContNoCont($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
+//                    $resultado = $this->encur_mod->listado_evaluados($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
 //                    pr($resultado);
 
-                    $data['total_empleados'] = $resultado['total'];
-                    $data['empleados'] = $resultado['data'];
+                    $data['total'] = $resultado['total'];
+                    $data['evaluaciones'] = $resultado['data'];
+                    $data['tutorizado'] = $resultado['tutorizado'];
+                    $data['controller'] = 'Resultadocursoencuesta';
+                    $data['action'] = 'get_data_ajax/' . $curso;
 
 
 
-                    $this->listado_resultado($data, array('form_recurso' => '#form_curso', 'elemento_resultado' => '#listado_resultado')); //Generar listado en caso de obtener datos
+                    $this->listado_resultado($data, array('form_recurso' => '#form_curso', 'elemento_resultado' => '#listado_resultado'), $resultado['view_res']); //Generar listado en caso de obtener datos
                 }
             } else {
                 redirect(site_url()); //Redirigir al inicio del sistema si se desea acceder al método mediante una petición normal, no ajax
@@ -113,14 +118,11 @@ class Resultadocursoencuesta extends CI_Controller {
         }
     }
 
-    private function listado_resultado($data, $form) {
-        echo $data['error'] . '<br>';
-        $data['encuestacve'] = 0;
-
-        $pagination = $this->template->pagination_data_curso_encuesta($data); //Crear mensaje y links de paginación
+    private function listado_resultado($data, $form, $view = '') {
+        $pagination = $this->template->pagination_data_general($data); //Crear mensaje y links de paginación
         $links = "<div class='col-sm-5 dataTables_info' style='line-height: 50px;'>" . $pagination['total'] . "</div>
                 <div class='col-sm-7 text-right'>" . $pagination['links'] . "</div>";
-        echo $links . $this->load->view('curso/listado_evaluados', $data, TRUE) . $links . '
+        echo $links . $this->load->view($view, $data, TRUE) . $links . '
             <script>
             $("ul.pagination li a").click(function(event){
                 data_ajax($(this).attr("href"), "' . $form['form_recurso'] . '", "' . $form['elemento_resultado'] . '");
@@ -159,8 +161,7 @@ class Resultadocursoencuesta extends CI_Controller {
 
         $datos_curso = $this->cur_mod->listado_cursos(array('cur_id' => $curso));
         $data['datos_curso'] = $datos_curso;
-
-
+//        pr($data);
         //$data['anios']=dropdown_options($anios, 'anio_id','anio_desc');
 
         $this->load->model('Reporte_model', 'rep_mod'); // modelo de cursos
@@ -174,7 +175,9 @@ class Resultadocursoencuesta extends CI_Controller {
         $data_extra['texto_titulo'] = '';
 //        pr($datos_curso);
         if (!empty($datos_curso['data'])) {
-            $data_extra['texto_titulo'] = $datos_curso['data'][0]['cur_clave'] . '-' . $datos_curso['data'][0]['cur_nom_completo'];
+            $text_tutorizado = ($datos_curso['data'][0]['tutorizado'] == 1) ? "Tutorizado" : "No tutorizado";
+            $data_extra['texto_titulo'] = $datos_curso['data'][0]['cur_clave'] . ' - ' . $datos_curso['data'][0]['cur_nom_completo'] . '<br>' . $text_tutorizado;
+            $data_extra['tutorizado'] = $datos_curso['data'][0]['tutorizado'];
         }
         $data_extra['curso'] = $curso;
 //data_ajax(site_url+'/resultadocursoencuesta/get_data_ajax/'+838, '#form_curso', '#listado_resultado')
@@ -182,7 +185,7 @@ class Resultadocursoencuesta extends CI_Controller {
 //          $main_contet = $this->load->view('curso/cur_enc_resultado', $data, true);
         $main_contet = $this->filtrosreportes_tpl->getCuerpo(FiltrosReportes_Tpl::RE_CONTESTADAS_NO_CONTESTADAS_PROMEDIO, $data_extra);
         $this->template->setMainContent($main_contet);
-        $this->template->setMainTitle('Encuestas contestadas');
+        $this->template->setMainTitle('Encuestas contestadas y no contestadas');
         $this->template->getTemplate();
     }
 

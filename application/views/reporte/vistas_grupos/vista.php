@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 // pr($formulario);
-$o = array('ordenar_detalle_por', 'ordenar_por', 'order_columns', 'ordenar_por_puntos'); //Ordenmiento variantes 
+$o = array('ordenar_por_con_no_con',/*Nueva*/'ordenar_detalle_por', 'ordenar_por', 'order_columns', 'ordenar_por_puntos',); //Ordenmiento variantes 
 $order = array();
 foreach ($o as $val) {
 //    pr(${$val});
@@ -32,10 +32,17 @@ echo form_open($controlador, array('id' => 'form_curso'));
             </div>
             <div class="panel-body">
 
-                <?php if (isset($curso)) {
+                <?php
+                if (isset($curso)) {
                     ?>
                     <input type = "hidden" id = "curso" name = "curso" value = "<?php echo $curso ?>">
                     <input type="hidden" id="bactiva" name="bactiva" value="0">
+                    <?php
+                }
+                if (isset($tutorizado)) {
+                    ?>
+                    <input type="hidden" id="bactiva" name="tutorizado" value="<?php echo $tutorizado ?>">
+
                     <?php
                 }
                 ?>
@@ -104,13 +111,13 @@ echo form_open($controlador, array('id' => 'form_curso'));
                             <?php echo $this->form_complete->create_element(array('id' => 'per_page', 'type' => 'dropdown', 'options' => array(5 => 5, 10 => 10, 20 => 20, 50 => 50, 100 => 100), 'attributes' => array('class' => 'form-control', 'placeholder' => 'Número de registros a mostrar', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Número de registros a mostrar', 'onchange' => "data_ajax($url_control)"))); ?>
                         </div>
                     </div>
-                    <?php if(!empty($order)) {?>
-                    <div class="col-lg-4 col-sm-4">
-                        <div class="panel-body input-group input-group-sm">
-                            <span class="input-group-addon">Ordenar por:</span>
-                            <?php echo $this->form_complete->create_element(array('id' => 'order', 'type' => 'dropdown', 'options' => $order, 'attributes' => array('class' => 'form-control', 'placeholder' => 'Ordernar por', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Ordenar por', 'onchange' => "data_ajax($url_control)"))); ?>
+                    <?php if (!empty($order)) { ?>
+                        <div class="col-lg-4 col-sm-4">
+                            <div class="panel-body input-group input-group-sm">
+                                <span class="input-group-addon">Ordenar por:</span>
+                                <?php echo $this->form_complete->create_element(array('id' => 'order', 'type' => 'dropdown', 'options' => $order, 'attributes' => array('class' => 'form-control', 'placeholder' => 'Ordernar por', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Ordenar por', 'onchange' => "data_ajax($url_control)"))); ?>
+                            </div>
                         </div>
-                    </div>
                     <?php } ?>
                     <div class="col-lg-4 col-sm-4">
                         <div class="panel-body input-group input-group-sm">
@@ -146,7 +153,7 @@ foreach ($js as $file_js) {
     });
     $(window).load(function () {
 //        $( "#btn_buscar_b" ).trigger( "click" );
-<?php // $extrac = (isset($curso))? $curso:''?>
+<?php // $extrac = (isset($curso))? $curso:''  ?>
 <?php if (!empty($exportar)) { ?>
             $("#btn_export").click(function (event) {
                 event.preventDefault();

@@ -28,7 +28,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 //$config['base_url'] = 'http://172.22.235.18/encuestas/';//producción 
 //$config['base_url'] = 'http://innovaedu.imss.gob.mx/encuestas/';//producción 
 //$config['base_url'] = 'http://11.32.41.92/kio_desarrollo/encuestas/';//host 92
-$config['base_url'] = 'http://localhost/encuestas_mod/';//host 92
+$config['base_url'] = 'http://localhost/encuestas/';//host 92
+//$config['base_url'] = 'http://11.32.41.86/encuestas/';//host 92
 
 /*
 |--------------------------------------------------------------------------

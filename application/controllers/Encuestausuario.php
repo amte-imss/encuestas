@@ -524,7 +524,7 @@ class Encuestausuario extends CI_Controller {
                 $rolescusercurso = $this->enc_mod->get_roles_usercurso(array('user_id' => $idusuario, 'cur_id' => $idcurso));
 
 //                $rolescusercurso = array(14, 18, 32, 5);
-                $parametros = array('role_evaluador' => $rolescusercurso, 'tutorizado' => $tutorizado, 'cur_id' => $idcurso);
+//                $parametros = array('role_evaluador' => $rolescusercurso, 'tutorizado' => $tutorizado, 'cur_id' => $idcurso);     //Comento Luis
 //                $reglas_validas = $this->enc_mod->getReglasEvaluacionCurso($parametros);
 //                pr($reglas_validas);
                 //exit();

@@ -19,6 +19,8 @@ class Reporte_model extends CI_Model {
             GF_GENERAL = 'general',
             GF_GENERAL_CNCE = 'general_enc_connoc', 
             GF_BLOQUES_CURSO = 'filter_matriz_bloques'
+            GF_ENCUESTA_CONTESTADAS = 'encuestas_filtro_contestadas',
+            GF_EVALUADOR_CONTESTADAS = 'evaluador_contestadas'
     ;
 
     public function __construct() {
@@ -494,7 +496,7 @@ class Reporte_model extends CI_Model {
         return $result;
     }
 
-    public function get_filtros_grupo($array_grupos) {
+    public function get_filtros_grupo($array_grupos, $condiciones) {
         $grupos_info = $this->getDatosPorGrupo();
         $key_datos = array();
         foreach ($array_grupos as $value) {
@@ -503,13 +505,13 @@ class Reporte_model extends CI_Model {
         $key_datos = array_unique($key_datos); //Quita valores duplicados
         $result = array();
         foreach ($key_datos as $value) {
-            $result[$value] = $this->getCatalogoInfoReportes($value); //Obtiene el valor de los datos
+            $result[$value] = $this->getCatalogoInfoReportes($value, $condiciones); //Obtiene el valor de los datos
         }
 //        pr($result);
         return $result;
     }
 
-    private function getCatalogoInfoReportes($key_dato) {
+    private function getCatalogoInfoReportes($key_dato, $condiciones) {
         switch ($key_dato) {
             case'tipo_encuesta':return array(1 => 'Desempeño', 0 => 'Satisfacción');
             case 'anios': return $this->get_listado_anios(2009);
@@ -556,7 +558,11 @@ class Reporte_model extends CI_Model {
             case 'umae':
                 $umae = $this->get_general_catalogos(array('from' => 'departments.ssd_cat_dependencia', 'select' => array('cve_depto_adscripcion', 'nom_dependencia'), 'where' => array("is_umae = '1'")));
                 return dropdown_options($umae, 'cve_depto_adscripcion', 'nom_dependencia');
-            case 'instrumento': return $this->get_lista_roles_regla_evaluacion();
+            case 'instrumento':
+                if (isset($condiciones[$key_dato])) {
+                    return $this->get_lista_roles_regla_evaluacion('normal', $condiciones[$key_dato]);
+                }
+                return $this->get_lista_roles_regla_evaluacion();
             case 'buscar_por': return array('clavecurso' => 'Clave instrumento', 'nombrecurso' => 'Nombre instrumento');
             case 'buscar_categoria': return array('categoria' => 'Categoría');
             case 'buscar_adscripcion': return array('claveadscripcion' => 'Clave departamental'/* , 'nameadscripcion' => 'Nombre departamento' */);
@@ -567,13 +573,23 @@ class Reporte_model extends CI_Model {
                 return $temp_grupo;
             case 'bloques_p': return array(1 => 'Bloque 1', 2 => 'Bloque 2', 3 => 'Bloque 3', 4 => 'Bloque 4', 5 => 'Bloque 5');
             case 'is_bono_p': return array(1 => 'Si', 0 => 'No');
-            case 'is_bloque_o_grupo': return array('' => 'Seleccione agrupamiento', 'bloque' => 'Por bloque'/* , 'grupo' => 'Por grupo' */);
+            case 'is_bloque_o_grupo': return array('' => 'Seleccione agrupamiento', 'bloque' => 'Por bloque', 'grupo' => 'Por grupo');
             case 'tipo_implementacion': return array(1 => 'Tutorizado', 0 => 'No tutorizado');
             case 'tipo_course':
                 $tipo_course = $this->config->item('tipo_curso_DCG');
                 return $tipo_course;
 //            case 'region':
 //                return array(1 => 'Noroccidente', 2 => 'Noreste', 3 => 'Centro', 4 => 'Centro sureste');
+            case 'enc_con_ncon':
+                return array('e_c' => 'Reporte de encuestas contestadas', 'e_nc' => 'Reporte de encuestas no contestadas');
+            case 'ordenar_por_con_no_con': return array(
+                    'uedo.nom,uedo.pat,uedo.mat' => 'Nombre del evaluado',
+                    'uedo.nom,uedo.pat,uedo.mat' => 'Nombre del evaluador',
+                    'uedo.username' => 'Matrícula del evaluado',
+                    'uedor.username' => 'Matrícula del evaluador',
+                    'mrdor.id' => 'Rol evaluador',
+                    'mrdo.id' => 'Rol evaluado',
+                );
             default:
                 return array();
         }
@@ -593,8 +609,10 @@ class Reporte_model extends CI_Model {
             Reporte_model::GF_CURSO => array('buscar_instrumento', 'anios', 'tipo_implementacion', 'is_bono_p', 'ordenar_por', 'order_by'),
             Reporte_model::GF_CURSO_DETALLE => array('buscar_instrumento', 'anios', 'tipo_implementacion', 'order_by'),
             Reporte_model::GF_GENERAL => array('ordenar_detalle_por'),
-            Reporte_model::GF_GENERAL_CNCE => array('ordenar_por', 'order_by'),
+            Reporte_model::GF_GENERAL_CNCE => array('order_by', /*'is_bloque_o_grupo'*/),
             Reporte_model::GF_BLOQUES_CURSO => array('order_by'),
+            Reporte_model::GF_ENCUESTA_CONTESTADAS => array('enc_con_ncon', 'instrumento', /*'is_bloque_o_grupo',*/ 'ordenar_por_con_no_con', 'order_by'),
+            Reporte_model::GF_EVALUADOR_CONTESTADAS => array('buscar_docente_evaluado', 'buscar_categoria', 'rol_evaluador', 'region', 'delg_umae', 'umae', 'buscar_adscripcion', 'order_by'),
         );
         return $array;
     }

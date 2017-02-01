@@ -86,7 +86,7 @@ class FiltrosReportes_Tpl extends Template {
                 FiltrosReportes_Tpl::C_VIEW_RESULT => 'reporte/',
                 FiltrosReportes_Tpl::C_CONTROL_FILTRO => 'resultadocursoencuesta/curso_encuesta_resultado/',
                 FiltrosReportes_Tpl::C_CONTROL_RESULT => '',
-                FiltrosReportes_Tpl::C_GRUPO_DATOS_ARRAY => array(Reporte_model::GF_GENERAL_CNCE),
+                FiltrosReportes_Tpl::C_GRUPO_DATOS_ARRAY => array(Reporte_model::GF_ENCUESTA_CONTESTADAS, Reporte_model::GF_EVALUADO_IMP, Reporte_model::GF_EVALUADOR_CONTESTADAS),
 //                FiltrosReportes_Tpl::C_GRUPO_DATOS_ARRAY => array(),
                 FiltrosReportes_Tpl::C_TITULO => 'Encuestas contestadas',
                 FiltrosReportes_Tpl::C_SUBTITULO => 'Listado de encuestas realizadas por curso',
@@ -140,7 +140,7 @@ class FiltrosReportes_Tpl extends Template {
         switch ($grupo_vista) {
             case Reporte_model::GF_EVALUADO: case Reporte_model::GF_EVALUADO_DETALLE: case Reporte_model::GF_EVALUADO_IMP:
                 return 2;
-            case Reporte_model::GF_EVALUADO_P:
+            case Reporte_model::GF_EVALUADO_P: case Reporte_model::GF_EVALUADOR_CONTESTADAS:
                 return 2;
             case Reporte_model::GF_BLOQUES_CURSO:
             case Reporte_model::GF_EVALUADOR: case Reporte_model::GF_EVALUADOR_DETALLE:
@@ -209,14 +209,17 @@ class FiltrosReportes_Tpl extends Template {
         $this->getTemplate();
     }
 
-    function getCuerpo($tipo_reporte = FALSE, $data_extra = null) {
+    function getCuerpo($tipo_reporte = FALSE, $data_extra = null, $condiciones = null) {
         if ($tipo_reporte != FiltrosReportes_Tpl::__default) {
+            if (is_null($condiciones)) {
+                $condiciones = array();
+            }
             $prop = $this->getArrayVistasReportes($tipo_reporte);
             $grupos_filtro_vista = $prop[FiltrosReportes_Tpl::C_GRUPO_DATOS_ARRAY];
             //Carga datos del controlador
             $this->CI->load->model('Reporte_model', 'rep_mod'); // modelo de reporte
             //Obtiene datos de los filtros
-            $data_info = $this->CI->rep_mod->get_filtros_grupo($grupos_filtro_vista); //Carga datos para ver en grupo
+
             $data_info['controlador'] = $prop[FiltrosReportes_Tpl::C_CONTROL_FILTRO];
 //            pr($data_info);
             $data_info['subtitulo'] = $prop[FiltrosReportes_Tpl::C_SUBTITULO];
@@ -224,19 +227,24 @@ class FiltrosReportes_Tpl extends Template {
                 $data_info['url_control'] = $data_extra['curso_url'];
                 $data_info['text_extra'] = $data_extra['texto_titulo'];
                 $data_info['curso'] = $data_extra['curso'];
+                if (isset($data_extra['tutorizado'])) {
+                    $data_info['tutorizado'] = $data_extra['tutorizado'];
+                    $condiciones['instrumento'] = array('tutorizado' => $data_extra['tutorizado']);
+                }
             } else {
                 $data_info['url_control'] = $prop[FiltrosReportes_Tpl::C_URL_CONTROL];
             }
-            
+            $data_info += $this->CI->rep_mod->get_filtros_grupo($grupos_filtro_vista, $condiciones); //Carga datos para ver en grupo
+
             $data['js'] = (isset($data_extra['js']) && !empty($data_extra['js'])) ? $data_extra['js'] : array('busquedas/busqueda.js');
 //            pr($data_info);
             $data['vistas'] = array(); //Carga datos para ver en grupo
             $data['exportar'] = $prop[FiltrosReportes_Tpl::C_LINK_EXPORTAR]; //Carga datos para ver en grupo
             $data['formulario'] = $prop[FiltrosReportes_Tpl::C_NAME_FORMULARIO]; //Carga datos para ver en grupo
-            if(isset($data_extra['info_extra']))
-            {
-                $data_info['info_extra'] = $data_extra['info_extra'];
-            }
+
+
+
+
 //            pr($grupos_filtro_vista);
             foreach ($grupos_filtro_vista as $view) {
 //                $r = $this->getNumEspaciosVistaGrupos($view);
