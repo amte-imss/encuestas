@@ -18,7 +18,7 @@ class Reporte_model extends CI_Model {
             GF_CURSO_DETALLE = 'curso_detalle',
             GF_GENERAL = 'general',
             GF_GENERAL_CNCE = 'general_enc_connoc', 
-            GF_BLOQUES_CURSO = 'filter_matriz_bloques'
+            GF_BLOQUES_CURSO = 'filter_matriz_bloques',
             GF_ENCUESTA_CONTESTADAS = 'encuestas_filtro_contestadas',
             GF_EVALUADOR_CONTESTADAS = 'evaluador_contestadas'
     ;
