@@ -1,111 +1,138 @@
 <?php
-
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Clase que gestiona el login
+ * Clase que muestra información (porcentaje general y datos de las implementaciones) almacenadas en la base de datos, mostrará cálculos considerando si la pregunta aplica para bono o no.
  * @version 	: 1.0.0
- * @autor 		: Pablo José
+ * @autor 	: JZDP
  */
-class Reporte_general extends CI_Controller {
-
+class Reporte_general extends CI_Controller 
+{
     /**
-     * * Carga de clases para el acceso a base de datos y para la creación de elementos del formulario
-     * * @access 		: public
-     * * @modified 	: 
+     * Carga de clases para el acceso a base de datos y para la creación de elementos del formulario
      */
-    public function __construct() {
+    public function __construct() 
+    {
         parent::__construct();
 
         $this->load->database();
-        $this->load->library('form_complete');
-        $this->load->library('form_validation');
-        $this->load->model('Reporte_model', 'rep_mod'); // modelo de reporte
-        $this->load->model('Curso_model', 'cur_mod'); // modelo de cursos
-        $this->load->model('Encuestas_model', 'enc_mod');
+        $this->load->library('form_complete'); //Carga elementos que permite la creación de formularios
+        $this->load->library('form_validation'); //Carga funciones de validación
+        $this->load->model('Reporte_general_model', 'rep_gen_mod'); // modelo de reporte
     }
-
-    public function index() {
-        //Obtiene los filtros para reporte
-        $data = $this->rep_mod->get_filtros_generales_reportes();
+    
+    /**
+     * Muestra los filtros correspondientes al reporte general. No muestra datos del evaluado y evaluador, solo del curso.
+     */
+    public function index() 
+    {
+        if (!$this->session->has_userdata('id')) 
+        {
+            $url_sied = $this->config->item('url_sied');
+            redirect($url_sied);
+        }
+        $reglas_evaluacion = $this->rep_mod->get_lista_roles_regla_evaluacion('roles', 'excepcion'); //Agregar reglas de evaluación a sesión, para ser utilizadas en la muestra de resultados
+        $this->session->set_userdata('reglas_evaluacion', $reglas_evaluacion);
         
-//        pr('holas');
-        /*
-          [2] => emp_matricula
-          [3] => emp_nombre
-          [11] => cat_nombre
-          [15] => fch_pre_registro
-          [17] => cur_clave
-          [18] => cur_nom_completo
-          [19] => fecha_inicio
-          [20] => horascur
-          [21] => fecha_fin
-          [24] => grup_nom
-          [25] => tutorizado
-          [26] => curso_alcance
-          [27] => rol_nom
-          [28] => tipocur
-         */
-
-        /*
-          $data['profesores'] = $this->rep_mod->reporte_usuarios(array('per_page'=>10, 'current_row'=>1));
-          pr($data['profesores']);
-
-         */
-
-//        $main_contet = $this->load->view('reporte/general/general_cursos', $data, true);
-//        $this->filtrosreportes_tpl->setMainTitle('Reporte general de cursos');
-//        $this->filtrosreportes_tpl->setMainContent($main_contet);
-//        $this->filtrosreportes_tpl->getTemplate();
-        $this->filtrosreportes_tpl->getVista(FiltrosReportes_Tpl::RB_IMPLEMENTACION);
+        $main_content = $this->filtrosreportes_tpl->getCuerpo(FiltrosReportes_Tpl::RB_GENERAL, array('js' => array('reporte_general.js')));
+        $this->template->setMainTitle("General");
+        $this->template->setMainContent($main_content);
+        $this->template->getTemplate();
     }
-
-    public function get_buscar_cursos_encuestas($current_row = null) {
-        if ($this->input->is_ajax_request()) { //Sólo se accede al método a través de una petición ajax
-            if (!is_null($this->input->post())) { //Se verifica que se haya recibido información por método post
-                //aqui va la nueva conexion a la base de datos del buscador
-                //Se guarda lo que se busco asi como la matricula de quien realizo la busqueda
-//                $filtros = $this->input->post();
-//                $filtros['current_row'] = (isset($current_row) && !empty($current_row)) ? $current_row : 0;
-                $data = array();
-                $result = $this->rep_mod->get_filtros_generales_reportes();
-//                pr($result);
-//                //pr($filtros);
-//                $resultado = $this->rep_mod->reporte_usuarios($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
-//                $data = $filtros;
-//                $data['total_empleados'] = $resultado['total'];
-//                $data['empleados'] = $resultado['data'];
-//                $data['current_row'] = $filtros['current_row'];
-//                $data['per_page'] = $this->input->post('per_page');
-//                //pr($data);
-//                $this->listado_resultado($data, array('form_recurso' => '#form_empleado', 'elemento_resultado' => '#listado_resultado_empleado')); //Generar listado en caso de obtener datos
-                echo $this->load->view('reporte/general/tb_result_rg', $data, TRUE);
-            }
-        } else {
-
+    
+    /**
+     * Método que recibe una petición ajax para obtener los porcentajes generales de las encuestas de acuerdo a los filtros seleccionados por el usuario
+     * @param integer $current_row Dato utilizado para la paginación. Límite inicial del cual se van a mostrar los registros.
+     * @return html Tabla conteniendo los resultados de la búsqueda
+     */
+    public function get_reporte_general_datos($current_row = null)
+    {
+        if (!$this->input->is_ajax_request()) //Sólo se accede al método a través de una petición ajax
+        {
             redirect(site_url()); //Redirigir al inicio del sistema si se desea acceder al método mediante una petición normal, no ajax
         }
+        if (!is_null($this->input->post())) //Se verifica que se haya recibido información por método post
+        {
+            $filtros = $this->input->post(null, true); //Se obtienen datos enviados por POST, se limpian los valores con el parámetro TRUE
+            $filtros['current_row'] = (isset($current_row) && !empty($current_row)) ? $current_row : 0;
+            $data = array();
+            $resultado = $this->rep_gen_mod->get_reporte_general_datos($filtros); //Datos del formulario se envían para generar la consulta según los filtros seleccionados
+            
+            $data['total_empleados'] = $resultado['total'];
+            $data['datos'] = $resultado['data'];
+            $data['reglas_evaluacion'] = $this->session->userdata('reglas_evaluacion'); //Obtener de sesión
+            $data['result_promedio'] = $resultado['promedio'];
+            $data['current_row'] = $filtros['current_row'];
+            $data['per_page'] = $filtros['per_page'];
+            //pr($data);
+            $c_r = $this->filtrosreportes_tpl->getArrayVistasReportes(FiltrosReportes_Tpl::RB_GENERAL); //Configuracion del reporte
+            $this->listado_resultado($data, array('form_recurso' => $c_r[FiltrosReportes_Tpl::C_NAME_FORMULARIO], 'elemento_resultado' => '#listado_resultado_empleado')); //Generar listado en caso de obtener datos. Mostrar resultados
+        }
     }
-
-    private function listado_resultado($data, $form) {
-        $pagination = $this->template->pagination_data_empleado($data, 'get_data_ajax2'); //Crear mensaje y links de paginación
-        $links = "<div class='col-sm-5 dataTables_info' style='line-height: 50px;'>" . $pagination['total'] . "</div>
-                <div class='col-sm-7 text-right'>" . $pagination['links'] . "</div>";
-        echo $links . $this->load->view('reporte/general/tb_result_rg', $data, TRUE) . $links . '
-            <script>
+    
+    /**
+     * Método que generá la paginación y el contenedor de la tabla resultante. Así como el método que agrega funcionalidad a las ligas de la paginación.
+     * @param array $data Datos de la consulta y datos necesarios para obtener la paginación.
+     * @param array $form Datos enviados del formulario. Como nombre del formulario, nombre del elemento donde se mostrará el resultado, entre otros.
+     * @return html Tabla html conteniendo los resultados de la búsqueda
+     */
+    private function listado_resultado($data, $form) 
+    {
+        $links = "";
+        if (!isset($data['export']) || (isset($data['export']) && $data['export'] == false)) 
+        {
+            $pagination = $this->template->pagination_data_empleado($data, array('reporte_general', 'get_reporte_general_datos')); //Crear mensaje y links de paginación
+            if ($data['total_empleados'] > 0)
+            {
+                $links = "<div class='col-sm-5 dataTables_info' style='line-height: 50px;'>" . $pagination['total'] . "</div>
+                    <div class='col-sm-7 text-right'>" . $pagination['links'] . "</div>";
+            }
+        }
+        echo $links . $this->load->view('reporte/general/listado_resultado', $data, TRUE) . $links;
+        if (!isset($data['export']) || (isset($data['export']) && $data['export'] == false))
+        {
+            echo '<script>
             $("ul.pagination li a").click(function(event){
                 data_ajax(this, "' . $form['form_recurso'] . '", "' . $form['elemento_resultado'] . '");
                 event.preventDefault();
             });
             </script>';
-    }
-
-    public function lista_anios($anio_inicio, $anio_fin) {
-        $anios = array();
-        for ($anio = $anio_inicio; $anio <= $anio_fin; $anio++) {
-            $anios[] = array('anio_id' => $anio, 'anio_desc' => $anio);
         }
-        return $anios;
     }
-
+    
+    /**
+     * Método exporta los porcentajes generales de las encuestas de acuerdo a los filtros seleccionados por el usuario.
+     * @return xls Archivo con extensión xls, conteniendo los resultados de la búsqueda.
+     */
+    public function exportar_reporte_general()
+    {
+        if (!$this->session->has_userdata('id')) 
+        {
+            $url_sied = $this->config->item('url_sied');
+            redirect($url_sied);
+        }
+        if (!is_null($this->input->post())) //Se verifica que se haya recibido información por método post
+        {
+            $filtros = $this->input->post(null, true); //Se obtienen datos enviados por POST, se limpian los valores con el parámetro TRUE
+            $data = array();
+            $data['current_row'] = $filtros['current_row'] = 0;
+            $filtros['export'] = TRUE;
+            $resultado = $this->rep_gen_mod->get_reporte_general_datos($filtros); //Datos del formulario se envían para generar la consulta según los filtros seleccionados
+            
+            $data['total_empleados'] = $resultado['total'];
+            $data['datos'] = $resultado['data'];
+            $data['reglas_evaluacion'] = $this->session->userdata('reglas_evaluacion'); //Obtener de sesión
+            $data['result_promedio'] = $resultado['promedio'];
+            //pr($data);
+            
+            $filename = "ExportReporteGeneral_" . date("d-m-Y_H-i-s") . ".xls";
+            header("Content-Type: application/vnd.ms-excel; charset=UTF-8;");
+            header("Content-Encoding: UTF-8");
+            header("Content-Disposition: attachment; filename=$filename");
+            header("Pragma: no-cache");
+            header("Expires: 0");
+            echo "\xEF\xBB\xBF"; // UTF-8 BOM
+            echo $this->load->view('reporte/general/listado_resultado', $data, TRUE);
+        }
+    }
 }

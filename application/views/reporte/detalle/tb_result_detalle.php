@@ -53,11 +53,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     //$depto_evaluado = ((!empty($dato['depto_tut_nombre'])) ? $dato['depto_tut_nombre'] : $dato['depto_user_nombre']);
                     //$depto_rama_evaluado = ((!empty($dato['rama_tut_evaluador'])) ? $dato['rama_tut_evaluador'] : $dato['rama_uder_evaluador']);
                     if(isset($dato['rama_tut_evaluado']) && !empty($dato['rama_tut_evaluado'])){
-                        $a_depto_rama_evaluado = explode(":", $dato['rama_tut_evaluado']);
+                        $rama_evaluado = explode(":", $dato['rama_tut_evaluado']);
+                        $r_evaluado = $rama_evaluado[1].' ('.$rama_evaluado[0].')';
                         //pr($a_depto_rama_evaluado);
-                        $rama_evaluado = (isset($a_depto_rama_evaluado[2])) ? explode("&", $a_depto_rama_evaluado[2]) : array('');
+                        //$rama_evaluado = (isset($a_depto_rama_evaluado[2])) ? explode("&", $a_depto_rama_evaluado[2]) : array('');
                     } else {
-                        $rama_evaluado[0] = '';
+                        $rama_evaluado = array('','');
+                        $r_evaluado = '';
                     }
                     $rama = (isset($dato['rama_tut_evaluador']) && !empty($dato['rama_tut_evaluador'])) ? $dato['rama_tut_evaluador'] : ((isset($dato['rama_pre_evaluador']) && !empty($dato['rama_pre_evaluador'])) ? $dato['rama_pre_evaluador'] : '' );
                     if($rama != ''){
@@ -90,7 +92,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <td>'.$grupo_nombre_evaluado.'</td>
                             <td>'.$dato['reg_tut_nombre'].'</td>
                             <td>'.((!empty($dato['depto_tut_nom_del'])) ? $dato['depto_tut_nom_del'] : '').'</td>
-                            <td>'.$rama_evaluado[0].'</td>
+                            <td>'.$r_evaluado.'</td>
                             <td>'.((!empty($dato['evaluado_cat_tut_nom'])) ? $dato['evaluado_cat_tut_nom'] : '').'</td>
                             <td>'.$dato['evaluador_matricula'].'</td>
                             <td>'.$dato['evaluador_nombre'].' '.$dato['evaluador_apellido'].'</td>

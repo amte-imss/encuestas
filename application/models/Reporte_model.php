@@ -20,7 +20,8 @@ class Reporte_model extends CI_Model {
             GF_GENERAL_CNCE = 'general_enc_connoc', 
             GF_BLOQUES_CURSO = 'filter_matriz_bloques',
             GF_ENCUESTA_CONTESTADAS = 'encuestas_filtro_contestadas',
-            GF_EVALUADOR_CONTESTADAS = 'evaluador_contestadas'
+            GF_EVALUADOR_CONTESTADAS = 'evaluador_contestadas',
+            GF_REPORTE_GENERAL = 'reporte_general'
     ;
 
     public function __construct() {
@@ -545,6 +546,11 @@ class Reporte_model extends CI_Model {
                     'nrolevaluador' => 'Rol evaluador',
                     'nrolevaluado' => 'Rol evaluado',
                     'ngrupo' => 'Grupo');
+            case 'ordenar_general': return array(
+                    'namec' => 'Nombre de implementación',
+                    'clave' => 'Clave de implementación',
+                    'tutorizado' => 'Tipo de implementación',
+                    'is_bono' => 'Aplica para bono');         
             case 'order_by': return array('ASC' => 'Ascendente', 'DESC' => 'Descendente');
             case 'order_columns': return array('emp_matricula' => 'Matrícula', 
                 'cve_depto_adscripcion' => 'Adscripción', 
@@ -609,6 +615,7 @@ class Reporte_model extends CI_Model {
             Reporte_model::GF_CURSO => array('buscar_instrumento', 'anios', 'tipo_implementacion', 'is_bono_p', 'ordenar_por', 'order_by'),
             Reporte_model::GF_CURSO_DETALLE => array('buscar_instrumento', 'anios', 'tipo_implementacion', 'order_by'),
             Reporte_model::GF_GENERAL => array('ordenar_detalle_por'),
+            Reporte_model::GF_REPORTE_GENERAL => array('ordenar_general'),
             Reporte_model::GF_GENERAL_CNCE => array('order_by', /*'is_bloque_o_grupo'*/),
             Reporte_model::GF_BLOQUES_CURSO => array('order_by'),
             Reporte_model::GF_ENCUESTA_CONTESTADAS => array('enc_con_ncon', 'instrumento', /*'is_bloque_o_grupo',*/ 'ordenar_por_con_no_con', 'order_by'),

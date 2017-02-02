@@ -22,6 +22,7 @@ class FiltrosReportes_Tpl extends Template {
             RE_INDICADORES = 4,
             RE_CONTESTADAS_NO_CONTESTADAS_PROMEDIO = 5,
             RE_MATRIZ_BLOQUES_CURSO = 6,
+            RB_GENERAL = 7,
             C_VIEW_FILTRO = 'viewFiltro',
             C_VIEW_RESULT = 'viewResult',
             C_CONTROL_FILTRO = 'controlFiltro',
@@ -132,6 +133,19 @@ class FiltrosReportes_Tpl extends Template {
                 FiltrosReportes_Tpl::C_NAME_FORMULARIO => "",
                 FiltrosReportes_Tpl::C_NAME_DIV_RESULTADO => "",
                 FiltrosReportes_Tpl::C_LINK_EXPORTAR => "",
+            ),
+            FiltrosReportes_Tpl::RB_GENERAL => array(
+                FiltrosReportes_Tpl::C_VIEW_FILTRO => '', //reporte/general/index
+                FiltrosReportes_Tpl::C_VIEW_RESULT => '', //reporte/general/index_1
+                FiltrosReportes_Tpl::C_CONTROL_FILTRO => '', //reporte_general/index
+                FiltrosReportes_Tpl::C_CONTROL_RESULT => '',
+                FiltrosReportes_Tpl::C_GRUPO_DATOS_ARRAY => array(Reporte_model::GF_CURSO, Reporte_model::GF_REPORTE_GENERAL),
+                FiltrosReportes_Tpl::C_TITULO => 'Reporte general',
+                FiltrosReportes_Tpl::C_SUBTITULO => '',
+                FiltrosReportes_Tpl::C_URL_CONTROL => "site_url+'/reporte_general/get_reporte_general_datos', '#form_curso', '#listado_resultado'",
+                FiltrosReportes_Tpl::C_NAME_FORMULARIO => "#form_curso",
+                FiltrosReportes_Tpl::C_NAME_DIV_RESULTADO => "#listado_resultado",
+                FiltrosReportes_Tpl::C_LINK_EXPORTAR => "reporte_general/exportar_reporte_general",
             ),
         );
     }
