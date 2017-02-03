@@ -18,7 +18,6 @@ class Encuestausuario extends CI_Controller {
         parent::__construct();
 
         $this->load->database();
-        $this->config->load('general'); // instanciamos el archivo de constantes generales
         $this->load->model('Encuestas_model', 'enc_mod');
         $this->load->model('Curso_model', 'cur_mod'); // modelo de cursos
         $this->load->library('form_validation'); //implemantación de la libreria form validation
@@ -26,6 +25,7 @@ class Encuestausuario extends CI_Controller {
         $this->config->load('form_validation'); // abrir el archivo general de validaciones
         $this->config->load('general'); // instanciamos el archivo de constantes generales
         $this->load->model('Reporte_model', 'rep_mod'); // modelo de reporte
+        $this->load->config('general');
     }
 
     public function lista_encuesta_usuario_bck() {
@@ -243,7 +243,7 @@ class Encuestausuario extends CI_Controller {
             $datos['curso_cve'] = $this->input->post('idcurso', true);
             $datos['grupo_cve'] = $this->input->post('idgrupo', true);
             if (!is_null($this->input->post('bloque', true))) {
-            $datos['bloque'] = $this->input->post('bloque', true);
+                $datos['bloque'] = $this->input->post('bloque', true);
             }
             if (!is_null($this->input->post('grupos_ids_text', true))) {
                 $datos['grupos_ids_text'] = $this->input->post('grupos_ids_text', true);
@@ -300,20 +300,40 @@ class Encuestausuario extends CI_Controller {
 
 
         $reactivos = $this->input->post('p_r', true);
+
         $encuesta_cve = $this->input->post('idencuesta', true);
         $busqueda = array('encuesta_cve' => $encuesta_cve);
         //pr($busqueda);
 
-        $reactivos_base = $this->enc_mod->get_preguntas_encuesta($busqueda);
-        foreach ($reactivos_base['data'] as $key => $value) {
-            # code...
-            //$arrpreguntas[]=$value['preguntas_cve'];
-            $this->form_validation->set_rules('p_r[' . $value['preguntas_cve'] . ']', 'Pregunta', 'required', array('required' => 'Esta pregunta es requerida'));
-        }
+        if ($reactivos) { //Validar que la información se haya enviado por método POST para almacenado
+            $reactivos_base = $this->enc_mod->get_preguntas_encuesta($busqueda); //Obtiene las preguntas asociadas a la encuesta
+
+
+//            pr($reactivos);
+//            pr($reactivos_base);
+            $tmp_array_id_preguntas = array();
+            foreach ($reactivos_base['data'] as $key => $value) {
+                # code...
+                //$arrpreguntas[]=$value['preguntas_cve'];
+                $this->form_validation->set_rules('p_r[' . $value['preguntas_cve'] . ']', 'Pregunta', 'required', array('required' => 'Esta pregunta es requerida'));
+                $tmp_array_id_preguntas[$value['preguntas_cve']] = $value['orden']; //Relaciona la pregunta con el orden de la pregunta
+            }
+            foreach ($reactivos as $key => $value) {//Recorre las preguntas que ya fueron contestadas para quitar de la lista 
+                unset($tmp_array_id_preguntas[$key]); //Se elimina la pregunta contestada de la lista de encuestas por contestar
+            }
+            $separa_simbolo = '';
+            $lista_preguntas_faltantes = '';
+            foreach ($tmp_array_id_preguntas as $value) {//Recorre las preguntas no han sido contestadas para ser agregadas a la lista
+                $lista_preguntas_faltantes .= $separa_simbolo . $value; //Carga el orden de las preguntas
+                $separa_simbolo = ', ';
+            }
+            if (strlen($lista_preguntas_faltantes) > 0) {//Condición para saber si existen preguntas fltantes por responder 
+                $campos_evaluacion['mensaje'] = 'Las siguientes preguntas son requeridas: ' . $lista_preguntas_faltantes;
+                $campos_evaluacion['tipo_msj'] = $this->config->item('alert_msg')['DANGER']['class']; //Selecciona el tipo de mensaje
+            }
 
 //        pr($this->session->userdata('datos_encuesta_usuario'));
-        //pr($this->input->post());
-        if ($this->input->post('p_r')) { //Validar que la información se haya enviado por método POST para almacenado
+            //pr($this->input->post());
             //Buscar los roles con las reglas de evaluacion
             $reglas = $this->enc_mod->get_reglas_encuesta($encuesta_cve);
             //var_dump($reglas[0]['rol_evaluado_cve']);
@@ -323,10 +343,10 @@ class Encuestausuario extends CI_Controller {
             if ($this->form_validation->run()) { //Se ejecuta la validación de datos 
                 $guardar_evaluacion = $this->enc_mod->guarda_reactivos_evaluacion($campos_evaluacion);
                 if ($guardar_evaluacion) {
+                    $datos['tipo_msj'] = $this->config->item('alert_msg')['SUCCESS']['class']; //Selecciona el tipo de mensaje
                     $datos['mensaje'] = 'El registro de la evaluación ha sido guardado correctamente';
                     $datos['idusuario'] = $this->input->post('iduevaluador', true);
                     $datos['idcurso'] = $this->input->post('idcurso', true);
-                    $this->session->set_flashdata('success', 'El registro de la evaluación ha sido guardado correctamente'); // devuelve mensaje flash
                     $main_contet = $this->load->view('encuesta/final', $datos, true);
                     $this->template->setMainContent($main_contet);
                     $this->template->getTemplate();
@@ -344,11 +364,12 @@ class Encuestausuario extends CI_Controller {
             }
         } else {
             //pr($id_instrumento);
+            $campos_evaluacion['mensaje'] = 'Por favor responda la encuesta para guardar la evaluación';
+            $campos_evaluacion['tipo_msj'] = $this->config->item('alert_msg')['WARNING']['class']; //Selecciona el tipo de mensaje
             $campos_evaluacion['boton'] = TRUE;
-            $campos_evaluacion['instrumento'] = $this->enc_mod->get_instrumento_detalle($id_instrumento);
-            $campos_evaluacion['preguntas'] = $this->enc_mod->preguntas_instrumento($id_instrumento);
+            $campos_evaluacion['instrumento'] = $this->enc_mod->get_instrumento_detalle($id_instrumento); //obtiene las posibles respuestas del instrumento
+            $campos_evaluacion['preguntas'] = $this->enc_mod->preguntas_instrumento($id_instrumento); //Obtiene las preguntas del instrumento
             $campos_evaluacion['id_instrumento'] = $id_instrumento;
-            $campos_evaluacion['mensaje'] = 'Todos los campos son requeridos';
             $main_contet = $this->load->view('encuesta/prev_encur', $campos_evaluacion, true);
             $this->template->setMainContent($main_contet);
             $this->template->getTemplate();
@@ -385,7 +406,7 @@ class Encuestausuario extends CI_Controller {
 //                $rolescusercurso = array(14, 18, 32, 5);
                 $parametros = array('role_evaluador' => $rolescusercurso, 'tutorizado' => $tutorizado, 'cur_id' => $idcurso);
                 $reglas_validas = $this->enc_mod->getReglasEvaluacionCurso($parametros);
-               // pr($reglas_validas);
+                // pr($reglas_validas);
                 //exit();
                 $reglas_validas = array();
 
@@ -592,7 +613,7 @@ class Encuestausuario extends CI_Controller {
                                 'rol_evaluado_cve' => $valuerg['rol_evaluado_cve'],
                                 'rol_evaluador_cve' => $valuerg['rol_evaluador_cve'],
                             ));
-                           // pr('-----------------*****************------------------------');
+                            // pr('-----------------*****************------------------------');
 //                            pr($datos_usuario_bloque);
 
                             if (isset($datos_usuario_bloque) || isset($datos_curso) || !empty($datos_usuario_bloque) || !empty($datos_curso)) {
@@ -704,37 +725,36 @@ class Encuestausuario extends CI_Controller {
     }
 
 //Listado de usuarios autoevaluados
-    public function lista_encuesta_usuario_autoevaluados($idcurso=null,$idusuario=null) {
-            //$sesion_valida = valida_sesion_activa($idusuario);
-            $sesion_valida = 1;
-            if ($sesion_valida) {
-                $this->session->unset_userdata('datos_encuesta_usuario'); //Eliminar la variable ya que puedequedara cargada con datos de otro curso
+    public function lista_encuesta_usuario_autoevaluados($idcurso = null, $idusuario = null) {
+        //$sesion_valida = valida_sesion_activa($idusuario);
+        $sesion_valida = 1;
+        if ($sesion_valida) {
+            $this->session->unset_userdata('datos_encuesta_usuario'); //Eliminar la variable ya que puedequedara cargada con datos de otro curso
 
-                $datos = array();
+            $datos = array();
 
-                $datos_curso = $this->cur_mod->listado_cursos(array('cur_id' => $idcurso));
+            $datos_curso = $this->cur_mod->listado_cursos(array('cur_id' => $idcurso));
 //                pr($datos_curso);
-                $tutorizado = null;
-                if (!empty($datos_curso['data'])) {
-                    $tutorizado = $datos_curso['data'][0]['tutorizado'];
-                }
-                //pr($datos_curso);
-                //var_dump($datos_curso['data'][0]['tutorizado']);
-                //$datos_roles_curso=$this->cur_mod->listar_roles_curso(array('cur_id'=>$idcurso));
-                //pr($datos_roles_curso['data']);
-                //pr(array_values($datos_roles_curso['data
-                //roles por curso por usuario
-                $usuarioscurso = $this->rep_mod->listado_usuariosenc($idcurso);
-                //pr($usuarioscurso);
+            $tutorizado = null;
+            if (!empty($datos_curso['data'])) {
+                $tutorizado = $datos_curso['data'][0]['tutorizado'];
+            }
+            //pr($datos_curso);
+            //var_dump($datos_curso['data'][0]['tutorizado']);
+            //$datos_roles_curso=$this->cur_mod->listar_roles_curso(array('cur_id'=>$idcurso));
+            //pr($datos_roles_curso['data']);
+            //pr(array_values($datos_roles_curso['data
+            //roles por curso por usuario
+            $usuarioscurso = $this->rep_mod->listado_usuariosenc($idcurso);
+            //pr($usuarioscurso);
 
-                foreach ($usuarioscurso as $keyuc => $valueuc) {
+            foreach ($usuarioscurso as $keyuc => $valueuc) {
 
-                    $rolescusercurso = $this->enc_mod->get_roles_usercurso(array('user_id' => $valueuc['cve_usuario'], 'cur_id' => $idcurso));
+                $rolescusercurso = $this->enc_mod->get_roles_usercurso(array('user_id' => $valueuc['cve_usuario'], 'cur_id' => $idcurso));
                 //} 
 
-                pr($rolescusercurso); 
+                pr($rolescusercurso);
                 //$rolescusercurso = $this->enc_mod->get_roles_usercurso(array('user_id' => $idusuario, 'cur_id' => $idcurso));
-
 //                $rolescusercurso = array(14, 18, 32, 5);
                 $parametros = array('role_evaluador' => $rolescusercurso, 'tutorizado' => $tutorizado, 'cur_id' => $idcurso);
 //                $reglas_validas = $this->enc_mod->getReglasEvaluacionCurso($parametros);
@@ -804,9 +824,7 @@ class Encuestausuario extends CI_Controller {
                                 'rol_evaluado_cve' => $valuerg['rol_evaluado_cve'],
                                 'rol_evaluador_cve' => $valuerg['rol_evaluador_cve'],
                             ));
-                           // pr('-----------------*****************------------------------');
-
-
+                            // pr('-----------------*****************------------------------');
                             //pr($datos_usuario_bloque);
 
                             if (isset($datos_usuario_bloque) || isset($datos_curso) || !empty($datos_usuario_bloque) || !empty($datos_curso)) {
@@ -880,45 +898,43 @@ class Encuestausuario extends CI_Controller {
                         $datos['datos_user_aeva'] = $datos_user_aeva;
                     }
                 }
-
             }
 
-                //pr($datos_user_aeva);
-                # code...
-                //}
-                //pr('--------------------------------------------------------------------');
-                //pr($datos_user_aeva);
-                //pr($datos['datos_user_aeva']);
-                $datos['datos_curso'] = $datos_curso;
-                //$datos['datos_usuario']=$datos_usuario;
-                //$datos['datos_user_aeva'];
-                //pr( $datos);
-                $datos['iduevaluador'] = $idusuario;
+            //pr($datos_user_aeva);
+            # code...
+            //}
+            //pr('--------------------------------------------------------------------');
+            //pr($datos_user_aeva);
+            //pr($datos['datos_user_aeva']);
+            $datos['datos_curso'] = $datos_curso;
+            //$datos['datos_usuario']=$datos_usuario;
+            //$datos['datos_user_aeva'];
+            //pr( $datos);
+            $datos['iduevaluador'] = $idusuario;
 
 
 
 
-                # code...
-            } else {//Muestra mensaje que no hay permisos
-                if (isset($data_get['token'])) {
-                    $datos['coment_general'] = 'El usuario actual no cuenta con permisos para ver el curso actual. '
-                            . '<br><br>Por favor verifique la ruta o inicie sesión nuevamente ';
-                } else {
-                    redirect('login/logeo/' . $idusuario . '/' . $idcurso);
-                }
+            # code...
+        } else {//Muestra mensaje que no hay permisos
+            if (isset($data_get['token'])) {
+                $datos['coment_general'] = 'El usuario actual no cuenta con permisos para ver el curso actual. '
+                        . '<br><br>Por favor verifique la ruta o inicie sesión nuevamente ';
+            } else {
+                redirect('login/logeo/' . $idusuario . '/' . $idcurso);
             }
-
-            $datos_usuario_evaluador = $this->enc_mod->get_datos_usuarios_gral(array('user_id' => $idusuario));
-
-            $nombreevaluador = $datos_usuario_evaluador[0]['nombres'] . ' ' . $datos_usuario_evaluador[0]['apellidos'];
-            $datos['nombreevaluador'] = $nombreevaluador;
-
-            $main_contet = $this->load->view('encuesta/lista_usuarios_autoevaluados', $datos, true);
-            $this->template->setMainContent($main_contet);
-            $this->template->getTemplate();
         }
+
+        $datos_usuario_evaluador = $this->enc_mod->get_datos_usuarios_gral(array('user_id' => $idusuario));
+
+        $nombreevaluador = $datos_usuario_evaluador[0]['nombres'] . ' ' . $datos_usuario_evaluador[0]['apellidos'];
+        $datos['nombreevaluador'] = $nombreevaluador;
+
+        $main_contet = $this->load->view('encuesta/lista_usuarios_autoevaluados', $datos, true);
+        $this->template->setMainContent($main_contet);
+        $this->template->getTemplate();
+    }
+
     //}
-  //}
-
-
+    //}
 }

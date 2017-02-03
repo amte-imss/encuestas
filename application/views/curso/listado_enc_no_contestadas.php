@@ -23,6 +23,8 @@ if (isset($evaluaciones) && !empty($evaluaciones)) {
                         <th>Departamento evaluado</th>
                         <th>Regi&oacute;n evaluado</th>
                         <th>Delegaci&oacute;n evaluado</th>
+                        <th>Fol&iacute;o de la encesta</th>
+                        <th>Nombre de la encuesta</th>
                         <th>Grupo(s)</th>
                         <?php if ($tutorizado == 1) { ?>
                             <th>Bloque</th>
@@ -74,6 +76,8 @@ if (isset($evaluaciones) && !empty($evaluaciones)) {
                             <td >' . htmlentities($val['depart_do']) . '</td >
                             <td >' . htmlentities($val['reg_do']) . '</td >
                             <td >' . htmlentities($val['del_do']) . '</td > 
+                            <td >' . htmlentities($val['cve_corta_encuesta']) . '</td > 
+                            <td >' . htmlentities($val['descripcion_encuestas']) . '</td > 
                             <td >' . $grupos . '</td >' .
                         $bloque
                         ;

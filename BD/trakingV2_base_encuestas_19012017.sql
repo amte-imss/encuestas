@@ -47,3 +47,28 @@ alter table encuestas.sse_result_evaluacion_encuesta_curso add column total_no_p
 --   Ejecución LEAS 23/01/2017
 ALTER TABLE encuestas.sse_reglas_evaluacion ALTER COLUMN ord_prioridad SET DEFAULT 1;
 
+--
+--Crear tablas para manejo de privilegios de rol
+-- Ejecución LEAS 02/02/2017
+CREATE TABLE encuestas.sse_modulo (
+	modulo_cve serial,
+	descripcion_modulo varchar(100) NOT NULL,
+	modulo_padre_cve int4 NULL,
+	CONSTRAINT sse_modulo_pkey PRIMARY KEY (modulo_cve),
+	CONSTRAINT fk_padre_modulo FOREIGN KEY (modulo_padre_cve) REFERENCES encuestas.sse_modulo(modulo_cve)
+)
+WITH (
+	OIDS=FALSE
+);
+
+CREATE TABLE encuestas.sse_modulo_rol (
+	modulo_cve int4 NOT NULL,
+	role_id int4 NOT NULL,
+	CONSTRAINT sse_modulo_role_pkey PRIMARY KEY (modulo_cve, role_id),
+	CONSTRAINT fk_modulo_cve_r_role FOREIGN KEY (modulo_cve) REFERENCES encuestas.sse_modulo(modulo_cve)
+)
+WITH (
+	OIDS=FALSE
+);
+
+

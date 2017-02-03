@@ -831,9 +831,9 @@ class Encuestas_model extends CI_Model {
         $this->db->join('public.mdl_role', 'sse_reglas_evaluacion.rol_evaluado_cve=mdl_role.id');
         $this->db->select($select_data);
         $query = $this->db->get('encuestas.sse_encuestas');
-
+//        pr($this->db->last_query());
         $resultado = $query->result_array();
-
+        
         return $resultado;
     }
 
@@ -2951,6 +2951,8 @@ class Encuestas_model extends CI_Model {
         //pr($query);
         
         $resultado = $this->db->query($query)->result_array();
+        pr($this->db->last_query());
+        
         $this->db->reset_query();
         $this->db->flush_cache();
         $salida['total'] = $count;

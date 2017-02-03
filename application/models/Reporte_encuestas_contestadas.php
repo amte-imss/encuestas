@@ -234,6 +234,7 @@ class EncContestadas {
     function getSelect_basico() {
         return array(
             "ec.course_cve", "ccfg.tutorizado", "reec.encuesta_cve", "reec.evaluador_user_cve", "reec.evaluado_user_cve",
+            "enc.cve_corta_encuesta", "enc.descripcion_encuestas",
             //evaluado
             "mrdo.id rid_do", 'mrdo."name" rolname_do', "uedo.username as matricula_do", "concat(uedo.nom, ' ', uedo.pat, ' ', uedo.mat) nom_evaluado",
             "cattutdo.des_clave", "cattutdo.nom_nombre",
@@ -268,6 +269,7 @@ class EncContestadas {
     function getGroupBy_basico() {
         return array(
             "ec.course_cve", "mcs.shortname", "ccfg.tutorizado", "reec.encuesta_cve", "reec.evaluador_user_cve", "reec.evaluado_user_cve",
+            "enc.cve_corta_encuesta", "enc.descripcion_encuestas",
             //evaluado
             "mrdo.id", 'mrdo."name"', "uedo.username", "uedo.nom", "uedo.pat", "uedo.mat",
             "depdo.cve_depto_adscripcion", "depdo.des_unidad_atencion", "depdo.nom_delegacion", "depdo.name_region",
@@ -339,6 +341,8 @@ class EncNoContestadas {
     function getSelectBasico() {
         return array(
             "rege.reglas_evaluacion_cve regeva", "ec.course_cve", "mcs.shortname",
+            //Encuestas
+            "enc.cve_corta_encuesta", "enc.descripcion_encuestas",
             //Evaluador 
             "mrdor.id rid_do", 'mrdor."name" rolname_dor', 'uedor.username matricula_dor',
             "concat(uedor.nom, ' ', uedor.pat, ' ', uedor.mat) nom_evaluador",
@@ -444,7 +448,7 @@ class EncNoContestadas {
 
     function getGroupBy_basico() {
         return array(
-            "rege.reglas_evaluacion_cve", "ec.course_cve, mcs.shortname",
+            "rege.reglas_evaluacion_cve", "ec.course_cve, mcs.shortname", "enc.cve_corta_encuesta", "enc.descripcion_encuestas",
 //Evaluador
             "mrdor.id", 'mrdor."name"', "uedor.id", "uedor.username", "uedor.nom", "uedor.pat", "uedor.mat",
             "cattutdor.des_clave", "cattutdor.nom_nombre", "catpredor.des_clave", "catpredor.nom_nombre",

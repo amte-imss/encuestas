@@ -89,7 +89,7 @@ class Reporte_bonos_implementacion_model extends CI_Model {
         $query = $ejecuta->result_array();
 
         $this->db->flush_cache(); //Limpia la cache
-//        pr($this->db->last_query());
+        pr($this->db->last_query());
         //Resultados de cálculo de promedios 
         $array_config_calculo = $array_result['calculo_prom'];
 //        pr($num_rows);
@@ -224,6 +224,14 @@ class config_busqueda {
         return 'encuestas.sse_result_evaluacion_encuesta_curso eeec';
     }
 
+    function getArrayConfigSecundario($paramPost) {
+        if($paramPost['tutorizado'] == 1){//Cursos tutorizados
+            
+        }else{//Cursos no tutorizados
+            
+        }
+    }
+    
     function getArrayConfigPrincipal($paramPost) {
 //        pr($paramPost);
         //***Carga arrays con datos basicos de la consulta principal

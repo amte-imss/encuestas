@@ -39,8 +39,16 @@ if (isset($logueado) && !empty($logueado)) {
                             <li><a href="<?php echo site_url('Resultadocursoindicador'); ?>" class="a_menu">Reporte por indicadores</a></li>
                         </ul>
                     </li>
-                    <li><a href="<?php echo site_url('reglas_evaluacion/index'); ?>">Gestión de Reglas de evaluación</a></li>
-                    <li><a href="<?php echo site_url('reglas_evaluacion/index'); ?>">Gestión de usuarios autoevaluados</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Gestión
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="<?php echo site_url('reglas_evaluacion/index'); ?>" class="a_menu">Gestión de Reglas de evaluación</a></li>
+                            <li><a href="<?php echo site_url('reglas_evaluacion/index'); ?>" class="a_menu">Gestión de usuarios autoevaluados</a></li>
+                        </ul>
+                    </li>
                     <li>
                         <a href="<?php echo site_url('login/regresar_sied'); ?>" class="a_nav_sied">
                             Regresar a SIED
