@@ -80,6 +80,12 @@
                         <a href="'.site_url('encuestas/prev/'.$val['encuesta_cve']).'" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="Ver instrumento">
                             <span class="glyphicon glyphicon-search"></span>
                         </a>
+                        <a href="'.site_url('encuestas/exportar_xls/'.$val['encuesta_cve']).'" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="Exportar instrumento hoja de cálculo">
+                            <span class="glyphicon glyphicon-export"></span>
+                        </a>
+                        <a href="'.site_url('encuestas/exportar_pdf/'.$val['encuesta_cve']).'" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="Exportar instrumento pdf">
+                            <span class="glyphicon glyphicon-open"></span>
+                        </a>
                         '. ((isset($val['tiene_evaluaciones']) && $val['tiene_evaluaciones']==0) ? $editar.' '.$eliminar : $duplicar.' '.$lock_unlock ) .'
                         
                     </td>

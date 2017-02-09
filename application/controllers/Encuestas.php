@@ -1551,6 +1551,46 @@ class Encuestas extends CI_Controller
 
     }
 
+    /*
+     * Exporta detalles de encuesta, preguntas y opciones de respuesta a archivo XLS. Mismo formato que plantilla utilizada para importación de datos de encuesta
+     * @param   $id_instrumento integer Identificador del instrumento a exportar
+     * @return  Archivo xls
+     */
+    public function exportar_xls($id_instrumento=0)
+    {
+        if($id_instrumento===0)
+        {
+            redirect(site_url('encuestas'));
+        }
+        $data = $this->enc_mod->exportar_xls_datos($id_instrumento); //Obtener datos
+        ////Generación de cabeceras
+        $archivo = "Exportar_instrumento_" . date("d-m-Y_H-i-s") . ".xls"; //Nombre de archivo
+        header("Content-Type: application/vnd.ms-excel; charset=UTF-8;");
+        header("Content-Encoding: UTF-8");
+        header("Content-Disposition: attachment; filename=$archivo");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+        echo "\xEF\xBB\xBF"; // UTF-8 BOM. Necesaria para que respete acentos
+        echo $this->load->view('encuesta/exportar_xls', $data, TRUE);
+    }
     
-
+    /*
+     * Exporta detalles de encuesta, preguntas y opciones de respuesta a archivo PDF.
+     * @param   $id_instrumento integer Identificador del instrumento a exportar
+     * @return  Archivo pdf
+     */
+    public function exportar_pdf($id_instrumento=0)
+    {
+        if($id_instrumento===0)
+        {
+            redirect(site_url('encuestas'));
+        }
+        $this->load->library('my_dompdf');
+        
+        $data = $this->enc_mod->exportar_xls_datos($id_instrumento); //Obtener datos
+        
+        $vista = $this->load->view('encuesta/exportar_pdf', $data, TRUE); //Obtener vista
+        
+        $this->my_dompdf->convert_html_to_pdf('Exportar_instrumento_'.date("d-m-Y_H-i-s"), $vista); //Exportar a PDF
+    }
 }

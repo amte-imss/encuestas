@@ -31,7 +31,6 @@ if (isset($logueado) && !empty($logueado)) {
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Reportes
                             <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <!--<li><a href="<?php // echo site_url('reporte_general');       ?>" class="a_menu">Reporte general</a></li>-->
                             <li><a href="<?php echo site_url('reporte'); ?>" class="a_menu">Reporte resumen de bonos</a></li>
                             <li><a href="<?php echo site_url('reporte_bonos'); ?>" class="a_menu">Reporte de implementación</a></li>
                             <li><a href="<?php echo site_url('reporte_general'); ?>" class="a_menu">Reporte general</a></li>
@@ -47,6 +46,13 @@ if (isset($logueado) && !empty($logueado)) {
                         <ul class="dropdown-menu">
                             <li><a href="<?php echo site_url('reglas_evaluacion/index'); ?>" class="a_menu">Gestión de Reglas de evaluación</a></li>
                             <li><a href="<?php echo site_url('reglas_evaluacion/index'); ?>" class="a_menu">Gestión de usuarios autoevaluados</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Catálogos
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="<?php echo site_url('catalogos/departamentos'); ?>" class="a_menu">Departamentos</a></li>
                         </ul>
                     </li>
                     <li>

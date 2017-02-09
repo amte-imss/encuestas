@@ -3195,5 +3195,48 @@ class Encuestas_model extends CI_Model {
 
         return $resultado;
     }
-
+    
+    public function exportar_xls_datos($id_instrumento){
+        $resultado = array(); //role_evaluado.id \"ROL_A_EVALUAR_ID\", role_evaluador.id \"ROL_EVALUADOR_ID\", sec.seccion_cve, ind.indicador_cve, tip_pre.descripcion,
+        $this->db->select("enc.descripcion_encuestas \"NOMBRE_INSTRUMENTO\", enc.cve_corta_encuesta \"FOLIO_INSTRUMENTO\", role_evaluado.\"name\" \"ROL_A_EVALUAR\", 
+            role_evaluador.\"name\" \"ROL_EVALUADOR\", case when reg_eva.tutorizado = 1 then 'SI' else 'NO' end as \"TUTORIZADO\", 
+            sec.descripcion as \"NOMBRE_SECCION\", ind.descripcion as \"NOMBRE_INDICADOR\", pre.orden as \"NO_PREGUNTA\", 
+            case when pre.is_bono = 1 then 'SI' else 'NO' end as \"PREGUNTA_BONO\", case when pre.obligada = 1 then 'SI' else 'NO' end as \"OBLIGADA\", pre.pregunta as \"PREGUNTA\",
+            case when tip_pre.descripcion SIMILAR TO '%(NULO)%' then 'SI' else '' end as \"NO_APLICA\",
+            case when pre.valido_no_aplica = 1 then 'SI' else 'NO' end as \"VALIDO_NO_APLICA\", 
+            case when tip_pre.descripcion SIMILAR TO '%(NOENVIOMENSAJE)%' then 'SI' else '' end as \"NO_ENVIO_MENSAJE\",
+            case when tip_pre.descripcion SIMILAR TO '%(SI_NO)%' then 'SI' else '' end as \"SI\",
+            case when tip_pre.descripcion SIMILAR TO '%(SI_NO)%' then 'SI' else '' end as \"NO\",
+            case when tip_pre.descripcion SIMILAR TO '%(SIEMPRE_NUNCA)%' then 'SI' else '' end as \"SIEMPRE\",
+            case when tip_pre.descripcion SIMILAR TO '%(SIEMPRE_NUNCA)%' then 'SI' else '' end as \"CASI_SIEMPRE\",
+            case when tip_pre.descripcion SIMILAR TO '%(SIEMPRE_NUNCA)%' then 'SI' else '' end as \"ALGUNAS_VECES\",
+            case when tip_pre.descripcion SIMILAR TO '%(SIEMPRE_NUNCA)%' then 'SI' else '' end as \"CASI_NUNCA\",
+            case when tip_pre.descripcion SIMILAR TO '%(SIEMPRE_NUNCA)%' then 'SI' else '' end as \"NUNCA\", 
+            case when tip_pre.descripcion SIMILAR TO '%(RESPUESTA_ABIERTA)%' then 'SI' else '' end as \"RESPUESTA_ABIERTA\",
+            case when reg_eva.eval_is_satisfaccion = 1 then 'SATISFACCION' else 'DESEMPENIO' end as \"TIPO_INSTRUMENTO\",
+            case when enc.eva_tipo = 1 then 'POR_GRUPO' when enc.eva_tipo = 2 then 'POR_BLOQUE' when enc.eva_tipo = 3 then 'POR_USUARIO' end as \"EVA_TIPO\"");
+        
+        $this->db->where("enc.encuesta_cve", $id_instrumento);
+        
+        $this->db->join('encuestas.sse_reglas_evaluacion reg_eva', 'reg_eva.reglas_evaluacion_cve=enc.reglas_evaluacion_cve');
+        $this->db->join('public.mdl_role role_evaluado', 'role_evaluado.id=reg_eva.rol_evaluado_cve', 'left');
+        $this->db->join('public.mdl_role role_evaluador', 'role_evaluador.id=reg_eva.rol_evaluador_cve', 'left');
+        $this->db->join('encuestas.sse_preguntas pre', 'pre.encuesta_cve=enc.encuesta_cve');
+        $this->db->join('encuestas.sse_seccion sec', 'sec.seccion_cve=pre.seccion_cve', 'left');
+        $this->db->join('encuestas.sse_indicador ind', 'ind.indicador_cve=pre.tipo_indicador_cve', 'left');
+        $this->db->join('encuestas.sse_tipo_pregunta tip_pre', 'tip_pre.tipo_pregunta_cve=pre.tipo_pregunta_cve', 'left');
+        
+        $this->db->order_by('NO_PREGUNTA', 'ASC');
+        
+        $query = $this->db->get('encuestas.sse_encuestas enc'); //Obtener conjunto de registros
+        //pr($this->db->last_query());
+        $this->db->flush_cache();
+        
+        $resultado['data'] = $query->result_array();
+        $resultado['head'] = $query->list_fields();
+        //pr($resultado); exit();
+        $query->free_result(); //Libera la memoria
+        
+        return $resultado;
+    }
 }
