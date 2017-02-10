@@ -7,8 +7,7 @@ class Login_model extends CI_Model {
     public function __construct() {
         // Call the CI_Model constructor
         parent::__construct();
-        $this->config->load('general');
-        // $this->load->database();
+//         $this->load->database();
     }
 
     /**
@@ -201,42 +200,181 @@ class Login_model extends CI_Model {
           exit(); */
         return $query->num_rows();
     }
-    
+
     function intento_fallido($matricula) {
         $intento['usr_matricula'] = $matricula;
         $this->db->insert('ini_ses_int', $intento);
-
     }
-    
+
     /**
      * @autor LEAS
-     * Fecha creación: 18-05-2016
-     * Fecha actualización: 26-05-2016
-     * @return Permisos de acceso para sesiones no iniciadas
+     * Fecha creación: 03-02-2017
+     * @return Accesos por rol
      */
-    public function get_rol_mod_no_sesion() {
-        $select = array('cr.ROL_CVE "cve_rol"', 'cr.ROL_NOMBRE "nombre_rol"',
-            'm.MODULO_CVE "cve_modulo"', 'm.MOD_NOMBRE "nombre_modulo"'
-           ,'m.MOD_RUTA "controlador"'
+    public function get_modulos_sesion_vx($param) {
+//        pr($param);
+        $string_roeles = '';
+        if (isset($param['roles']) and ! empty($param['roles'])) {
+            $string_roeles = 'and mrol.id in( ';
+            $separador = '';
+            foreach ($param['roles'] as $idrole) {
+                $string_roeles .= $separador . $idrole;
+                $separador = ', ';
+            }
+            $string_roeles .= ' )';
+        } else {//Si no existen roles asociados con el usuario, envíar un array vacio
+            return array();
+        }
+
+        $select = array(
+            'm.modulo_cve', 'm.nom_controlador_funcion_mod', 'm.descripcion_modulo', 'm.modulo_padre_cve', 'is_seccion',
+            "(select nom_controlador_funcion_mod from encuestas.sse_modulo mp where mp.modulo_cve = m.modulo_padre_cve) as modulo_padre_controlador_funcion"
         );
 
         $this->db->select($select);
-        $this->db->from('rol_modulo as rm');
-        $this->db->join('modulo as m', 'm.MODULO_CVE = rm.MODULO_CVE');
-        $this->db->join('crol as cr', 'cr.ROL_CVE = rm.ROL_CVE');
-        $this->db->where('m.MOD_EST_CVE', 1);
-        $this->db->where('cr.ROL_CVE', 1);
-        $this->db->order_by('cr.ROL_CVE', 'ASC');
-        $this->db->order_by('m.MODULO_CVE', 'ASC');
-        $query = $this->db->get();
+        $this->db->join('encuestas.sse_modulo_rol mr', 'mr.modulo_cve  = m.modulo_cve');
+        $this->db->join('public.mdl_role mrol', 'mrol.id = mr.role_id ' . $string_roeles);
+        //Condiciones
+        //Group by agrupamiento
+        $this->db->group_by('m.modulo_cve');
+        $this->db->group_by('m.descripcion_modulo');
+        $this->db->group_by('m.modulo_padre_cve');
+        //Ordenamiento
+        $this->db->order_by('modulo_padre_cve', 'desc');
+        $query = $this->db->get('encuestas.sse_modulo m');
         $result = $query->result_array();
 
-        if (!isset($result)) {
-            $result = null;
-        } else if (empty($result)) {
-            $result = null;
-        }
+//        pr($this->db->last_query());
         $query->free_result();
+        return $result;
+    }
+
+    /**
+     * @autor LEAS
+     * Fecha creación: 03-02-2017
+     * @return Accesos por rol
+     */
+    public function get_modulos_sesion_3($param) {
+//        pr($param);
+        $string_roeles = '';
+        if (isset($param['roles']) and ! empty($param['roles'])) {
+            $string_roeles = 'and mrol.id in( ';
+            $separador = '';
+            foreach ($param['roles'] as $idrole) {
+                $string_roeles .= $separador . $idrole;
+                $separador = ', ';
+            }
+            $string_roeles .= ' )';
+        } else {//Si no existen roles asociados con el usuario, envíar un array vacio
+            return array();
+        }
+
+        $select = array(
+            'm.modulo_cve', 'm.descripcion_modulo', 'mact.modulo_cve "actividad_cve"', 'mact.descripcion_modulo "descripcion_actividad"',
+            'mact.nom_controlador_funcion_mod', 'mract.acceso acceso_actividad'
+        );
+
+        $this->db->select($select);
+        $this->db->join('public.mdl_role mrol', 'mrol.id = mr.role_id ' . $string_roeles);
+        $this->db->join('encuestas.sse_modulo m', 'mr.modulo_cve = m.modulo_cve and m.is_seccion = 1 and mr.acceso = 1');
+        $this->db->join('encuestas.sse_modulo mact', 'mact.modulo_padre_cve = m.modulo_cve');
+        $this->db->join('encuestas.sse_modulo_rol mract', 'mract.modulo_cve = mact.modulo_cve', 'left');
+        //Condiciones
+        $this->db->where('mract.acceso is null');
+        $this->db->or_where('mract.acceso', '1');
+        //Group by agrupamiento
+        $this->db->group_by('m.modulo_cve');
+        $this->db->group_by('m.descripcion_modulo');
+        $this->db->group_by('mact.modulo_cve');
+        $this->db->group_by('mact.descripcion_modulo');
+        $this->db->group_by('mact.nom_controlador_funcion_mod');
+        $this->db->group_by('mract.acceso');
+        //Ordenamiento
+        $this->db->order_by('m.modulo_cve');
+        $query = $this->db->get('encuestas.sse_modulo_rol mr');
+        $result = $query->result_array();
+
+//        pr($this->db->last_query());
+        $query->free_result();
+        return $result;
+    }
+
+    /**
+     * @autor LEAS
+     * Fecha creación: 03-02-2017
+     * @return Accesos por rol
+     */
+    public function get_modulos_sesion($param) {
+//        pr($param);
+        $string_roeles = '';
+        if (isset($param['roles']) and ! empty($param['roles'])) {
+            $string_roeles = ' in( ';
+            $separador = '';
+            foreach ($param['roles'] as $idrole) {
+                $string_roeles .= $separador . $idrole;
+                $separador = ', ';
+            }
+            $string_roeles .= ' )';
+        } else {//Si no existen roles asociados con el usuario, envíar un array vacio
+            return array();
+        }
+
+        $query_cad = "
+                select mact.modulo_cve, mact.modulo_padre_cve, mact.descripcion_modulo, 
+                mact.nom_controlador_funcion_mod, 1 acceso 
+                from encuestas.sse_modulo mact
+                left join encuestas.sse_modulo_rol mract on mract.modulo_cve = mact.modulo_cve and mract.role_id " . $string_roeles . "
+                where mact.is_seccion = 0 and 
+                mact.modulo_padre_cve in (select mactp.modulo_cve
+                from encuestas.sse_modulo mactp
+                join encuestas.sse_modulo_rol mractp on mractp.modulo_cve = mactp.modulo_cve and mactp.is_seccion = 1 and mractp.role_id " . $string_roeles . "
+                group by mactp.modulo_cve)
+                and mract.role_id is null 
+                group by mact.modulo_padre_cve, mact.modulo_cve
+            union
+                select mact.modulo_cve, mact.modulo_padre_cve, mact.descripcion_modulo, 
+                mact.nom_controlador_funcion_mod,
+		case when ((select count(*) cuenta
+                    from encuestas.sse_modulo_rol mract
+                    join encuestas.sse_modulo mact on mact.modulo_cve = mract.modulo_cve and acceso = 0 and mract.role_id " . $string_roeles . "
+                    group by mact.modulo_padre_cve, mact.modulo_cve
+                    having count(mact.modulo_cve) > 1) > 0) then 1
+                    else 0 end 
+                as acceso
+                from encuestas.sse_modulo_rol mract
+                join encuestas.sse_modulo mact on mact.modulo_cve = mract.modulo_cve and acceso = 0 and mract.role_id " . $string_roeles . "
+                group by mact.modulo_padre_cve, mact.modulo_cve
+                having count(mact.modulo_cve) = 1
+            union
+                select mact.modulo_cve, mact.modulo_padre_cve, mact.descripcion_modulo, 
+                mact.nom_controlador_funcion_mod, 0 acceso
+                from encuestas.sse_modulo_rol mract
+                join encuestas.sse_modulo mact on mact.modulo_cve = mract.modulo_cve and acceso = 0 and mract.role_id " . $string_roeles . "
+                group by mact.modulo_padre_cve, mact.modulo_cve
+                having count(mact.modulo_cve) > 1";
+
+        $ejecucion = $this->db->query($query_cad)->result_array();
+        //Carga las secciones
+        $select = array(
+            'mactp.modulo_cve', 'mactp.descripcion_modulo', 'mactp.nom_controlador_funcion_mod'
+        );
+
+        $this->db->select($select);
+        $this->db->join('encuestas.sse_modulo_rol mractp', 'mractp.modulo_cve = mactp.modulo_cve and mactp.is_seccion = 1 and mractp.role_id ' . $string_roeles);
+        //Condiciones
+        $this->db->where('mractp.acceso', '1');
+        //Group by agrupamiento
+        $this->db->group_by('mactp.modulo_cve');
+        //Ordenamiento
+        $this->db->order_by('mactp.modulo_cve');
+        $query = $this->db->get('encuestas.sse_modulo mactp');
+        $secciones = $query->result_array();
+        $query->free_result();
+
+        $result['modulos'] = $ejecucion;
+        $result['secciones'] = $secciones;
+
+//        pr($this->db->last_query());
         return $result;
     }
 

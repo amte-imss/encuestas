@@ -18,21 +18,23 @@ $config['rol_docente'] = array(
     array('rol_id' => 30, 'rol_nom' => 'Coordinador normativo')
 );
 
-$config['menu_super_admin'] = array('resultadocursoencuesta' => array('*'), 'encuestas' => array('*'), 
-    'dashboard' => array('*'), 'curso' => array('*'), 'modal' => array('*'), 
-    'cursoencuesta' => array('*'), 'email' => array('*'), 'evaluacion' => array('*'), 
-    'encuestasusuario' => array('*'), 'resultadocurso' => array('*'), 'reporte' => array('*'), 
-    'grupo' => array('*'), 'login' => array('*'), 'seccion' => array('*'), 
-    'encuestausuario' => array('*'), 'resultadocurenrealizada' => array('*'), 
+$config['menu_super_admin'] = array('resultadocursoencuesta' => array('*'), 'encuestas' => array('*'),
+    'dashboard' => array('*'), 'curso' => array('*'), 'modal' => array('*'),
+    'cursoencuesta' => array('*'), 'email' => array('*'), 'evaluacion' => array('*'),
+    'encuestasusuario' => array('*'), 'resultadocurso' => array('*'), 'reporte' => array('*'),
+    'grupo' => array('*'), 'login' => array('*'), 'seccion' => array('*'),
+    'encuestausuario' => array('*'), 'resultadocurenrealizada' => array('*'),
     'pagina_no_encontrada' => array('*'), 'resultadocursoindicador' => array('*'),
-    'reporte_bonos' => array('*'), 
-    'reporte_detallado' => array('*'), 
-    'reporte_general' => array('*'), 
+    'reporte_bonos' => array('*'),
+    'reporte_detallado' => array('*'),
+    'reporte_general' => array('*'),
 );
 
 $config['menu_validador'] = array('login' => array('cerrar_session', 'cerrar_session_ajax'), 'dashboard' => array('*'), 'tarjeton' => array('*'), 'pagina_no_encontrada' => array('index'), 'bonos_titular' => array('*'), 'bono_perfil_empleado' => array('*'));
-$config['menu_no_logueado'] = array('login' => array('*'));
 
+$config['menu_no_logueado'] = array('login/logeo');
+$config['menu_logueado_general'] = array('login/cerrar_session');
+$config['omite_menus'] = array('encuestausuario' => array('*')); //Es importante que el usuario mantenga una sesión inicida, pero no deben aparecer los menus, ejemplos: gestión, reportes implementación, instrumentos etc. 
 /////Ruta de solicitudes
 $config['ruta_documentacion'] = $_SERVER["DOCUMENT_ROOT"] . "/sipimss_bonos/assets/files/archivos_bono/";
 $config['ruta_documentacion_web'] = asset_url() . 'files/archivos_bono/'; //base_url()."assets/files/solicitudes/";
@@ -220,7 +222,7 @@ $config['puntos_rol'] = array(
     '18_1' => 4, //Coordinador de tutores tutorizado
     '32_1' => 6, //Tutor titular
     '33_1' => 4, //Tutor adjunto
-    '30_1' => 0,// coordinador normativo
+    '30_1' => 0, // coordinador normativo
     //No pasa en el negocio, pero en programacion es importante para evitar errores
     '18_0' => 4, //Coordinador de tutores tutorizado
     '32_0' => 6, //Tutor titular
@@ -230,7 +232,7 @@ $config['puntos_rol'] = array(
 
 $config['tipo_curso_DCG'] = array(1 => 'Diplomado', 2 => 'Curso', 3 => 'Curso basado en GPC');
 $config['puntos_tipo_curso'] = array('CURSO' => 1, 'DIPLOMADO' => 3, 'CURSO BASADO EN GPC' => 1);
-$config['puntos_tipo_curso_id'] = array(2 => 1, 1 => 3, 3 => 1);//curso =2 ; diplomado=1; GPC=3;
+$config['puntos_tipo_curso_id'] = array(2 => 1, 1 => 3, 3 => 1); //curso =2 ; diplomado=1; GPC=3;
 $config['puntos_horas'] = array(
     '=0' => array('PUN' => 0, 'DESC' => 'Default'),
     '<40' => array('PUN' => 1, 'DESC' => 'Menor que 40 y mayor a 1'),
@@ -313,11 +315,9 @@ $config['ENCUESTAS_RESPUESTAS_PREGUNTA'] = array(
 //      $config['url_sied'] ='http://11.32.41.92/kio/sied';
 //      $config['url_sied_logout'] = 'http://11.32.41.92/kio/sied/app/login/logout.php';    
 // }
-
 //Liga sied productivo
 //$config['url_sied'] = 'http://11.32.41.30/kio/sied';
 //$config['url_sied_logout'] = 'http://11.32.41.30/kio/sied/app/login/logout.php';
-
 //$config['url_sied'] = 'http://innovaedu.imss.gob.mx/sied';
 //$config['url_sied_logout'] = 'http://innovaedu.imss.gob.mx/sied/app/login/logout.php';
 //$config['url_moodle_logout'] = 'http://innovaedu.imss.gob.mx/educacionadistancia/login/index.php';
@@ -351,29 +351,30 @@ $config['EVA_TIPO'] = array(
 
 $config['prop_roles'] = array(
     En_roles::ALUMNO => array(//5
-        'rol_nom' => 'Alumno', 
-        'ab'=>'A'
+        'rol_nom' => 'Alumno',
+        'ab' => 'A'
     ),
     En_roles::COORDINADOR_DE_CURSO => array(//14
-        'rol_nom' => 'Coordinador de Curso', 
-        'ab'=>'CC'
+        'rol_nom' => 'Coordinador de Curso',
+        'ab' => 'CC'
     ),
     En_roles::COORDINADOR_DE_TUTORES => array(//18
-        'rol_nom' => 'Coordinador de Tutores', 
-        'ab'=>'CT'
+        'rol_nom' => 'Coordinador de Tutores',
+        'ab' => 'CT'
     ),
     En_roles::COORDINADOR_NORMATIVO => array(//30
-        'rol_nom' => 'Coordinador Normativo', 
-        'ab'=>'CN'
+        'rol_nom' => 'Coordinador Normativo',
+        'ab' => 'CN'
     ),
     En_roles::TUTOR_TITULAR => array(//32
-        'rol_nom' => 'Tutor Titular', 
-        'ab'=>'TT'
+        'rol_nom' => 'Tutor Titular',
+        'ab' => 'TT'
     ),
     En_roles::TUTOR_ADJUNTO => array(//33
-        'rol_nom' => 'Tutor Adjunto', 
-        'ab'=>'TA'
+        'rol_nom' => 'Tutor Adjunto',
+        'ab' => 'TA'
     )
 );
+
 
 

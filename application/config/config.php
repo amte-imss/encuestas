@@ -30,7 +30,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 //$config['base_url'] = 'http://11.32.41.92/kio_desarrollo/encuestas/';//host 92
 $config['base_url'] = 'http://localhost/encuestas/';//host 92
 //$config['base_url'] = 'http://11.32.41.86/encuestas/';//host 92
-
+//$config['base_url'] = 'http://11.32.41.13/encuestas/';
 /*
 |--------------------------------------------------------------------------
 | Index File
@@ -106,7 +106,7 @@ $config['charset'] = 'UTF-8';
 | setting this variable to TRUE (boolean).  See the user guide for details.
 |
 */
-$config['enable_hooks'] = FALSE;
+$config['enable_hooks'] = TRUE;
 
 /*
 |--------------------------------------------------------------------------

@@ -54,3 +54,64 @@ deppredor.cve_depto_adscripcion, deppredor.des_unidad_atencion,  deppredor.nom_d
 reec.calif_emitida, reec.calif_emitida_napb, reec.group_id, grupos_ids_text
 ,cattutdo.des_clave, cattutdo.nom_nombre 
 --,cbg.bloque
+
+
+
+--Obtiene todos los registros que tiene acceso
+select mact.modulo_padre_cve, mact.modulo_cve mod_hijo, mact.descripcion_modulo, mact.nom_controlador_funcion_mod
+--, mract.role_id rol_id_hijo, mract.acceso acceso_hijo
+, 1 acceso 
+from encuestas.sse_modulo mact
+left join encuestas.sse_modulo_rol mract on mract.modulo_cve = mact.modulo_cve and mract.role_id in (30, 1)
+where mact.is_seccion = 0 and 
+mact.modulo_padre_cve in (select mactp.modulo_cve
+from encuestas.sse_modulo mactp
+join encuestas.sse_modulo_rol mractp on mractp.modulo_cve = mactp.modulo_cve and mactp.is_seccion = 1 and mractp.role_id in (30, 1)
+group by mactp.modulo_cve)
+and mract.role_id is null 
+group by mact.modulo_padre_cve, mact.modulo_cve--, mract.role_id, mract.acceso
+;
+
+
+
+select mact.modulo_cve, mact.modulo_padre_cve, mact.descripcion_modulo, 
+mact.nom_controlador_funcion_mod,
+		case when ((select count(*) cuenta
+		--, mract.role_id
+		from encuestas.sse_modulo_rol mract
+		join encuestas.sse_modulo mact on mact.modulo_cve = mract.modulo_cve and acceso = 0 and mract.role_id in (30,1)
+		group by mact.modulo_padre_cve, mact.modulo_cve
+		--, mract.role_id
+		having count(mact.modulo_cve) > 1) > 0) then 1
+		--when 0 then 0
+		else 0 end as acceso
+--, mract.role_id
+from encuestas.sse_modulo_rol mract
+join encuestas.sse_modulo mact on mact.modulo_cve = mract.modulo_cve and acceso = 0 and mract.role_id in (30)
+group by mact.modulo_padre_cve, mact.modulo_cve
+--, mract.role_id
+having count(mact.modulo_cve) = 1
+;
+
+select mact.modulo_cve, mact.modulo_padre_cve, mact.descripcion_modulo, 
+mact.nom_controlador_funcion_mod, 0 acceso
+--, mract.role_id
+from encuestas.sse_modulo_rol mract
+join encuestas.sse_modulo mact on mact.modulo_cve = mract.modulo_cve and acceso = 0 and mract.role_id in (30,1)
+group by mact.modulo_padre_cve, mact.modulo_cve
+--, mract.role_id
+having count(mact.modulo_cve) > 1
+;
+
+
+--Obtener roles del usuario  admin: 31211, 43695, 34700 cn: 32077, 22615, 1423 CE:31138,10432,30104
+--AGC29:488, 21951, 43909
+SELECT mdl_role.id FROM mdl_course
+    INNER JOIN mdl_context ON mdl_context.instanceid = mdl_course.id
+    INNER JOIN mdl_role_assignments ON mdl_context.id = mdl_role_assignments.contextid
+    INNER JOIN mdl_role ON mdl_role.id = mdl_role_assignments.roleid
+    INNER JOIN mdl_user ON mdl_user.id = mdl_role_assignments.userid
+    where mdl_user.id=31211
+    group by mdl_role.id
+     
+

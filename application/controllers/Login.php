@@ -27,6 +27,26 @@ class Login extends CI_Controller {
         $this->config->load('general');
     }
 
+    public function roles($id = NULL) {
+        $roles = $this->enc_mod->get_roles_usercurso(array('user_id' => $id)); //Obtiene roles del usuario
+        $array_modulos = $this->lm->get_modulos_sesion(array('roles' => $roles)); //Obtiene todos los accesos de los roles relacionados
+        $modulos_acceso = transformar_modulos($array_modulos);
+        pr($modulos_acceso);
+        $this->session->set_userdata('modulos_acceso', $modulos_acceso);
+        pr(permiso_acceso_modulo(En_modulos::EXPORTA_INSTRUMENTO_PDF));
+    }
+
+    private function transformar_modulos($modulos_rol) {
+        if (!is_array($modulos_rol)) {//Si no es un array, retorna null
+            return null; //
+        }
+        $array_result = array();
+        foreach ($modulos_rol as $valores) {
+            $array_result[$valores['modulo_cve']] = $valores;
+        }
+        return $array_result;
+    }
+
     public function logeo($id = NULL, $curseid = NULL) {
 //        pr($this->session->userdata());
         //     exit();
@@ -49,11 +69,20 @@ class Login extends CI_Controller {
                 $usuario = $this->enc_mod->usuario_existe($id);
                 if (isset($usuario)) {
                     $token = md5(uniqid(rand(), TRUE));
+                    //******Modulos de acceso *****
+                    $roles = $this->enc_mod->get_roles_usercurso(array('user_id' => $id)); //Obtiene roles del usuario
+                    $array_modulos = $this->lm->get_modulos_sesion(array('roles' => $roles)); //Obtiene todos los accesos de los roles relacionados
+                    $modulos_acceso = transformar_modulos($array_modulos);
+//                    pr($modulos_acceso);
+//                    exit();
+                    //*****************************
                     $usuario_data = array(
                         'id' => $usuario->id,
                         'nombre' => $usuario->nombre . ' ' . $usuario->apellidos,
                         'logueado' => TRUE,
-                        'token' => $token
+                        'token' => $token,
+                        'modulos_acceso' => $modulos_acceso['modulos'],//Carga los modulos de accesos
+                        'secciones_acceso' => $modulos_acceso['secciones']//Carga las secciones de acceso del docente
                     );
                     //pr($usuario_data);
                     $this->session->set_userdata($usuario_data);

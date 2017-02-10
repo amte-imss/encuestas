@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('template','session', 'En_roles', 'FiltrosReportes_Tpl','En_general');
+$autoload['libraries'] = array('template','session', 'En_roles', 'FiltrosReportes_Tpl','En_general', 'En_modulos');
 
 /*
 | -------------------------------------------------------------------

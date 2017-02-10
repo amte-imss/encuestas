@@ -50,8 +50,9 @@ class Encuestas extends CI_Controller
 
         if($this->session->has_userdata('id'))
         {
-               
+             $modulos_acceso = $this->session->userdata("modulos_acceso");               
             $datos['encuestas'] = $this->enc_mod->listado_instrumentos();
+            $datos['modulos_acceso'] = $modulos_acceso;
             //$datos['listado_preguntas'] = $this->enc_mod->get_preguntas_encuesta(array('encuesta_cve'=>1));
             //$datos['listado_cursos'] = $this->cur_mod->get_cursos();
             //pr($datos);
@@ -658,6 +659,7 @@ class Encuestas extends CI_Controller
                     //pr($filtros);
                     $resultado = $this->enc_mod->listado_instrumentos($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
                     $data=$filtros;
+                    $data['modulos_acceso'] = $this->session->userdata("modulos_acceso");
                     $data['total_encuestas'] = $resultado['total'];
                     $data['encuestas'] = $resultado['data'];
                     $data['current_row'] = $filtros['current_row'];

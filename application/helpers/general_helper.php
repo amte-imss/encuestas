@@ -435,6 +435,7 @@ if (!function_exists('crear_formato_array')) {
 }
 
 if (!function_exists('crear_lista_asociativa_valores')) {
+
     /**
      * 
      * @param type : $array_value array de busqueda
@@ -454,11 +455,12 @@ if (!function_exists('crear_lista_asociativa_valores')) {
 
         return $array_lista_roles;
     }
+
 }
 if (!function_exists('valida_sesion_activa')) {
 
-    
-/**
+
+    /**
      * 
      * @author LEAS
      * @fecha 18112016
@@ -479,11 +481,12 @@ if (!function_exists('valida_sesion_activa')) {
 //        pr($valida_session);
         return $valida_session;
     }
+
 }
 
 if (!function_exists('sesion_iniciada')) {
-    
-/**
+
+    /**
      * 
      * @author LEAS
      * @fecha 18112016
@@ -497,6 +500,133 @@ if (!function_exists('sesion_iniciada')) {
         }
         return 0;
     }
+
+}
+if (!function_exists('transformar_modulos')) {
+
+    /**
+     * 
+     * @param type array $modulos_rol Moódulos de acceso segun el rol o roles del usuario 
+     * @return array con todos los módulos de acceso con llave index del módulo
+     */
+    function transformar_modulos($modulos_rol) {
+        if (!is_array($modulos_rol)) {//Si no es un array, retorna null
+            return null; //
+        }
+        $array_result = array();
+        foreach ($modulos_rol['modulos'] as $valores) {
+            $array_result['modulos'][$valores['modulo_cve']] = $valores;
+        }
+        foreach ($modulos_rol['secciones'] as $valores) {
+            $array_result['secciones'][$valores['modulo_cve']] = $valores;
+        }
+        return $array_result;
+    }
+
+}
+
+if (!function_exists('permiso_acceso_modulo')) {
+
+    /**
+     * 
+     * @param type int $modulos_id identificador del módulo que se validará su acceso
+     * @return type integer si el modulo tiene acceso, retorna 1, si no, 0
+     */
+    function permiso_acceso_modulo($modulos_id) {
+        $CI = & get_instance();
+        $modulos_acceso = $CI->session->userdata('modulos_acceso');
+
+        return (isset($modulos_acceso[$modulos_id])) ? 1 : 0; //Si se encuentra el modulo 
+    }
+
+}
+
+if (!function_exists('permiso_acceso_ruta')) {
+
+    /**
+     * 
+     * @param type $controlador
+     * @param type $accion
+     * @return type
+     */
+    function permiso_acceso_ruta($controlador, $accion, $is_ajax) {
+        $CI = & get_instance();
+        //Valida accesos generales con sesión iniciada
+        $menu_logueado_general = $CI->config->item('menu_logueado_general');
+        foreach ($menu_logueado_general as $value) {
+            $conactena = $controlador . '/' . $accion;
+            if ($conactena == $value) {
+                return 1;
+            }
+        }
+        $modulos_acceso = $CI->session->userdata('modulos_acceso');
+        if (!is_null($modulos_acceso)) {
+            $tmp_array_implicados = array();
+            foreach ($modulos_acceso as $value) {
+//                pr($value);
+                $cadURL_control = $value['nom_controlador_funcion_mod'];
+                if (strlen($cadURL_control) > 0 and $cadURL_control != '*') {//Valida que la cadena de control contenga una ruta, indica que no es un controlador como tal, y que no venga vacia
+                    $explode = explode('/', $cadURL_control); //descomposicion de la ruta
+                    $ctrl_mod = $explode[0];
+                    $acc_mod = $explode[1];
+                    if ($ctrl_mod == $controlador) {//Separa los controladores implicados
+                        $tmp_array_implicados[$value['nom_controlador_funcion_mod']] = $value;
+                    }
+                }
+            }
+
+            if (! empty($tmp_array_implicados)) {//Verifica la eistencia de reglas de seguridad para el controlador actual
+//                if ($is_ajax) {//Valida si es ajax
+//                    if ($controlador == $ctrl_mod and $accion == $acc_mod) {//Si existe la condición, el controlador pasa
+//                        return 1;
+//                    }
+//                } else {
+                $concat = $controlador . '/' . $accion;
+                if (isset($tmp_array_implicados[$concat])) {//Checa si existe el la acción y el controlador
+                    return $tmp_array_implicados[$concat]['acceso'];
+                }
+
+                $concat = $controlador . '/*';
+                if (isset($tmp_array_implicados[$concat])) {//Checa si existe el la acción y el controlador
+                    return $tmp_array_implicados[$concat]['acceso'];
+                }
+            } else {//Si no encuentra controlador, no permite acceso y retorna 0
+                return 0;
+            }
+        } else {
+            return 0;
+        }
+//        if (!is_null($modulos_acceso)) {
+//            foreach ($modulos_acceso as $value) {
+////                pr($value);
+//                $cadControl = $value['nom_controlador_funcion_mod'];
+//                if (strlen($cadControl) > 0 and $cadControl != '*') {//Valida que la cadena de control contenga una ruta, indica que no es un controlador como tal, y que no venga vacia
+//                    $explode = explode('/', $cadControl); //descomposicion de la ruta
+//                    $ctrl_mod = $explode[0];
+//                    $acc_mod = $explode[1];
+//                    if ($is_ajax) {//Valida si es ajax
+//                        if ($controlador == $ctrl_mod and $accion == $acc_mod) {//Si existe la condición, el controlador pasa
+//                            return 1;
+//                        }
+//                    } else {
+//                        if (strlen($accion) < 1 || $accion == 'index') {//Si la accion no exite, solo valida acceso al controlador
+//                            if ($controlador == $ctrl_mod and ( $acc_mod == '*' || $acc_mod == '')) {//Si existe la condición, el controlador pasa
+////                            pr('·########################################################');
+//                                return 1;
+//                            }
+//                        } else {
+//                            if ($controlador == $ctrl_mod and $accion == $acc_mod) {//Si existe la condición, el controlador pasa
+//                                return 1;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        } else {
+//            return 0;
+//        }
+    }
+
 }
 
 

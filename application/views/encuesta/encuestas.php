@@ -4,9 +4,11 @@ echo form_open('encuestas/index', array('id' => 'form_listado_encuestas'));
 $roles_evalua = array(32=>'Tutor Titular',33=>'Tutor Adjunto',18=>'Coordinador de Tutores',14=>'Coordinador de Curso');
 
 ?>
+<?php if (isset($modulos_acceso[En_modulos::CARGAR_INSTRUMENTO]) and $modulos_acceso[En_modulos::CARGAR_INSTRUMENTO]['acceso'] == 1) { ?>
 <div class="row"> 
     <a href="<?php echo site_url('encuestas/cargar_instrumento'); ?>" class="btn btn-primary pull-right"> Cargar instrumento por CSV </a>
 </div>
+<?php } ?>
 <br>
 <div class="clearfix"></div>
 <div class="row">

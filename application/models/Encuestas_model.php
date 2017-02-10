@@ -2432,17 +2432,45 @@ class Encuestas_model extends CI_Model {
         return FALSE;
     }
 
+     /**
+     * @author LEAS
+     * @fechamod 07/02/2017
+     * @param type $params array de parametros
+     * @return ARRAY INT roles del usuario
+     * @describe Si $params contiene como parametros 'cur_id', entonces, trae los roles
+     * del usuario relacionados al curso, si no, trae todos los roles del usuario en todos 
+     * los cursos donde tenga presencia
+     */
     public function get_roles_usercurso($params = null) {
 
-        $resultado = array();
-        $sql = "SELECT mdl_role.id FROM mdl_course
-    INNER JOIN mdl_context ON mdl_context.instanceid = mdl_course.id
-    INNER JOIN mdl_role_assignments ON mdl_context.id = mdl_role_assignments.contextid
-    INNER JOIN mdl_role ON mdl_role.id = mdl_role_assignments.roleid
-    INNER JOIN mdl_user ON mdl_user.id = mdl_role_assignments.userid
-    WHERE mdl_course.id=" . $params['cur_id'] . " and mdl_user.id=" . $params['user_id'];
+//        $sql = "SELECT mdl_role.id FROM mdl_course
+//                INNER JOIN mdl_context ON mdl_context.instanceid = mdl_course.id
+//                INNER JOIN mdl_role_assignments ON mdl_context.id = mdl_role_assignments.contextid
+//                INNER JOIN mdl_role ON mdl_role.id = mdl_role_assignments.roleid
+//                INNER JOIN mdl_user ON mdl_user.id = mdl_role_assignments.userid
+//                WHERE mdl_user.id=" . $params;
+//    WHERE mdl_course.id=" . $params['cur_id']. " and mdl_user.id=" . $params['user_id'];
+
+        $this->db->select('mdl_role.id');
+        $this->db->join('mdl_context', 'mdl_context.instanceid = mdl_course.id');
+        $this->db->join('mdl_role_assignments', 'mdl_context.id = mdl_role_assignments.contextid');
+        $this->db->join('mdl_role', 'mdl_role.id = mdl_role_assignments.roleid');
+        $this->db->join('mdl_user', 'mdl_user.id = mdl_role_assignments.userid');
+        if (isset($params['cur_id'])) {
+            $this->db->where('mdl_course.id', $params['cur_id']);
+        } else {//Si no existe curso, puede repetir los roles, por eso se agrupa para quitar repetidos
+            $this->db->group_by('mdl_role.id');
+            $this->db->order_by('mdl_role.id asc');
+        }
+
+        if (isset($params['user_id'])) {
+            $this->db->where('mdl_user.id', $params['user_id']);
+        }
+        $result = $this->db->get('mdl_course');
+
+
         $arrol = array();
-        $result = $this->db->query($sql);
+
         if ($result->num_rows() > 0) {
 
             $usuariosrol = $result->result_array();
@@ -2453,7 +2481,7 @@ class Encuestas_model extends CI_Model {
             }
         }
 
-
+//        pr($this->db->last_query());
 
         return $arrol;
     }
