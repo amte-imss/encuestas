@@ -271,109 +271,183 @@ class Encuestausuario extends CI_Controller {
         }
     }
 
-    public function guardar_encuesta_usuario() {
-        $id_instrumento = $this->input->post('idencuesta', true);
+    public function guardar_encuesta_usuario()
+    {
+        if ($this->input->post())
+        {
+            $id_instrumento = $this->input->post('idencuesta', true);
 //        pr($this->input->post());
 //        exit();
-        $campos_evaluacion['encuesta_cve'] = $this->input->post('idencuesta', true);
-        $campos_evaluacion['curso_cve'] = $this->input->post('idcurso', true);
-        $campos_evaluacion['curso'] = $this->cur_mod->listado_cursos(array('cur_id' => $this->input->post('idcurso', true)));
-        $campos_evaluacion['grupo_cve'] = $this->input->post('idgrupo', true);
-        $campos_evaluacion['evaluado_user_cve'] = $this->input->post('iduevaluado', true);
-        $campos_evaluacion['evaluador_user_cve'] = $this->input->post('iduevaluador', true);
-        $campos_evaluacion['is_bono'] = $this->input->post('is_bono', true);
-        if (!is_null($this->input->post('bloque', true))) {
-            $campos_evaluacion['bloque'] = $this->input->post('bloque', true);
-        }
-        if (!is_null($this->input->post('grupos_ids_text', true))) {
-            $campos_evaluacion['grupos_ids_text'] = $this->input->post('grupos_ids_text', true);
-        }
-
-        //Buscar los roles con las reglas de evaluacion
-        $reglas = $this->enc_mod->get_reglas_encuesta($this->input->post('idencuesta', true));
-        //pr($reglas);
-        $fecha = date('Y-m-d: H:s');
-        $campos_evaluacion['evaluado_rol_id'] = $reglas[0]['rol_evaluado_cve'];
-        $campos_evaluacion['evaluador_rol_id'] = $reglas[0]['rol_evaluador_cve'];
-        $campos_evaluacion['respuesta_abierta'] = '0';
-        $campos_evaluacion['fecha'] = $fecha;
-
-
-        $reactivos = $this->input->post('p_r', true);
-
-        $encuesta_cve = $this->input->post('idencuesta', true);
-        $busqueda = array('encuesta_cve' => $encuesta_cve);
-        //pr($busqueda);
-
-        if ($reactivos) { //Validar que la información se haya enviado por método POST para almacenado
-            $reactivos_base = $this->enc_mod->get_preguntas_encuesta($busqueda); //Obtiene las preguntas asociadas a la encuesta
-
-
-//            pr($reactivos);
-//            pr($reactivos_base);
-            $tmp_array_id_preguntas = array();
-            foreach ($reactivos_base['data'] as $key => $value) {
-                # code...
-                //$arrpreguntas[]=$value['preguntas_cve'];
-                $this->form_validation->set_rules('p_r[' . $value['preguntas_cve'] . ']', 'Pregunta', 'required', array('required' => 'Esta pregunta es requerida'));
-                $tmp_array_id_preguntas[$value['preguntas_cve']] = $value['orden']; //Relaciona la pregunta con el orden de la pregunta
+            $campos_evaluacion['encuesta_cve'] = $this->input->post('idencuesta', true);
+            $campos_evaluacion['curso_cve'] = $this->input->post('idcurso', true);
+            $campos_evaluacion['curso'] = $this->cur_mod->listado_cursos(array('cur_id' => $this->input->post('idcurso', true)));
+            $campos_evaluacion['grupo_cve'] = $this->input->post('idgrupo', true);
+            $campos_evaluacion['evaluado_user_cve'] = $this->input->post('iduevaluado', true);
+            $campos_evaluacion['evaluador_user_cve'] = $this->input->post('iduevaluador', true);
+            $campos_evaluacion['is_bono'] = $this->input->post('is_bono', true);
+            if (!is_null($this->input->post('bloque', true)))
+            {
+                $campos_evaluacion['bloque'] = $this->input->post('bloque', true);
             }
-            foreach ($reactivos as $key => $value) {//Recorre las preguntas que ya fueron contestadas para quitar de la lista 
-                unset($tmp_array_id_preguntas[$key]); //Se elimina la pregunta contestada de la lista de encuestas por contestar
+            if (!is_null($this->input->post('grupos_ids_text', true)))
+            {
+                $campos_evaluacion['grupos_ids_text'] = $this->input->post('grupos_ids_text', true);
             }
-            $separa_simbolo = '';
-            $lista_preguntas_faltantes = '';
-            foreach ($tmp_array_id_preguntas as $value) {//Recorre las preguntas no han sido contestadas para ser agregadas a la lista
-                $lista_preguntas_faltantes .= $separa_simbolo . $value; //Carga el orden de las preguntas
-                $separa_simbolo = ', ';
+
+            //Buscar los roles con las reglas de evaluacion
+            $reglas = $this->enc_mod->get_reglas_encuesta($this->input->post('idencuesta', true));
+            //pr($reglas);
+            $fecha = date('Y-m-d: H:s');
+            $campos_evaluacion['evaluado_rol_id'] = $reglas[0]['rol_evaluado_cve'];
+            $campos_evaluacion['evaluador_rol_id'] = $reglas[0]['rol_evaluador_cve'];
+            $campos_evaluacion['respuesta_abierta'] = '0';
+            $campos_evaluacion['fecha'] = $fecha;
+            $campos_evaluacion['respuestas_abiertas'] = [];
+
+
+            $reactivos = $this->input->post('p_r', true);
+            $reactivos_preguntas_abiertas = $this->input->post('p_r_text', true);
+            $reactivos_preguntas_abiertas_radio = $this->input->post('p_r_radio', true);
+
+            if ($reactivos_preguntas_abiertas != null)
+            {
+                foreach ($reactivos_preguntas_abiertas as $key => $value)
+                {
+                    $reactivos[$key] = $value;
+                }
             }
-            if (strlen($lista_preguntas_faltantes) > 0) {//Condición para saber si existen preguntas fltantes por responder 
-                $campos_evaluacion['mensaje'] = 'Las siguientes preguntas son requeridas: ' . $lista_preguntas_faltantes;
-                $campos_evaluacion['tipo_msj'] = $this->config->item('alert_msg')['DANGER']['class']; //Selecciona el tipo de mensaje
+            if ($reactivos_preguntas_abiertas_radio != null)
+            {
+                foreach ($reactivos_preguntas_abiertas_radio as $key => $value)
+                {
+                    if (isset($reactivos_preguntas_abiertas_radio[$key])) //si es radio
+                    {
+                        $reactivos[$key] = $reactivos_preguntas_abiertas_radio[$key];
+                    }
+                }
             }
+            
+            /*
+              pr('[CH][Encuestausuario][guardar_encuesta_usuario]reactivos: ');
+              pr($reactivos);
+
+              pr($this->input->post());
+             * 
+             */
+            $encuesta_cve = $this->input->post('idencuesta', true);
+            $busqueda = array('encuesta_cve' => $encuesta_cve);
+            //pr($busqueda);
+
+            if ($reactivos)
+            { //Validar que la información se haya enviado por método POST para almacenado
+                $reactivos_base = $this->enc_mod->get_preguntas_encuesta($busqueda); //Obtiene las preguntas asociadas a la encuesta
+                $campos_evaluacion['reactivos_base'] = $reactivos_base['data'];
+                $campos_evaluacion['errores_preguntas_abiertas'] = [];
+                /*
+                  pr('[CH][Encuestausuario][guardar_encuesta_usuario]$reactivos: ');
+                  pr($reactivos);
+                
+                  pr('---Reactivos base:');
+                  pr($reactivos_base);
+                 * 
+                 */
+
+                $tmp_array_id_preguntas = array();
+                $preguntas_abiertas_validas = true;
+                foreach ($reactivos_base['data'] as $key => $value)
+                {
+                    # code...
+                    //$arrpreguntas[]=$value['preguntas_cve'];        
+                    if ($value["tipo_pregunta_cve"] != 6)
+                    {
+                        $this->form_validation->set_rules('p_r[' . $value['preguntas_cve'] . ']', 'Pregunta', 'required', array('required' => 'Esta pregunta es requerida'));
+                    } else
+                    {
+                        if (!isset($reactivos_preguntas_abiertas_radio[$value['preguntas_cve']]) && isset($reactivos_preguntas_abiertas[$value['preguntas_cve']]) && trim($reactivos_preguntas_abiertas[$value['preguntas_cve']]) == "")
+                        {
+                            //pr('falta');
+                            $campos_evaluacion['errores_preguntas_abiertas'][$value['preguntas_cve']] = true;
+                        } else if (!isset($reactivos_preguntas_abiertas_radio[$value['preguntas_cve']]) && !isset($reactivos_preguntas_abiertas[$value['preguntas_cve']]))
+                        {
+                            $campos_evaluacion['errores_preguntas_abiertas'][$value['preguntas_cve']] = true;
+                        }
+                    }
+                    $tmp_array_id_preguntas[$value['preguntas_cve']] = $value['orden']; //Relaciona la pregunta con el orden de la pregunta
+                }
+
+                foreach ($reactivos as $key => $value)
+                {//Recorre las preguntas que ya fueron contestadas para quitar de la lista 
+                    if (!empty($value))
+                    {
+                        unset($tmp_array_id_preguntas[$key]); //Se elimina la pregunta contestada de la lista de encuestas por contestar
+                    }
+                }
+
+                $separa_simbolo = '';
+                $lista_preguntas_faltantes = '';
+                foreach ($tmp_array_id_preguntas as $value)
+                {//Recorre las preguntas no han sido contestadas para ser agregadas a la lista
+                    $lista_preguntas_faltantes .= $separa_simbolo . $value; //Carga el orden de las preguntas
+                    $separa_simbolo = ', ';
+                }
+                if (strlen($lista_preguntas_faltantes) > 0)
+                {//Condición para saber si existen preguntas fltantes por responder 
+                    $campos_evaluacion['mensaje'] = 'Las siguientes preguntas son requeridas: ' . $lista_preguntas_faltantes;
+                    $campos_evaluacion['tipo_msj'] = $this->config->item('alert_msg')['DANGER']['class']; //Selecciona el tipo de mensaje
+                }
 
 //        pr($this->session->userdata('datos_encuesta_usuario'));
-            //pr($this->input->post());
-            //Buscar los roles con las reglas de evaluacion
-            $reglas = $this->enc_mod->get_reglas_encuesta($encuesta_cve);
-            //var_dump($reglas[0]['rol_evaluado_cve']);
+                //pr($this->input->post());
+                //Buscar los roles con las reglas de evaluacion
+                $reglas = $this->enc_mod->get_reglas_encuesta($encuesta_cve);
+                //var_dump($reglas[0]['rol_evaluado_cve']);
 
-            $campos_evaluacion['reactivos'] = $reactivos;
+                $campos_evaluacion['reactivos'] = $reactivos;
+                $campos_evaluacion['reactivos_abiertas'] = $reactivos_preguntas_abiertas;
+                $campos_evaluacion['reactivos_abiertas_radio'] = $reactivos_preguntas_abiertas_radio;
 
-            if ($this->form_validation->run()) { //Se ejecuta la validación de datos 
-                $guardar_evaluacion = $this->enc_mod->guarda_reactivos_evaluacion($campos_evaluacion);
-                if ($guardar_evaluacion) {
-                    $datos['tipo_msj'] = $this->config->item('alert_msg')['SUCCESS']['class']; //Selecciona el tipo de mensaje
-                    $datos['mensaje'] = 'El registro de la evaluación ha sido guardado correctamente';
-                    $datos['idusuario'] = $this->input->post('iduevaluador', true);
-                    $datos['idcurso'] = $this->input->post('idcurso', true);
-                    $main_contet = $this->load->view('encuesta/final', $datos, true);
+                if ($this->form_validation->run() && $preguntas_abiertas_validas)
+                { //Se ejecuta la validación de datos 
+                    $guardar_evaluacion = $this->enc_mod->guarda_reactivos_evaluacion($campos_evaluacion);
+                    if ($guardar_evaluacion)
+                    {
+                        $datos['tipo_msj'] = $this->config->item('alert_msg')['SUCCESS']['class']; //Selecciona el tipo de mensaje
+                        $datos['mensaje'] = 'El registro de la evaluación ha sido guardado correctamente';
+                        $datos['idusuario'] = $this->input->post('iduevaluador', true);
+                        $datos['idcurso'] = $this->input->post('idcurso', true);
+                        $main_contet = $this->load->view('encuesta/final', $datos, true);
+                        $this->template->setMainContent($main_contet);
+                        $this->template->getTemplate();
+                    }
+                } else
+                {
+                    //echo "entra2";
+                    $campos_evaluacion['boton'] = TRUE;
+                    $campos_evaluacion['instrumento'] = $this->enc_mod->get_instrumento_detalle($id_instrumento);
+                    $campos_evaluacion['preguntas'] = $this->enc_mod->preguntas_instrumento($id_instrumento);
+                    $campos_evaluacion['id_instrumento'] = $id_instrumento;
+                    //$campos_evaluacion['mensaje']='Todos los campos son requeridos';
+                    $main_contet = $this->load->view('encuesta/prev_encur', $campos_evaluacion, true);
                     $this->template->setMainContent($main_contet);
                     $this->template->getTemplate();
                 }
-            } else {
-                //echo "entra2";
+            } else
+            {
+                //pr($id_instrumento);
+                $campos_evaluacion['mensaje'] = 'Por favor responda la encuesta para guardar la evaluación';
+                $campos_evaluacion['tipo_msj'] = $this->config->item('alert_msg')['WARNING']['class']; //Selecciona el tipo de mensaje
                 $campos_evaluacion['boton'] = TRUE;
-                $campos_evaluacion['instrumento'] = $this->enc_mod->get_instrumento_detalle($id_instrumento);
-                $campos_evaluacion['preguntas'] = $this->enc_mod->preguntas_instrumento($id_instrumento);
+                $campos_evaluacion['instrumento'] = $this->enc_mod->get_instrumento_detalle($id_instrumento); //obtiene las posibles respuestas del instrumento
+                $campos_evaluacion['preguntas'] = $this->enc_mod->preguntas_instrumento($id_instrumento); //Obtiene las preguntas del instrumento
                 $campos_evaluacion['id_instrumento'] = $id_instrumento;
-                //$campos_evaluacion['mensaje']='Todos los campos son requeridos';
                 $main_contet = $this->load->view('encuesta/prev_encur', $campos_evaluacion, true);
                 $this->template->setMainContent($main_contet);
                 $this->template->getTemplate();
+                //redirect(site_url()); //Redirigir al inicio del sistema si se desea acceder al método mediante una petición normal, no ajax
             }
-        } else {
-            //pr($id_instrumento);
-            $campos_evaluacion['mensaje'] = 'Por favor responda la encuesta para guardar la evaluación';
-            $campos_evaluacion['tipo_msj'] = $this->config->item('alert_msg')['WARNING']['class']; //Selecciona el tipo de mensaje
-            $campos_evaluacion['boton'] = TRUE;
-            $campos_evaluacion['instrumento'] = $this->enc_mod->get_instrumento_detalle($id_instrumento); //obtiene las posibles respuestas del instrumento
-            $campos_evaluacion['preguntas'] = $this->enc_mod->preguntas_instrumento($id_instrumento); //Obtiene las preguntas del instrumento
-            $campos_evaluacion['id_instrumento'] = $id_instrumento;
-            $main_contet = $this->load->view('encuesta/prev_encur', $campos_evaluacion, true);
-            $this->template->setMainContent($main_contet);
-            $this->template->getTemplate();
-            //redirect(site_url()); //Redirigir al inicio del sistema si se desea acceder al método mediante una petición normal, no ajax
+        } else
+        {
+            redirect(site_url()); //Redirigir al inicio del sistema si se desea acceder al método sin tener una encuesta asignada
         }
     }
 

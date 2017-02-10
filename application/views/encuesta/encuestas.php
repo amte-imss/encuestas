@@ -62,7 +62,7 @@ $roles_evalua = array(32=>'Tutor Titular',33=>'Tutor Adjunto',18=>'Coordinador d
 </div>
 
 <div id="listado_resultado"><!-- listado encuestas --></div>
-<div class="clearfix"></div>
+<div class="clearfix" style="margin-bottom: 45px;"></div>
 
 <?php echo form_close(); ?>
 

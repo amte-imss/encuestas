@@ -33,7 +33,8 @@ class En_modulos {
             ASOCIAR_ENCUESTA_SELECCIONADAS_CURSO = 27, //hijo 4
             DES_ASOCIAR_ENCUESTA_CURSO  = 28, //hijo 4
             CATALOGOS  = 29, //módulo
-            CATALOGOS_INDEX  = 30 //hijo 29
+            CATALOGOS_INDEX  = 30, //hijo 29
+            EVALUACION_ENCUESTA_INDEX  = 31 //hijo 5
             
             
             

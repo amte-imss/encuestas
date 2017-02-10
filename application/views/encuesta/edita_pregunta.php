@@ -93,19 +93,26 @@
 						<br>
 						<label>
 							<?php 
-
+                            /*
+                            pr('[CH][edita_pregunta]tipo_pregunta clave');
+                            pr($pregunta[0]['tipo_pregunta_cve']);
+                             * 
+                             */
 							$check_null;
 
 							if(isset($pregunta[0]['tipo_pregunta_cve']) && ($pregunta[0]['tipo_pregunta_cve']==2 OR $pregunta[0]['tipo_pregunta_cve']==4 OR $pregunta[0]['tipo_pregunta_cve']==6))
-							 {
+							{
 							 	$check_null=1;
-							 }
-							 elseif (isset($pregunta[0]['tipo_pregunta_cve']) && $pregunta[0]['tipo_pregunta_cve']==8) 
-							 {
+							}
+							elseif (isset($pregunta[0]['tipo_pregunta_cve']) && $pregunta[0]['tipo_pregunta_cve']==8) 
+							{
 							  	$check_null=7;
-							 }
-							 else{ $check_null=0;} 
-
+							}
+							 else
+                            { 
+                                 $check_null=0;
+                            } 
+                            //pr($check_null);
 							$tiponoobligatoria=array(1 => 'No aplica',7 => 'No envió mensaje');
 							//echo "Respuesta tipo no obligatoria";
 							echo $this->form_complete->create_element(array('id' => 'no_obligatoria', 'type' => 'dropdown', 'options' => $tiponoobligatoria,'value'=>$check_null, 'first' => array('' => 'Seleccione'), 'attributes' => array('name' => 'no_obligatoria', 'class' => 'form-control', 'placeholder' => 'Respuesta', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Respuesta'))); 
@@ -139,36 +146,31 @@
 							?>
 						 <!--No envió mensaje-->
 						</label><br>
-						<label>
+                        <label>
 							<?php
-
-							$check_sino = (isset($pregunta[0]['tipo_pregunta_cve']) && ($pregunta[0]['tipo_pregunta_cve']==1 OR $pregunta[0]['tipo_pregunta_cve']==2)) ? 'checked': '';
-
-							echo $this->form_complete->create_element(array('id'=>'tipo_pregunta_1', 'type'=>'radio', 'value'=>1, 'attributes'=>array('name'=>'tipo_pregunta_radio', 'checked'=>$check_sino)));
+                            $valores = array(
+                                1 => '[Si / No]', 2 => '[Siempre, Casi siempre, Algunas veces, Casi nunca, Nunca]', 3=> '[Respuesta abierta]'
+                            );
+							$check_sino = (isset($pregunta[0]['tipo_pregunta_cve']) && ($pregunta[0]['tipo_pregunta_cve']==1 OR $pregunta[0]['tipo_pregunta_cve']==2));
+                            $check_siemprenunca = (isset($pregunta[0]['tipo_pregunta_cve']) && ($pregunta[0]['tipo_pregunta_cve']==3 OR $pregunta[0]['tipo_pregunta_cve']==4));
+                            $check_abierta = (isset($pregunta[0]['tipo_pregunta_cve']) && ($pregunta[0]['tipo_pregunta_cve']==5 OR $pregunta[0]['tipo_pregunta_cve']==6));
+                            $value_tipo_respuesta = 0;
+                            if($check_sino)
+                            {
+                                $value_tipo_respuesta = 1;
+                            }else if($check_siemprenunca)
+                            {
+                                $value_tipo_respuesta = 2;
+                            }else if($check_abierta)
+                            {
+                                $value_tipo_respuesta = 3;
+                            }
+                            
+                            //pr('[CH][edita_pregunta]check_abierta: '.$value_tipo_respuesta);
+							echo $this->form_complete->create_element(array('id'=>'tipo_pregunta', 'type'=>'dropdown', 'options' => $valores, 'value'=>$value_tipo_respuesta,  'first' => array('' => 'Seleccione'), 'attributes' => array('name' => 'tipo_respuesta', 'class' => 'form-control', 'placeholder' => 'Respuesta', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Respuesta')));
 							?>
-							[Si / No]
 						</label><br>		
-						<label>
-							<?php
 
-							$check_siemprenunca = (isset($pregunta[0]['tipo_pregunta_cve']) && ($pregunta[0]['tipo_pregunta_cve']==3 OR $pregunta[0]['tipo_pregunta_cve']==4)) ? 'checked': '';
-
-							echo $this->form_complete->create_element(array('id'=>'tipo_pregunta_2', 'type'=>'radio', 'value'=>2, 'attributes'=>array('name'=>'tipo_pregunta_radio', 'checked'=>$check_siemprenunca)));
-							?>
-							[Siempre, Casi siempre, Algunas veces, Casi nunca, Nunca]
-						</label><br>
-						<label>
-							<?php
-
-							$check_abierta = (isset($pregunta[0]['tipo_pregunta_cve']) && ($pregunta[0]['tipo_pregunta_cve']==5 OR $pregunta[0]['tipo_pregunta_cve']==6)) ? 'checked': '';
-
-							echo $this->form_complete->create_element(array('id'=>'tipo_pregunta_3', 'type'=>'radio', 'value'=>3, 'attributes'=>array('name'=>'tipo_pregunta_radio', 'checked'=>$check_abierta)));
-							?>
-							[Respuesta abierta]
-						</label><br>
-
-
-						
 						<?php echo form_error_format('no_obligatoria');?>
 						<?php echo form_error_format('tipo_pregunta_radio');?>
 						<p class="help-block"></p>

@@ -353,7 +353,7 @@ class Encuestas extends CI_Controller
 
     }
 
-    public function edita_pregunta($id_pregunta=null, $id_instrumento=null)
+    public function edita_pregunta($id_pregunta=null, $id_instrumento=null, $fromNueva = false)
     {            
         if (isset($id_pregunta) && !empty($id_pregunta)) {
                 
@@ -381,7 +381,7 @@ class Encuestas extends CI_Controller
                     $preguntas_padre = $this->enc_mod->listado_preguntas_seccion($id_instrumento,$datos['pregunta'][0]['seccion_cve'],$id_pregunta);
                     $datos['preguntas_padre'] = dropdown_options($preguntas_padre, 'preguntas_cve', 'pregunta');
                     
-                    if($this->input->post()) {
+                    if($this->input->post() && $fromNueva == false) {
                         
                         /*
                         $datos=array(
@@ -430,19 +430,31 @@ class Encuestas extends CI_Controller
                                 3=>array('id'=>5, 'descripcion'=>'respuesta abierta'),
                             );
                             
-                            $pregunta_radio = $tipos_pregunta[$campos_pregunta['tipo_pregunta_radio']]['id'];
+                            $pregunta_tipo_opcion = $tipos_pregunta[$campos_pregunta['tipo_pregunta']]['id'];
                             $no_obligatoria = isset($campos_pregunta['no_obligatoria']) ? $campos_pregunta['no_obligatoria'] : 0;
-                            $tipo_pregunta = ($pregunta_radio + $no_obligatoria);
+                            $tipo_pregunta = ($pregunta_tipo_opcion + $no_obligatoria);
+                            $is_bono = isset($campos_pregunta['is_bono']) ? $campos_pregunta['is_bono'] : 0;
                             $campos_pregunta['tipo_pregunta_cve'] = $tipo_pregunta;
                             $campos_pregunta['respuestas'] = $respuestas[$tipo_pregunta];
                             $campos_pregunta['pregunta_anterior']= $datos['pregunta'];
-                            //pr($campos_pregunta);
+                            $campos_pregunta['encuesta_cve'] = $id_instrumento;
+                            /*
+                            pr('[CH][Encuesstas][edita_pregunta]campos_pregunta: ');
+                            pr($campos_pregunta);
+                             * 
+                             */
                             $guardar_cambios = $this->enc_mod->update_pregunta($id_pregunta,$campos_pregunta);
 
                             if ($guardar_cambios == true) {
                                 $this->session->set_flashdata('success', 'La pregunta ha sido modificada correctamente'); // devuelve mensaje flash                                
+                                $datos['pregunta'][0]['tipo_pregunta_cve'] = $tipo_pregunta;
+                                $datos['pregunta'][0]['obligada'] = $no_obligatoria;
+                                $datos['pregunta'][0]['is_bono'] = $is_bono;
                             }
 
+                        }else{
+                            pr('[CH][Encuesstas][edita_pregunta]error en la validacion ');
+                            pr($this->form_validation->error_array());
                         }
                         
                     }
@@ -524,7 +536,7 @@ class Encuestas extends CI_Controller
                             /*
                             iinvestigaa -> valores por default para un arreglo (renviar datos de que no existe la variable solicitada dinamicamente)
                             */
-                            $pregunta_radio = $tipos_pregunta[$campos_pregunta['tipo_pregunta_radio']]['id'];
+                            $pregunta_radio = $tipos_pregunta[$campos_pregunta['tipo_pregunta']]['id'];
                             $no_obligatoria = isset($campos_pregunta['no_obligatoria']) ? $campos_pregunta['no_obligatoria'] : 0;
                             $tipo_pregunta = ($pregunta_radio + $no_obligatoria);
                             $campos_pregunta['tipo_pregunta_cve'] = $tipo_pregunta;
@@ -541,6 +553,7 @@ class Encuestas extends CI_Controller
 
                             if(isset($nuevaPreguntaRes['success']) && $nuevaPreguntaRes['success'] == TRUE){
                                 $this->session->set_flashdata('success', 'La pregunta ha sido guardada correctamente'); // devuelve mensaje flash                                
+                                $this->edita_pregunta($nuevaPreguntaRes['id_pregunta'], $id_instrumento, true);
                             }else{
                                 // mensaje de error
                             }
@@ -549,11 +562,11 @@ class Encuestas extends CI_Controller
                         }
                         //pr($_POST);
 
+                    }else{
+                        $main_contet = $this->load->view('encuesta/nueva_pregunta', $datos, true);
+                        $this->template->setMainContent($main_contet);
+                        $this->template->getTemplate();
                     }
-
-                    $main_contet = $this->load->view('encuesta/nueva_pregunta', $datos, true);
-                    $this->template->setMainContent($main_contet);
-                    $this->template->getTemplate();
                 }else{
                     $this->session->set_flashdata('warning', 'No puede editar el instrumento ya que tiene historial'); // devuelve mensaje flash
                     redirect(site_url('encuestas'));
@@ -961,8 +974,9 @@ class Encuestas extends CI_Controller
                                 $rol_evalua = $this->config->item('ENCUESTAS_ROL_EVALUA');
                                 $rol_evaluador = $this->config->item('ENCUESTAS_ROL_EVALUADOR');
                                 $tipo_instrumento = $this->config->item('TIPO_INSTRUMENTO');
+                                $tipo_tutorizado = $this->config->item('TUTORIZADO');
 
-                                $existe_regla=$this->enc_mod->regla_disponible($rol_evaluador[$row['ROL_EVALUADOR']],$rol_evalua[$row['ROL_A_EVALUAR']]);
+                                $existe_regla=$this->enc_mod->regla_disponible($rol_evaluador[$row['ROL_EVALUADOR']],$rol_evalua[$row['ROL_A_EVALUAR']], $tipo_tutorizado[strtoupper($row['TUTORIZADO'])]);
                                 $params = array(
                                     'rol_evaluado_cve'=>$rol_evalua[$row['ROL_A_EVALUAR']],
                                     'rol_evaluador_cve'=>$rol_evaluador[$row['ROL_EVALUADOR']]
@@ -1291,6 +1305,7 @@ class Encuestas extends CI_Controller
 
             $rol_evalua = $this->config->item('ENCUESTAS_ROL_EVALUA'); // obtenemos los valores de la constante ENCUESTAS_RESPUESTA
             $rol_evaluador = $this->config->item('ENCUESTAS_ROL_EVALUADOR'); // obtenemos los valores de la constante ENCUESTAS_RESPUESTA
+            $tipo_tutorizado = $this->config->item('TUTORIZADO'); // obtenemos los valores de la constante TUTORIZADO
             $obligada = ((!empty($row['OBLIGADA'])) ? strtoupper($row['OBLIGADA']) : 'NO' ); // SI EL CAMPO [OBLIGADA] no esta vacio transformar el texto en mayusculas, si el campo esta vacio arrojar el texto 'NO'
             $roles_evaluar = array('COORDINADOR_CURSO','COORDINADOR_TUTORES','TUTOR_TITULAR','TUTOR_ADJUNTO'); //arreglo de roles a evaluar
             $roles_evaluador = array('COORDINADOR_CURSO','COORDINADOR_TUTORES','TUTOR_TITULAR','TUTOR_ADJUNTO','ALUMNO','COORDINADOR_NORMATIVO'); //arreglo de roles a evaluar
@@ -1298,6 +1313,7 @@ class Encuestas extends CI_Controller
             $rol_asignado_evaluador = ((!empty($row['ROL_EVALUADOR']) && in_array($row['ROL_EVALUADOR'], $roles_evaluador)) ? $rol_evaluador[$row['ROL_EVALUADOR']] : 0 );  // si el campo [INSTRUMENTO_ROL_ASIGNADO] no esta vacio y si existe en uno de los
             $pregunta_bono = ((!empty($row['PREGUNTA_BONO'])) ? strtoupper($row['PREGUNTA_BONO']) : 'NO' );
             $tutorizado = ((!empty($row['TUTORIZADO'])) ? strtoupper($row['TUTORIZADO']) : 'NO' );
+            $tutorizado_int = $tipo_tutorizado[$tutorizado];
             $tipo_instrumento = $this->config->item('TIPO_INSTRUMENTO');
             $eva_tipo = $this->config->item('EVA_TIPO');
 
@@ -1326,7 +1342,7 @@ class Encuestas extends CI_Controller
                                 'valido_no_aplica'=> $respuesta['CERRADA'][$valido_no_aplica],
                                 'id_indicador_enc' => md5($row['NOMBRE_INDICADOR']),// definimos un id temporal de INDICADOR de preguntas
                                 'descripcion_indicador'=>$row['NOMBRE_INDICADOR'],
-
+                                'tutorizado' => $tutorizado_int, 
                             );
             
             return $insert_data;
@@ -1370,7 +1386,7 @@ class Encuestas extends CI_Controller
             $respuesta['ABIERTA'][$respuesta_abierta]
 
             );
-            //pr($reactivos);
+            //pr('[CH][Encuestas][tipo_pregunta]reactivos: '.$reactivos);
 
             $error_tipo_pregunta;
             if ($reactivos<=9 && !in_array($reactivos, array(2,3,5,6,7,8,9))) { // SI EL VALOR DEL REACTIVO NO SE ENCUENTRA EN EL ARREGLO Y ES MENOR A 8

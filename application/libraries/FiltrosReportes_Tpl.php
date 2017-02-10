@@ -255,10 +255,10 @@ class FiltrosReportes_Tpl extends Template {
             $data['vistas'] = array(); //Carga datos para ver en grupo
             $data['exportar'] = $prop[FiltrosReportes_Tpl::C_LINK_EXPORTAR]; //Carga datos para ver en grupo
             $data['formulario'] = $prop[FiltrosReportes_Tpl::C_NAME_FORMULARIO]; //Carga datos para ver en grupo
-
-
-
-
+            if(isset($data_extra['info_extra']))
+            {
+                $data_info['info_extra'] = $data_extra['info_extra'];
+            }
 //            pr($grupos_filtro_vista);
             foreach ($grupos_filtro_vista as $view) {
 //                $r = $this->getNumEspaciosVistaGrupos($view);

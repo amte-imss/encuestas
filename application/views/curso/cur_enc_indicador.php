@@ -11,24 +11,41 @@ echo form_open('resultadocursoindicador/get_data_ajax/'.$curso, array('id' => 'f
                     <div class="col-lg-12 col-sm-12">
                         <fieldset class="scheduler-border well">
                             <legend class="scheduler-border">Encuesta</legend>
-                            
-                                <div class="col-lg-6 col-sm-6">
+                            <div class="row">
+                                <div class="col-lg-4 col-sm-4">
                                     <div class="panel-body input-group input-group-sm">
                                         <!--<span class="input-group-addon">Delegación:</span>-->
-                                        <label for="grupo"><span style="color:red;">*</span> Bloques</label>
-                                        <?php echo $this->form_complete->create_element(array('id' => 'bloque', 'type' => 'text',  'attributes' => array('name' => 'bloque', 'class' => 'form-control', 'placeholder' => 'Bloque', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Bloques', 'onchange' => "data_ajax(site_url+'/Resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
+                                        <label for="bloque"><span style="color:red;">*</span> Bloques</label>
+                                        <?php echo $this->form_complete->create_element(array('id' => 'bloque', 'type' => 'text',  'attributes' => array('name' => 'bloque', 'class' => 'form-control', 'placeholder' => 'Bloque', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Bloques', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
                                     </div>
                                 </div>
                             
-                            
-                                <div class="col-lg-6 col-sm-6">
+                            <?php if(!isset($curso)){ ?>
+                                <div class="col-lg-4 col-sm-4">
                                     <div class="panel-body input-group input-group-sm">
                                         <!--<span class="input-group-addon">Delegación:</span>-->
-                                        <label for="grupo">Grupos</label>
-                                        <?php echo $this->form_complete->create_element(array('id' => 'grupo', 'type' => 'text', 'attributes' => array('name' => 'grupo', 'class' => 'form-control', 'placeholder' => 'Grupo', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Grupos', 'onchange' => "data_ajax(site_url+'/Resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
+                                        <label for="curso">Curso</label>
+                                        <?php echo $this->form_complete->create_element(array('id' => 'curso', 'type' => 'text', 'attributes' => array( 'class' => 'form-control', 'placeholder' => 'Curso', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Cursos', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
                                     </div>
                                 </div>
-                            
+                            <?php } ?>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="panel-body input-group input-group-sm">
+                                        <!--<span class="input-group-addon">Delegación:</span>-->
+                                        <label for="grupo">Grupo</label>
+                                        <?php echo $this->form_complete->create_element(array('id' => 'grupo', 'type' => 'text', 'attributes' => array('name' => 'grupo','class' => 'form-control', 'placeholder' => 'grupo', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Grupos', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-4">
+                                    <div class="panel-body input-group input-group-sm">
+                                        <!--<span class="input-group-addon">Delegación:</span>-->
+                                        <label for="tutorizado">Tutorizado</label>
+                                        <?php echo $this->form_complete->create_element(array('id' => 'tutorizado', 'type' => 'dropdown', 'options' => array(0=> 'No Tutorizado', 1 => 'Tutorizado'), 'first' => array('' => 'Seleccione tipo de curso'), 'attributes' => array('class' => 'form-control', 'placeholder' => 'Grupo', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Grupos', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
+                                    </div>
+                                </div>
+                            </div>
                         </fieldset>
                     </div>
                 </div>
@@ -95,7 +112,7 @@ echo form_open('resultadocursoindicador/get_data_ajax/'.$curso, array('id' => 'f
                                     <div class="panel-body  input-group input-group-sm">
                                         <!--<span class="input-group-addon">Sesiones:</span>-->
                                         <label for="evaluado">Delegación - UMAE</label>
-                                        <?php echo $this->form_complete->create_element(array('id' => 'delg_umae', 'type' => 'dropdown', 'options' => $delg_umae, 'first' => array('' => 'Seleccione delegación o UMAE'), 'attributes' => array('name' => 'categoria', 'class' => 'form-control', 'placeholder' => 'Delegación o UMAE', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Delegación o UMAE', 'onchange' => "data_ajax(site_url+'/Resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
+                                        <?php echo $this->form_complete->create_element(array('id' => 'delg_umae', 'type' => 'dropdown', 'options' => $delg_umae, 'first' => array('' => 'Seleccione delegación o UMAE'), 'attributes' => array('name' => 'categoria', 'class' => 'form-control', 'placeholder' => 'Delegación o UMAE', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Delegación o UMAE', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
                                     </div>
                                 </div>
                             <?php } ?>
@@ -188,7 +205,7 @@ echo form_open('resultadocursoindicador/get_data_ajax/'.$curso, array('id' => 'f
                     <div class="row">
                         <div class="col-lg-12 col-sm-12 text-right">
                             <div class="input-group-btn" >
-                                <button type="button" id="btn_buscar_b" aria-expanded="false" class="btn btn-primary browse" title="Buscar" data-toggle="tooltip" onclick="<?php echo "data_ajax(site_url+'/Resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')";?>" >
+                                <button type="button" id="btn_buscar_b" aria-expanded="false" class="btn btn-primary browse" title="Buscar" data-toggle="tooltip" onclick="<?php echo "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')";?>" >
                                     Buscar <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
                                 </button>
                                 <?php echo $this->form_complete->create_element(array('id'=>'btn_export', 'type'=>'submit', 'value'=>'Exportar', 'attributes'=>array('class'=>'btn btn-primary browse', 'data-toggle'=>"tooltip", 'style'=>'display:yes;margin-left:10px;'))); ?>
@@ -206,19 +223,19 @@ echo form_open('resultadocursoindicador/get_data_ajax/'.$curso, array('id' => 'f
                                 <div class="panel-body input-group input-group-sm">
                                     <span class="input-group-addon">Número de registros a mostrar:</span>
                                     <?php // echo $this->form_complete->create_element(array('id'=>'per_page', 'type'=>'dropdown', 'options'=>array(2=>2,3=>3,4=>4,10=>10, 20=>20, 50=>50, 100=>100), 'attributes'=>array('class'=>'form-control', 'placeholder'=>'Número de registros a mostrar', 'data-toggle'=>'tooltip', 'data-placement'=>'top', 'title'=>'Número de registros a mostrar', 'onchange'=>"data_ajax(site_url+'/bonos_titular/get_buscar_cursos_encuestas', '#form_buscador', '#listado_resultado_empleado')")));     ?>
-                                    <?php echo $this->form_complete->create_element(array('id' => 'per_page', 'type' => 'dropdown', 'options' => array(20 => 20, 50 => 50, 100 => 100), 'attributes' => array('class' => 'form-control', 'placeholder' => 'Número de registros a mostrar', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Número de registros a mostrar', 'onchange' => "data_ajax(site_url+'/Resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
+                                    <?php echo $this->form_complete->create_element(array('id' => 'per_page', 'type' => 'dropdown', 'options' => array(20 => 20, 50 => 50, 100 => 100), 'attributes' => array('class' => 'form-control', 'placeholder' => 'Número de registros a mostrar', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Número de registros a mostrar', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
                                 </div>
                             </div>
                             <div class="col-lg-4 col-sm-4">
                                 <div class="panel-body input-group input-group-sm">
                                     <span class="input-group-addon">Ordenar por:</span>
-                                    <?php echo $this->form_complete->create_element(array('id' => 'order', 'type' => 'dropdown', 'options' => $ordenar_por, 'attributes' => array('class' => 'form-control', 'placeholder' => 'Ordernar por', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Ordenar por', 'onchange' => "data_ajax(site_url+'/Resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
+                                    <?php echo $this->form_complete->create_element(array('id' => 'order', 'type' => 'dropdown', 'options' => $ordenar_por, 'attributes' => array('class' => 'form-control', 'placeholder' => 'Ordernar por', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Ordenar por', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
                                 </div>
                             </div>
                             <div class="col-lg-4 col-sm-4">
                                 <div class="panel-body input-group input-group-sm">
                                     <span class="input-group-addon">Tipo de orden:</span>
-                                    <?php echo $this->form_complete->create_element(array('id' => 'order_type', 'type' => 'dropdown', 'options' => $order_by, 'attributes' => array('class' => 'form-control', 'placeholder' => 'Tipo de orden', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Tipo de orden', 'onchange' => "data_ajax(site_url+'/Resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
+                                    <?php echo $this->form_complete->create_element(array('id' => 'order_type', 'type' => 'dropdown', 'options' => $order_by, 'attributes' => array('class' => 'form-control', 'placeholder' => 'Tipo de orden', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Tipo de orden', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
                                 </div>
                             </div>
                         <!-- </fieldset>
@@ -227,9 +244,9 @@ echo form_open('resultadocursoindicador/get_data_ajax/'.$curso, array('id' => 'f
 
 
 
-
-
+                <?php if(isset($curso)){ ?>
                 <input type="hidden" id="curso" name="curso" value="<?php echo $curso ?>">
+                <?php } ?>
                 <input type="hidden" id="bactiva" name="bactiva" value="0">
                 
                 <div class="form-group text-center">
@@ -243,9 +260,9 @@ echo form_open('resultadocursoindicador/get_data_ajax/'.$curso, array('id' => 'f
                                         ));*/
                 //echo $this->form_complete->create_element(array('id'=>'btn_submit', 'type'=>'botton', 'options'=>array('DESC'=>'Descendente', 'ASC'=>'Ascendente'), 'attributes'=>array('class'=>'form-control', 'placeholder'=>'Ordernar por', 'data-toggle'=>'tooltip', 'data-placement'=>'top', 'title'=>'Ordenar por', 'onchange'=>"data_ajax(site_url+'/cursoencuesta/get_data_ajax/'+".$curso.", '#form_curso', '#listado_resultado')"))); ?>
                 </div>
-                <div class="row">
+               <!-- <div class="row"> -->
                 <div id="listado_resultado"></div>
-                </div>
+                <!--</div>-->
              </div>  <!-- /panel-body-->
         </div> <!-- /panel panel-amarillo-->
     </div> <!-- /col 12-->

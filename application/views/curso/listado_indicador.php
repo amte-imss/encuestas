@@ -3,8 +3,8 @@ if (isset($registros) && !empty($registros))
 {
 //echo form_open('cursoencuesta/guardar_asociacion', array('id'=>'form_asignar', 'class'=>'form-horizontal'));
     ?>
-    <div>
-        <div class="table-responsive">
+    <div style="width: 100%; overflow: auto;">
+        <div class="table-responsive" style="width: 100%; max-width: 900px;">
             <table class="table table-striped table-hover table-bordered">
                 <thead>
                     <tr>

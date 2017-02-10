@@ -14,7 +14,7 @@ $config = array(
         array(
             'field' => 'pregunta',
             'label' => 'Pregunta',
-            'rules' => 'required|max_length[250]|alpha_numeric_accent_space_dot_double_quot'
+            'rules' => 'required|max_length[500]|alpha_numeric_accent_space_dot_double_quot' //se cambia de 250 a 500 caracteres
 
         ),
         array(
@@ -33,9 +33,9 @@ $config = array(
             'rules' => 'numeric'
         ),
         array(
-            'field' => 'tipo_pregunta_radio',
+            'field' => 'tipo_pregunta',
             'label' => 'Tipo respuesta',
-            'rules' => 'required|radio_buttom_validation'
+            'rules' => 'required|numeric'
         ),
         array(
             'field' => 'tiene_pregunta_padre',
@@ -222,9 +222,9 @@ $config = array(
             'rules' => 'numeric|max_length[1]'
         ), //cve_corta_encuesta
         array(
-            'field' => 'tipo_pregunta_radio',
+            'field' => 'tipo_pregunta',
             'label' => 'Tipo pregunta',
-            'rules' => 'required|numeric|greater_than[0]|max_length[1]'
+            'rules' => 'required|numeric'
         ),
         array(
             'field' => 'seccion_cve',

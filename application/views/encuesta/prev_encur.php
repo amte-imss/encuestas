@@ -1,5 +1,6 @@
 <?php
 //pr($grupos_ids_text);
+echo js('encuestas/guardar_encuesta_usuario.js');
 ?>
 <div class="list-group-item">
     <div style="text-align:justify">
@@ -126,11 +127,42 @@
                         if ($pregunta !== $val['preguntas_cve']) {//Agrega la pregunta
                             echo "<br><b><h5> " . $val['orden'] . " - " . $val['pregunta'] . "</h5></b><br>";
                             echo form_error_format('p_r[' . $val['preguntas_cve'] . ']');
+                            if(isset($errores_preguntas_abiertas[$val['preguntas_cve']])){
+                                echo html_message('Esta pregunta es requerida', $tipo_msj); //Muestra mensaje
+                            }
                         }
-
+                        
+                        $tmp_s = isset($reactivos[$val['preguntas_cve']])? $reactivos[$val['preguntas_cve']]: '';
+                        
+                        if ($val['tipo_pregunta_cve'] == 5)
+                        {
+                            echo $this->form_complete->create_element(array('id' => 'p_r'.$val['preguntas_cve'].'_text',  'type' => 'textarea', 'value' => $tmp_s, 'attributes' => array('name' => 'p_r[' . $val['preguntas_cve'] . ']', 'rows' => '4')));
+                        } elseif ($val['tipo_pregunta_cve'] == 6)
+                        {
+                            $tmp_b = '';
+                            if(isset($reactivos_abiertas_radio[$val['preguntas_cve']])){
+                                $tmp_s = '';                           
+                                $tmp_b = 'checked';   
+                            }
+                            echo '<label><input class="only_one_answer_radio" id="p_r' . $val['preguntas_cve'] . '_radio" type="radio" name="p_r_radio[' . $val['preguntas_cve'] . ']"   
+                                value="' . $val['reactivos_cve'] . '"' . $tmp_b . ' >' . $val['texto'] . '</label><br>';
+                            if(isset($reactivos_abiertas_radio[$val['preguntas_cve']])){
+                                echo '<span id="'.'p_r'.$val['preguntas_cve'].'_link'.'"><small><a onclick="activar_campo_texto('."'p_r".$val['preguntas_cve']."_text"."'".')">Activar campo de texto</a></small></span>';
+                                echo $this->form_complete->create_element(array('id' => 'p_r'.$val['preguntas_cve'].'_text', 'type' => 'textarea', 'value' => $tmp_s, 'attributes' => array('name' => 'p_r_text[' . $val['preguntas_cve'] . ']','class' => 'only_one_answer_text', 'rows' => '4', 'disabled'=>'true')));
+                            }else{
+                                echo '<span style="display:none" id="'.'p_r'.$val['preguntas_cve'].'_link'.'"><small><a onclick="activar_campo_texto('."'p_r".$val['preguntas_cve']."_text"."'".')">Activar campo de texto</a></small></span>';
+                                echo $this->form_complete->create_element(array('id' => 'p_r'.$val['preguntas_cve'].'_text', 'type' => 'textarea', 'value' => $tmp_s, 'attributes' => array('name' => 'p_r_text[' . $val['preguntas_cve'] . ']','class' => 'only_one_answer_text', 'rows' => '4')));
+                            }
+                            
+                        } else
+                        {
+                            echo '<label><input type="radio" name="p_r[' . $val['preguntas_cve'] . ']"   
+                                value="' . $val['reactivos_cve'] . '"' . set_radio('p_r[' . $val['preguntas_cve'] . ']',  $val['reactivos_cve'] ) . ' >' . $val['texto'] . '</label><br>';
+                        }
+                        /*
                         echo '<label><input type="radio" name="p_r[' . $val['preguntas_cve'] . ']"   
                     value="' . $val['reactivos_cve'] . '"' . set_radio('p_r[' . $val['preguntas_cve'] . ']', '' . $val['reactivos_cve'] . '') . '; >' . $val['texto'] . '</label><br>';
-
+                        */
 
 
 

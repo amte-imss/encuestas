@@ -216,6 +216,12 @@ $config['ENCUESTAS_ROL_EVALUADOR'] = array(
     'TUTOR_ADJUNTO' => 33
 );
 
+$config['TUTORIZADO'] = array(
+	'SI' => 1, 
+	'NO' => 0
+);
+
+
 $config['puntos_rol'] = array(
     '14_0' => 2, //'Coordinador de curso no tutorizado'
     '14_1' => 3, //'Coordinador de curso tutorizado'

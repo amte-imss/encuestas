@@ -116,7 +116,9 @@ class Encuestas_model extends CI_Model {
         return $resultado;
     }
 
-    function carga_csv_instrumentos($data) {
+    function carga_csv_instrumentos($data)
+    {
+        //pr('[CH][Encuestas_model][carga_csv_instrumentos]data: '); pr($data);
         $resultado = array('success' => FALSE);
         $this->db->trans_begin(); // inicio de transaccion
 
@@ -124,14 +126,18 @@ class Encuestas_model extends CI_Model {
         $instrumento;
         $seccion;
         $indicador;
-        foreach ($data as $row) {
+        foreach ($data as $row)
+        {
             //preguntas_instrumentopr($row); 
             //exit();
-            if (!empty($instrumento)) {  // si la variable instrumento esta vaica
-                if ($instrumento['id_instrumento_enc'] != $row['id_instrumento_enc']) { // si la variable $instrumento['id_instrumento_enc'] es diferente de $row['id_instrumento_enc']                        
+            if (!empty($instrumento))
+            {  // si la variable instrumento esta vaica
+                if ($instrumento['id_instrumento_enc'] != $row['id_instrumento_enc'])
+                { // si la variable $instrumento['id_instrumento_enc'] es diferente de $row['id_instrumento_enc']                        
                     $roles_regla = array(
                         'rol_evaluador_cve' => $row['rol_evaluador'],
-                        'rol_evaluado_cve' => $row['rol_a_evaluar']
+                        'rol_evaluado_cve' => $row['rol_a_evaluar'], 
+                        'tutorizado' => $row['tutorizado'],
                     );
 
                     $registro_en_regla = $this->get_id_regla($roles_regla);
@@ -140,15 +146,18 @@ class Encuestas_model extends CI_Model {
                     $instrumento = $this->guarda_instrumento($row); //cargar nuevo instrumento
                 }
 
-                if (empty($seccion)) {  //si la variable seccion esta vacia 
+                if (empty($seccion))
+                {  //si la variable seccion esta vacia 
                     //$seccion_bd = $this->get_seccion($row['descripcion']);
                     //if (isset($seccion_bd[0]['seccion_cve']) && $seccion_bd[0]['seccion_cve']>0) {
                     //$seccion = $seccion_bd[0]['seccion_cve'];
                     //}else{
                     $seccion = $this->guarda_seccion($row); // guardar la primera sección del instrumento
                     //}
-                } else {  //si la variable seccion NO esta vacia 
-                    if ($seccion['id_seccion_enc'] != $row['id_seccion_enc']) {    // si la variable id_seccion no coincide con la variable seccion almacenada local
+                } else
+                {  //si la variable seccion NO esta vacia 
+                    if ($seccion['id_seccion_enc'] != $row['id_seccion_enc'])
+                    {    // si la variable id_seccion no coincide con la variable seccion almacenada local
                         //$seccion_bd = $this->get_seccion($row['descripcion']);
                         //if (isset($seccion_bd[0]['seccion_cve']) && $seccion_bd[0]['seccion_cve']>0) {
                         //$seccion = $seccion_bd[0]['seccion_cve'];
@@ -159,15 +168,18 @@ class Encuestas_model extends CI_Model {
                 }
 
                 /* Indicador */
-                if (empty($indicador)) {  //si la variable seccion esta vacia 
+                if (empty($indicador))
+                {  //si la variable seccion esta vacia 
                     //$seccion_bd = $this->get_seccion($row['descripcion']);
                     //if (isset($seccion_bd[0]['seccion_cve']) && $seccion_bd[0]['seccion_cve']>0) {
                     //$seccion = $seccion_bd[0]['seccion_cve'];
                     //}else{
                     $indicador = $this->guarda_indicador($row); // guardar la primera sección del instrumento
                     //}
-                } else {  //si la variable seccion NO esta vacia 
-                    if ($indicador['id_indicador_enc'] != $row['id_indicador_enc']) {    // si la variable id_seccion no coincide con la variable seccion almacenada local
+                } else
+                {  //si la variable seccion NO esta vacia 
+                    if ($indicador['id_indicador_enc'] != $row['id_indicador_enc'])
+                    {    // si la variable id_seccion no coincide con la variable seccion almacenada local
                         //$seccion_bd = $this->get_seccion($row['descripcion']);
                         //if (isset($seccion_bd[0]['seccion_cve']) && $seccion_bd[0]['seccion_cve']>0) {
                         //$seccion = $seccion_bd[0]['seccion_cve'];
@@ -178,10 +190,12 @@ class Encuestas_model extends CI_Model {
                 }
 
                 /**/
-            } else {  // si la variable instrumento NO esta vacia
+            } else
+            {  // si la variable instrumento NO esta vacia
                 $roles_regla = array(
                     'rol_evaluador_cve' => $row['rol_evaluador'],
-                    'rol_evaluado_cve' => $row['rol_a_evaluar']
+                    'rol_evaluado_cve' => $row['rol_a_evaluar'], 
+                    'tutorizado' => $row['tutorizado'],
                 );
 
                 $registro_en_regla = $this->get_id_regla($roles_regla);
@@ -189,15 +203,18 @@ class Encuestas_model extends CI_Model {
 
                 $instrumento = $this->guarda_instrumento($row); //guardar el primer instrumento
 
-                if (empty($seccion)) {  //si la variable seccion esta vacia 
+                if (empty($seccion))
+                {  //si la variable seccion esta vacia 
                     //$seccion_bd = $this->get_seccion($row['descripcion']);
                     //if (isset($seccion_bd[0]['seccion_cve']) && $seccion_bd[0]['seccion_cve']>0) {
                     //$seccion = $seccion_bd[0]['seccion_cve'];
                     //}else{
                     $seccion = $this->guarda_seccion($row); // guardar la primera sección del instrumento
                     //} // guardar la primera sección del instrumento
-                } else {
-                    if ($seccion['id_seccion_enc'] != $row['id_seccion_enc']) {    // si la variable id_seccion no coincide con la variable seccion almacenada local
+                } else
+                {
+                    if ($seccion['id_seccion_enc'] != $row['id_seccion_enc'])
+                    {    // si la variable id_seccion no coincide con la variable seccion almacenada local
                         //$seccion_bd = $this->get_seccion($row['descripcion']);
                         //if (isset($seccion_bd[0]['seccion_cve']) && $seccion_bd[0]['seccion_cve']>0) {
                         //$seccion = $seccion_bd[0]['seccion_cve'];
@@ -209,15 +226,18 @@ class Encuestas_model extends CI_Model {
 
 
                 /* Indicador */
-                if (empty($indicador)) {  //si la variable seccion esta vacia 
+                if (empty($indicador))
+                {  //si la variable seccion esta vacia 
                     //$seccion_bd = $this->get_seccion($row['descripcion']);
                     //if (isset($seccion_bd[0]['seccion_cve']) && $seccion_bd[0]['seccion_cve']>0) {
                     //$seccion = $seccion_bd[0]['seccion_cve'];
                     //}else{
                     $indicador = $this->guarda_indicador($row); // guardar la primera sección del instrumento
                     //}
-                } else {  //si la variable seccion NO esta vacia 
-                    if ($indicador['id_indicador_enc'] != $row['id_indicador_enc']) {    // si la variable id_seccion no coincide con la variable seccion almacenada local
+                } else
+                {  //si la variable seccion NO esta vacia 
+                    if ($indicador['id_indicador_enc'] != $row['id_indicador_enc'])
+                    {    // si la variable id_seccion no coincide con la variable seccion almacenada local
                         //$seccion_bd = $this->get_seccion($row['descripcion']);
                         //if (isset($seccion_bd[0]['seccion_cve']) && $seccion_bd[0]['seccion_cve']>0) {
                         //$seccion = $seccion_bd[0]['seccion_cve'];
@@ -230,16 +250,19 @@ class Encuestas_model extends CI_Model {
                 /**/
             }
 
-            if (isset($instrumento) && !empty($instrumento)) {
+            if (isset($instrumento) && !empty($instrumento))
+            {
 
-                if (isset($row['tipo_pregunta']['reactivos'])) {
+                if (isset($row['tipo_pregunta']['reactivos']))
+                {
 
                     /* # Guardado de preguntas # */
                     //pr($row);
                     $pregunta = $this->guarda_pregunta($row, $instrumento['insert_id'], $seccion['insert_id'], $indicador['insert_id']);   //guardar pregunta
 
 
-                    foreach ($row['tipo_pregunta']['reactivos'] as $row_respuesta) {
+                    foreach ($row['tipo_pregunta']['reactivos'] as $row_respuesta)
+                    {
                         $condicion_pregunta;
                         $respuesta = $this->guarda_respuesta($row_respuesta, $pregunta, $instrumento['insert_id']);
                         /* if (isset($row['tipo_pregunta']['respuesta_esperada']) && !empty($row['tipo_pregunta']['respuesta_esperada']) && (md5($row_respuesta['texto']) == md5($row['tipo_pregunta']['respuesta_esperada']) ) ){
@@ -249,16 +272,27 @@ class Encuestas_model extends CI_Model {
                           $condicion_accion = $this->guarda_condicion_accion($condicion_pregunta, $pregunta_padre['preguntas_cve']);
                           } */
                     }
+                } else if (in_array($row['tipo_pregunta']['tipo_pregunta_cve'], array(5, 6))) //[Christian] agregamos las preguntas con respuestas abiertas
+                {
+                    $pregunta = $this->guarda_pregunta($row, $instrumento['insert_id'], $seccion['insert_id'], $indicador['insert_id']);   //guardar pregunta
                 }
+                /*
+                 * else{
+                  pr('[CH][Encuestas_model][carga_csv_instrumentos]tipo_pregunta: ');
+                  pr($row['tipo_pregunta']);
+                  }
+                 */
             }
         }
 
         $this->db->trans_complete();
-        if ($this->db->trans_status() == TRUE) { // condición para ver si la transaccion se efectuara correctamente                
+        if ($this->db->trans_status() == TRUE)
+        { // condición para ver si la transaccion se efectuara correctamente                
             $this->db->trans_commit(); // si la transacción es correcta retornar TRUE
             $resultado['success'] = TRUE;
             return $resultado;
-        } else {
+        } else
+        {
             $this->db->trans_rollback(); // si la transacción no es correcta retornar FALSE
             $resultado['success'] = FALSE;
             return $resultado;
@@ -381,7 +415,8 @@ class Encuestas_model extends CI_Model {
         return $row;
     }
 
-    public function guarda_nueva_pregunta($pregunta = array(), $instrumento_id = null, $seccion_id = null) {
+    public function guarda_nueva_pregunta($pregunta = array(), $instrumento_id = null, $seccion_id = null)
+    {
         $this->db->trans_begin();
 
         $indicador_id = $pregunta['tipo_indicador_cve'];
@@ -389,25 +424,31 @@ class Encuestas_model extends CI_Model {
 
         $respuestas_nuevas = (isset($pregunta['respuestas']) && is_array($pregunta['respuestas'])) ? $pregunta['respuestas'] : '';
 
-        if (is_array($respuestas_nuevas)) {
-            foreach ($respuestas_nuevas as $respuesta) {
+        if (is_array($respuestas_nuevas))
+        {
+            foreach ($respuestas_nuevas as $respuesta)
+            {
                 $this->guarda_respuesta($respuesta, $id_pregunta, $instrumento_id);
             }
         }//else trans_complete () trans_rollback return false
 
         $this->db->trans_complete();
-        if ($this->db->trans_status() != true) {
+        if ($this->db->trans_status() != true)
+        {
             $this->db->trans_rollback();
             $resultado['success'] = FALSE;
             return $resultado;
-        } else {
+        } else
+        {
             $this->db->trans_commit();
             $resultado['success'] = TRUE;
+            $resultado['id_pregunta'] = $id_pregunta;
             return $resultado;
         }
     }
 
-    public function guarda_pregunta($pregunta = array(), $instrumento_id = null, $seccion_id = null, $indicador_id = null) {
+    public function guarda_pregunta($pregunta = array(), $instrumento_id = null, $seccion_id = null, $indicador_id = null)
+    {
 
 
         $data['encuesta_cve'] = $instrumento_id;
@@ -448,11 +489,12 @@ class Encuestas_model extends CI_Model {
         $this->db->insert('encuestas.sse_preguntas', $data);
         $insert_id = $this->db->insert_id();
         //echo '<br>], prg: '.$insert_id.' [';
-
+        $this->update_bono_encuesta($instrumento_id);
         return $insert_id;
     }
 
-    function update_pregunta($id_pregunta = null, $params = null) {
+    function update_pregunta($id_pregunta = null, $params = null)
+    {
 
 
         $pregunta_anterior = isset($params['pregunta_anterior'][0]) ? $params['pregunta_anterior'][0] : ''; // obtenemos los datos anteriores de la pregunta
@@ -504,6 +546,8 @@ class Encuestas_model extends CI_Model {
             }
         }
 
+        $this->update_bono_encuesta($params['encuesta_cve']);
+        
         $this->db->trans_complete();
         if ($this->db->trans_status() === true) {
             $this->db->trans_rollback();
@@ -514,6 +558,32 @@ class Encuestas_model extends CI_Model {
             $resultado['success'] = TRUE;
             return $resultado;
         }
+    }
+    
+    /**
+     * update_bono_encuesta - Actualiza la bandera is_bono en tabla encuestas si presenta una pregunta para bono
+     * @param type $id_instrumento - id de la encuesta a revisar  
+     */
+    public function update_bono_encuesta($id_instrumento = 0)
+    {
+        $this->db->flush_cache();
+        $this->db->reset_query();
+        $this->db->select('is_bono');
+        $this->db->where('encuesta_cve', $id_instrumento);
+        $query1 = $this->db->get_compiled_select('encuestas.sse_preguntas');
+        $this->db->reset_query();
+        $this->db->select('(case when (1 in ('. $query1 .')) then 1 else 0 end) valor');
+        $valor = $this->db->get()->result_array()[0]['valor'];       
+        /*
+        pr('[CH][Encuestas_model][update_bono_encuesta]$valor: ' );
+        pr($valor);
+         * *
+         */
+        $this->db->reset_query();
+        $this->db->set('is_bono', $valor, FALSE);
+         
+        $this->db->where('encuesta_cve', $id_instrumento);
+        $this->db->update('encuestas.sse_encuestas'); 
     }
 
     public function tiene_preguntas_hija($id_pregunta = null) {
@@ -934,7 +1004,7 @@ class Encuestas_model extends CI_Model {
             'sse_indicador.descripcion as indicador',
         );
 
-        $this->db->join('encuestas.sse_respuestas', 'sse_respuestas.preguntas_cve=sse_preguntas.preguntas_cve');
+        $this->db->join('encuestas.sse_respuestas', 'sse_respuestas.preguntas_cve=sse_preguntas.preguntas_cve', 'left');
         $this->db->join('encuestas.sse_seccion', 'sse_seccion.seccion_cve=sse_preguntas.seccion_cve');
         $this->db->join('encuestas.sse_indicador', 'sse_indicador.indicador_cve=sse_preguntas.tipo_indicador_cve');
         $this->db->where('sse_preguntas.encuesta_cve', $id_instrumento);
@@ -1903,10 +1973,16 @@ class Encuestas_model extends CI_Model {
         //return $insert_id;
     }
 
- public function guarda_reactivos_evaluacion($params = null) {
+    public function guarda_reactivos_evaluacion($params = null)
+    {
 
 //        pr($params);
 //        exit();
+        $preguntas_base = $params['reactivos_base'];
+        $reactivos = $params['reactivos'];
+        $reactivos_abiertas = $params['reactivos_abiertas'];
+        $reactivos_abiertas_radio = $params['reactivos_abiertas_radio'];
+        $respuestas_abiertas = $params['respuestas_abiertas'];
         $encuesta_cve = $params['encuesta_cve'];
         $course_cve = $params['curso_cve'];
         $group_id = $params['grupo_cve'];
@@ -1940,10 +2016,12 @@ class Encuestas_model extends CI_Model {
 
         $grupos_text = ''; //Pone como null el valor de grupos por default
         $bloque_ = 0;
-        if (isset($params['grupos_ids_text'])) {
+        if (isset($params['grupos_ids_text']))
+        {
             $data['grupos_ids_text'] = $params['grupos_ids_text'];
             $grupos_text = $params['grupos_ids_text']; //Asigna el valor de grupos 
-            if (isset($params['bloque'])) {
+            if (isset($params['bloque']))
+            {
                 $bloque_ = $params['bloque'];
             }
         }
@@ -1955,14 +2033,31 @@ class Encuestas_model extends CI_Model {
 //        pr($params);
 
         $this->db->trans_begin(); // inicio de transaccion
-        //pr($params['reactivos']);
-        foreach ($params['reactivos'] as $key => $value) {
-            $pregunta = $key;
-            $respuesta = $value;
-
+        /*
+          pr('[CH][Encuestas_model][guarda_reactivos_evaluacion]$reactivos: ');
+          pr($params['reactivos']);
+         * 
+         */
+        foreach ($preguntas_base as $value)
+        {
+            $pregunta = $value["preguntas_cve"];
+            $respuesta = $reactivos[$pregunta];
+            /*
+              pr('[CH][Encuestas_model][guarda_reactivos_evaluacion]$value: ');
+              pr($respuesta);
+             * 
+             */
             $data ['preguntas_cve'] = $pregunta;
+            $data ['respuesta_abierta'] = $respuesta;
             $data ['reactivos_cve'] = $respuesta;
-            $data ['respuesta_abierta'] = $params['respuesta_abierta'];
+
+            if ($value['tipo_pregunta_cve'] == 5)
+            { //solo respuesta abierta, no lleva reactivo asociado
+                $data ['reactivos_cve'] = null;
+            } else if ($value['tipo_pregunta_cve'] == 6 && !isset($reactivos_abiertas_radio[$pregunta]))
+            { //pregunta abierta con radio y la respuesta es escrita
+                $data ['reactivos_cve'] = null;
+            }
             $data ['fecha'] = $params['fecha'];
             $this->db->where('encuesta_cve', $params['encuesta_cve']);
             $this->db->where('evaluado_user_cve', $params['evaluado_user_cve']);
@@ -1970,7 +2065,8 @@ class Encuestas_model extends CI_Model {
             $this->db->where('ev.course_cve', $params['curso_cve']);
             $this->db->where('group_id', $params['grupo_cve']);
             $this->db->where('preguntas_cve', $pregunta);
-            if ($bloque_ > 0) {
+            if ($bloque_ > 0)
+            {
                 $this->db->join('encuestas.sse_curso_bloque_grupo cbg', 'cbg.course_cve = ev.course_cve 
                     and cbg.mdl_groups_cve = ANY (string_to_array(ev.grupos_ids_text, \', \')::int[])
                     and cbg.bloque=' . $params['bloque'] . ' and cbg.mdl_groups_cve IN (' . $grupos_text . ') '
@@ -1981,15 +2077,17 @@ class Encuestas_model extends CI_Model {
 
             $query = $this->db->get('encuestas.sse_evaluacion ev'); //Obtener conjunto de registros
 //            pr($query);
-            if ($query->num_rows() == 0) {
+            if ($query->num_rows() == 0)
+            {
 
-                $pregresp = $this->get_pregunta_respuesta($pregunta, $respuesta);
+                //$pregresp = $this->get_pregunta_respuesta($pregunta, $respuesta);
                 $this->db->insert('encuestas.sse_evaluacion', $data);
             }
         }
 //        pr($data);
         $validacion = $this->get_validar_encuesta_contestada($data, 'promedio', $bloque_, $grupos_text);
-        if ($validacion < 1) {//Valida 
+        if ($validacion < 1)
+        {//Valida 
             //curso_cve, grupo_cve, evaluado_user_cve, evaluado_rol_id
             $parametrosp = array(
                 'curso_cve' => $course_cve,
@@ -2007,7 +2105,8 @@ class Encuestas_model extends CI_Model {
             $promedio_snb = $this->get_promedio_encuesta_encuesta($parametrosp, $bloque_, $grupos_text, 0); //Promedio de la encuesta que aplica para bono
 //            $grupos_text = (isset($data['grupos_ids_text'])) ? $data['grupos_ids_text'] : '';
 //            pr($promedio);
-            if (!empty($promedio_of_bono)) {//No encontro información guardada
+            if (!empty($promedio_of_bono))
+            {//No encontro información guardada
                 //GUARDAR EN RESUL_ENCUESTA
                 $datares = array(
                     'encuesta_cve' => $encuesta_cve,
@@ -2032,7 +2131,8 @@ class Encuestas_model extends CI_Model {
                     'total_reactivos_napb' => $promedio_snb[0]['total'],
                     'calif_emitida_napb' => $promedio_snb[0]['porcentaje'],
                 );
-            } else {
+            } else
+            {
                 $datares = array(
                     'encuesta_cve' => $encuesta_cve,
                     'course_cve' => $course_cve,
@@ -2062,10 +2162,12 @@ class Encuestas_model extends CI_Model {
         }
 
         $this->db->trans_complete();
-        if ($this->db->trans_status() === FALSE) { // condición para ver si la transaccion se efectuara correctamente
+        if ($this->db->trans_status() === FALSE)
+        { // condición para ver si la transaccion se efectuara correctamente
             $this->db->trans_rollback(); // si la transacción no es correcta retornar FALSE
             return false;
-        } else {
+        } else
+        {
 
             $this->db->trans_commit(); // si la transacción es correcta retornar TRUE
             return true;
@@ -2829,7 +2931,7 @@ class Encuestas_model extends CI_Model {
         $this->db->start_cache();
 
         $this->db->select('case when count(*) = sum(encuestas.get_value_reactivo(3,C.valido_no_aplica, "B".texto)) then 0 else 100*(sum(encuestas.get_value_reactivo(1,"C".valido_no_aplica, "B".texto))::numeric/(count(*)::numeric - sum(encuestas.get_value_reactivo(3,"C".valido_no_aplica, "B".texto))::numeric)) end');
-        $this->db->join('encuestas.sse_respuestas as "B"', 'A.encuesta_cve = "B".encuesta_cve and A.reactivos_cve = "B".reactivos_cve and A.preguntas_cve = "B".preguntas_cve', 'inner');
+        $this->db->join('encuestas.sse_respuestas as "B"', 'A.encuesta_cve = "B".encuesta_cve and A.reactivos_cve = "B".reactivos_cve and A.preguntas_cve = "B".preguntas_cve', 'left');
         $this->db->join('encuestas.sse_preguntas as "C"', ' C.encuesta_cve = "B".encuesta_cve and C.preguntas_cve = "B".preguntas_cve', 'inner');
         $this->db->where('"A".course_cve = "AA".course_cve and "A".group_id = "AA".group_id AND "A".evaluador_user_cve = "AA".evaluador_user_cve and "A".evaluador_rol_id = "AA".evaluador_rol_id and "A".evaluado_user_cve = "AA".evaluado_user_cve and "A".evaluado_rol_id = "AA".evaluado_rol_id and "AA".grupos_ids_text = "A".grupos_ids_text');
         $this->db->group_by('"A".course_cve, "A".group_id, "A".evaluador_user_cve, "A".evaluador_rol_id, "A".evaluado_user_cve, "A".evaluado_rol_id, "A".grupos_ids_text');
@@ -2849,7 +2951,7 @@ class Encuestas_model extends CI_Model {
         $this->db->reset_query();
 
         $this->db->select('array_to_string(array_agg("C".tipo_indicador_cve), \',\')');
-        $this->db->join('encuestas.sse_respuestas as "B"', 'A.encuesta_cve = "B".encuesta_cve and A.reactivos_cve = "B".reactivos_cve and A.preguntas_cve = "B".preguntas_cve', 'inner');
+        $this->db->join('encuestas.sse_respuestas as "B"', 'A.encuesta_cve = "B".encuesta_cve and A.reactivos_cve = "B".reactivos_cve and A.preguntas_cve = "B".preguntas_cve', 'left');
         $this->db->join('encuestas.sse_preguntas as "C"', ' C.encuesta_cve = "B".encuesta_cve and C.preguntas_cve = "B".preguntas_cve', 'inner');
         $this->db->where('"A".course_cve = "AA".course_cve and "A".group_id = "AA".group_id AND "A".evaluador_user_cve = "AA".evaluador_user_cve and "A".evaluador_rol_id = "AA".evaluador_rol_id and "A".evaluado_user_cve = "AA".evaluado_user_cve and "A".evaluado_rol_id = "AA".evaluado_rol_id and "AA".grupos_ids_text = "A".grupos_ids_text');
         $this->db->group_by('"A".course_cve, "A".group_id, "A".evaluador_user_cve, "A".evaluador_rol_id, "A".evaluado_user_cve, "A".evaluado_rol_id, "A".grupos_ids_text');
@@ -2876,7 +2978,7 @@ class Encuestas_model extends CI_Model {
         $this->db->join('"departments"."ssv_departamentos" depto_pre_evaluador', '"depto_pre_evaluador"."cve_depto_adscripcion"="prereg_evaluador"."cve_departamental"', "left");
         $this->db->join('"departments"."ssv_departamentos" depto_tut_evaluador', '"depto_tut_evaluador"."cve_depto_adscripcion"="tut_evaluador"."cve_departamento"  ', "left");
         $this->db->join('"encuestas.sse_curso_bloque_grupo" "BLOQUE"', '(BLOQUE.course_cve = "AA"."course_cve" and "AA"."group_id" = "BLOQUE".mdl_groups_cve) OR (BLOQUE.course_cve = "AA"."course_cve" AND BLOQUE.mdl_groups_cve = ANY (string_to_array("AA".grupos_ids_text, \', \')::int[]))', 'inner');
-        
+
         //espacio para filtros
         if (isset($params['grupo']) && !empty($params['grupo']))
         {
@@ -2902,17 +3004,22 @@ class Encuestas_model extends CI_Model {
         {
             $this->db->where('depto_pre_evaluador.cve_delegacion  = \'' . $params['delg_umae'] . '\' OR depto_tut_evaluador.cve_delegacion  = \'' . $params['delg_umae'] . '\'');
         }
-        
+
         if (isset($params['bloque']) && !empty($params['bloque']))
         {
             $this->db->where('BLOQUE.bloque', $params['bloque']);
         }
-        
+
         if (isset($params['curso']) && !empty($params['curso']))
         {
             $this->db->where('AA.course_cve', $params['curso']);
         }
         
+        if (isset($params['tutorizado']) && $params['tutorizado'] != '')
+        {
+            $this->db->where('CURSO.tutorizado', $params['tutorizado']);
+        }
+
         $this->db->stop_cache();
 
         $count = 10;
@@ -2927,7 +3034,7 @@ class Encuestas_model extends CI_Model {
         $this->db->reset_query();
         $group_by = array('BLOQUE.bloque', 'AA.course_cve', 'AA.group_id', 'AA.evaluador_user_cve',
             'AA.evaluador_rol_id', 'AA.evaluado_user_cve', 'AA.evaluado_rol_id',
-            'AA.grupos_ids_text', 'UN1','"U1".username',  'URN1', 'UN2', 'URN2', 'CN', 'GN',
+            'AA.grupos_ids_text', 'UN1', '"U1".username', 'URN1', 'UN2', 'URN2', 'CN', 'GN',
             'depto_tut_evaluado.name_region', ' depto_tut_evaluado.nom_delegacion',
             'depto_tut_evaluado.des_unidad_atencion', 'cat_tut_evaluado.nom_nombre',
             'depto_pre_evaluador.name_region', 'depto_pre_evaluador.nom_delegacion',
@@ -2935,13 +3042,13 @@ class Encuestas_model extends CI_Model {
             'depto_tut_evaluador.name_region', 'depto_tut_evaluador.nom_delegacion',
             'depto_tut_evaluador.des_unidad_atencion', 'cat_tut_evaluador.nom_nombre');
         $this->db->group_by($group_by);
-        
-        
-        
-        if(isset($params['order']))
+
+
+
+        if (isset($params['order']))
         {
-            $type_order = (isset($params['order_type']) && strtolower($params['order_type']) == 'desc')? 'DESC' : 'ASC';
-            switch($params['order'])
+            $type_order = (isset($params['order_type']) && strtolower($params['order_type']) == 'desc') ? 'DESC' : 'ASC';
+            switch ($params['order'])
             {
                 case 'emp_matricula':
                     $this->db->order_by('"U1".username', $type_order);
@@ -2963,24 +3070,22 @@ class Encuestas_model extends CI_Model {
                     break;
             }
         }
-        
-        
+
+
         $this->db->select($select);
 
         if (isset($params['per_page']) && !empty($params['per_page']) && isset($params['current_row']))
         {
             $this->db->limit($params['per_page'], $params['current_row']);
         }
-        
-        
+
+
 
         $query = $this->db->get_compiled_select('encuestas.sse_evaluacion AA');
 
         //pr($query);
-        
+
         $resultado = $this->db->query($query)->result_array();
-        pr($this->db->last_query());
-        
         $this->db->reset_query();
         $this->db->flush_cache();
         $salida['total'] = $count;

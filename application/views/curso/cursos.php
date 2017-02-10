@@ -1,6 +1,6 @@
 <?php echo js("Curso/curso.js"); ?>
 <?php
-echo form_open('reporte/index', array('id' => 'form_curso'));
+echo form_open('curso/index', array('id' => 'form_curso'));
 ?>
 
 <div class="panel-heading clearfix breadcrumbs6">

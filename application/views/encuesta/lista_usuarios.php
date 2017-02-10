@@ -136,6 +136,7 @@ if (isset($datos_user_aeva) && !empty($datos_user_aeva)) {
         </table>
 
     </div>
+    <div style="margin-bottom: 100px;" class="clearfix"> </div>
 <?php } else if (isset($coment_general)) { ?>
     <div class="row">
         <div class="jumbotron"><div class="container"><p class="text_center"><?php echo $coment_general; ?></p> </div></div>
