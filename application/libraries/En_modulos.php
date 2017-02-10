@@ -22,7 +22,7 @@ class En_modulos {
             REPORTES_INDICADORES = 15,//hijo 2
             GESTION_REGLAS_EVALUACION = 16,//hijo 1
             GESTION_DESIGNAR_AUTOEVALUACION = 17,//hijo 1
-            DESIGNAR_BLOQUES = 18,//hijo 4
+            CURSO_BLOQUE_GRUPO = 18,//hijo 4
             DUPLICAR_INSTRUMENTO = 19,//hijo 3
             DESACTIVAR_INSTRUMENTO = 20,//hijo 3
             CARGAR_INSTRUMENTO = 22,//hijo 3
@@ -34,7 +34,9 @@ class En_modulos {
             DES_ASOCIAR_ENCUESTA_CURSO  = 28, //hijo 4
             CATALOGOS  = 29, //módulo
             CATALOGOS_INDEX  = 30, //hijo 29
-            EVALUACION_ENCUESTA_INDEX  = 31 //hijo 5
+            EVALUACION_ENCUESTA_INDEX  = 31, //hijo 5
+            MATRIZ_DE_BLOQUES_INDEX  = 32, //hijo 5
+            DESIGNAR_BLOQUES_GUARDAR = 33//hijo 4
             
             
             

@@ -107,6 +107,7 @@ class Curso extends CI_Controller {
             }
             $data_tabla['max_boque'] = $num_max;
             $data_tabla['bloques'] = $bloques;
+            $data_tabla['modulos_acceso'] = $this->session->userdata("modulos_acceso");
 //            pr($data_tabla);
 //        pr($result);total_grupos, max_boque
 //           [idc] => 838
@@ -118,6 +119,7 @@ class Curso extends CI_Controller {
 //                    [id] => 11858
 //                    [name] => ZACATECAS
 //                )
+            
             $data['vista'] = $this->load->view('curso/tabla_bloque_grupo', $data_tabla, true);
         }
         $main_contet = $this->load->view('curso/curso_bloque_grupos', $data, true);

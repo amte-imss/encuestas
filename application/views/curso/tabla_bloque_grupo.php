@@ -25,7 +25,7 @@
                     $tt = (isset($tts[$idgrupo])) ? $tts[$idgrupo] : '--';
                     echo '<tr>';
 //                    echo '<td>' . $grupo['ct_bloque'] . '</td>';
-                    echo '<td>' . $ct . '</td>';                    
+                    echo '<td>' . $ct . '</td>';
                     echo '<td>' . $grupo['name'] . '</td>';
                     echo '<td>' . $tt . '</td>';
                     echo '<td>';
@@ -45,6 +45,8 @@
             </tr>
         </tbody>
     </table>
-    <div class="right"><input type="button" class="form-control btn-primary" value="Guardar bloques" onclick="guardar_curso_bloque_grupo();"/></div>
+    <?php if (isset($modulos_acceso[En_modulos::DESIGNAR_BLOQUES_GUARDAR]) and $modulos_acceso[En_modulos::DESIGNAR_BLOQUES_GUARDAR]['acceso'] == 1) { ?>
+        <div class="right"><input type="button" class="form-control btn-primary" value="Guardar bloques" onclick="guardar_curso_bloque_grupo();"/></div>
+    <?php } ?>
 <?php } ?>
 <?php echo js("busquedas/bloque_grupo_curso.js"); ?>
