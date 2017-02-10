@@ -177,11 +177,12 @@ $db['default2'] = array(
     'save_queries' => TRUE
 );
 $db['default'] = array(
-    'dsn' => 'pgsql:host=localhost;dbname=nueva_kio',// se agrego la base de datos correctamente kio_prod201 -> nueva_kio
-    'hostname' => 'localhost',
-    'username' => 'postgres',
-    'password' => 'postgresql',
-    'database' => 'nueva_kio',
+    'dsn' => 'pgsql:host=11.32.41.19;dbname=nueva_kiodes',
+    'hostname' => '11.32.41.19',
+    'username' => 'innovaedu',
+    'password' => 'nPgEoXCqd/?gV.,',
+    'database' => 'nueva_kiodes',
+//    'database' => 'nueva_kio2',
     'dbdriver' => 'pdo',
     'port' => '5432',
     'dbprefix' => '',

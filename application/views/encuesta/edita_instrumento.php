@@ -1,3 +1,5 @@
+  <?php echo js('tinymceen\tinymce\js\tinymce\tinymce.min.js');?>
+  <script>tinymce.init({ selector:'textarea' });</script>
 <div class="row">
     <div class="col-md-12 col-sm-12">
         <div class="panel panel-amarillo">
