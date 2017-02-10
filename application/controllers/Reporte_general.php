@@ -66,7 +66,7 @@ class Reporte_general extends CI_Controller
             $data['per_page'] = $filtros['per_page'];
             //pr($data);
             $c_r = $this->filtrosreportes_tpl->getArrayVistasReportes(FiltrosReportes_Tpl::RB_GENERAL); //Configuracion del reporte
-            $this->listado_resultado($data, array('form_recurso' => $c_r[FiltrosReportes_Tpl::C_NAME_FORMULARIO], 'elemento_resultado' => '#listado_resultado_empleado')); //Generar listado en caso de obtener datos. Mostrar resultados
+            $this->listado_resultado($data, array('form_recurso' => $c_r[FiltrosReportes_Tpl::C_NAME_FORMULARIO], 'elemento_resultado' => '#listado_resultado')); //Generar listado en caso de obtener datos. Mostrar resultados
         }
     }
     

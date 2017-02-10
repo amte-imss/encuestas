@@ -3347,7 +3347,8 @@ class Encuestas_model extends CI_Model {
             case when tip_pre.descripcion SIMILAR TO '%(SIEMPRE_NUNCA)%' then 'SI' else '' end as \"NUNCA\", 
             case when tip_pre.descripcion SIMILAR TO '%(RESPUESTA_ABIERTA)%' then 'SI' else '' end as \"RESPUESTA_ABIERTA\",
             case when reg_eva.eval_is_satisfaccion = 1 then 'SATISFACCION' else 'DESEMPENIO' end as \"TIPO_INSTRUMENTO\",
-            case when enc.eva_tipo = 1 then 'POR_GRUPO' when enc.eva_tipo = 2 then 'POR_BLOQUE' when enc.eva_tipo = 3 then 'POR_USUARIO' end as \"EVA_TIPO\"");
+            case when enc.eva_tipo = 1 then 'POR_GRUPO' when enc.eva_tipo = 2 then 'POR_BLOQUE' when enc.eva_tipo = 3 then 'POR_USUARIO' end as \"EVA_TIPO\",
+            enc.guia_descripcion_encuesta AS \"INSTRUCCIONES\"");
         
         $this->db->where("enc.encuesta_cve", $id_instrumento);
         

@@ -6,7 +6,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <tr>
             <?php
             foreach ($head as $encabezado) {
-                echo '<th>'.$encabezado.'</th>';
+                if($encabezado!="INSTRUCCIONES")
+                {
+                    echo '<th>'.$encabezado.'</th>';
+                }
             }
             ?>
         </tr>
@@ -17,7 +20,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             foreach ($data as $datos) {
                 echo '<tr>';
                 foreach ($head as $encabezado) {
-                    echo '<td>'.$datos[$encabezado].'</td>';
+                    if($encabezado!="INSTRUCCIONES")
+                    {
+                        echo '<td>'.$datos[$encabezado].'</td>';
+                    }
                 }
                 echo '</tr>';
             }

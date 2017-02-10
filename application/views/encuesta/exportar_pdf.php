@@ -22,6 +22,9 @@ if(isset($head) and isset($data) and !empty($data))
         <tr>
             <td align="right">Tipo de evaluación:</td><td><b><?php echo (isset($data[0]['EVA_TIPO'])) ? str_replace('_',' ',$data[0]['EVA_TIPO']) : ''; ?></b></td>
         </tr>
+        <tr>
+            <td align="right">Instrucciones:</td><td><b><?php echo (isset($data[0]['INSTRUCCIONES'])) ? str_replace('_',' ',$data[0]['INSTRUCCIONES']) : ''; ?></b></td>
+        </tr>
     </table>
     <table width="100%" style="border: 1px solid gray;">
         <thead>
