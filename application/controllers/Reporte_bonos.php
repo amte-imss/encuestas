@@ -110,7 +110,7 @@ class Reporte_bonos extends CI_Controller {
     }
 
     private function listado_resultado($data, $form) {
-        $data['controller'] = 'Reporte_bonos';
+        $data['controller'] = 'reporte_bonos';
         $data['action'] = 'get_buscar_cursos_encuestas';
         $pagination = $this->template->pagination_data_general($data); //Crear mensaje y links de paginación
         //$pagination = $this->template->pagination_data_buscador_asignar_validador($data); //Crear mensaje y links de paginación

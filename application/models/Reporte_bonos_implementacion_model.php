@@ -89,7 +89,7 @@ class Reporte_bonos_implementacion_model extends CI_Model {
         $query = $ejecuta->result_array();
 
         $this->db->flush_cache(); //Limpia la cache
-        pr($this->db->last_query());
+//        pr($this->db->last_query());
         //Resultados de cálculo de promedios 
         $array_config_calculo = $array_result['calculo_prom'];
 //        pr($num_rows);

@@ -79,25 +79,25 @@ class Reporte_general extends CI_Controller
     private function listado_resultado($data, $form) 
     {
         $links = "";
-        if (!isset($data['export']) || (isset($data['export']) && $data['export'] == false)) 
+        if (!isset($data['export']) || (isset($data['export']) && $data['export'] == FALSE)) 
         {
             $pagination = $this->template->pagination_data_empleado($data, array('reporte_general', 'get_reporte_general_datos')); //Crear mensaje y links de paginación
             if ($data['total_empleados'] > 0)
             {
                 $links = "<div class='col-sm-5 dataTables_info' style='line-height: 50px;'>" . $pagination['total'] . "</div>
                     <div class='col-sm-7 text-right'>" . $pagination['links'] . "</div>";
+                
             }
-        }
-        echo $links . $this->load->view('reporte/general/listado_resultado', $data, TRUE) . $links;
-        if (!isset($data['export']) || (isset($data['export']) && $data['export'] == false))
-        {
             echo '<script>
-            $("ul.pagination li a").click(function(event){
-                data_ajax(this, "' . $form['form_recurso'] . '", "' . $form['elemento_resultado'] . '");
-                event.preventDefault();
-            });
+                $( document ).ready(function() {
+                    $("ul.pagination li a").click(function(event){
+                        data_ajax(this, "' . $form['form_recurso'] . '", "' . $form['elemento_resultado'] . '");
+                        event.preventDefault();
+                    });
+                });
             </script>';
         }
+        echo $links . $this->load->view('reporte/general/listado_resultado', $data, TRUE) . $links;
     }
     
     /**

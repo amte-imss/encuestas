@@ -254,7 +254,7 @@ class Reporte extends CI_Controller {
     }
 
     private function listado_resultado($data, $form) {
-        $data['controller'] = 'Reporte';
+        $data['controller'] = 'reporte';
         $data['action'] = 'get_data_ajax2';
         $pagination = $this->template->pagination_data_general($data); //Crear mensaje y links de paginación
         //$pagination = $this->template->pagination_data_buscador_asignar_validador($data); //Crear mensaje y links de paginación
