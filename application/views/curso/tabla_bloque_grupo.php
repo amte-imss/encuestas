@@ -21,8 +21,10 @@
                 <?php
                 foreach ($grupos as $key_g => $grupo) {
                     $idgrupo = trim($grupo['id']);
-                    $ct = (isset($cts[$idgrupo])) ? $cts[$idgrupo] : '--';
-                    $tt = (isset($tts[$idgrupo])) ? $tts[$idgrupo] : '--';
+//                    $ct = (isset($cts[$idgrupo])) ? $cts[$idgrupo] : '--';
+//                    $tt = (isset($tts[$idgrupo])) ? $tts[$idgrupo] : '--';
+                    $ct = (isset($grupo['cts']) and ! empty($grupo['cts'])) ? $grupo['cts'] : '--';
+                    $tt = (isset($grupo['tts']) and ! empty($grupo['tts'])) ? $grupo['tts'] : '--';
                     echo '<tr>';
 //                    echo '<td>' . $grupo['ct_bloque'] . '</td>';
                     echo '<td>' . $ct . '</td>';

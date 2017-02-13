@@ -60,7 +60,12 @@
             <h1>Acceso restringido</h1>
             <p>No cuenta con los permisos para acceder a la dirección solicitada.</p>
             <?php echo'<a class="text-right" href="javascript:window.history.back();">&laquo; Volver a la página anterior &laquo;</a>'; ?>
-
+            <?php if ($sesion_iniciada) { ?>
+                <a class="navbar-brand" href="<?php echo site_url('login/cerrar_session'); ?>">
+                    Cerrar sesión
+                    <span class="glyphicon glyphicon-log-out"></span>
+                </a>
+            <?php } ?>
         </div>
     </body>
 </html>

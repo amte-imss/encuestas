@@ -6,7 +6,7 @@ $modulos_acceso = $this->session->userdata("modulos_acceso");  //Tipo de usuario
 //pr($secciones_acceso);
 //pr($this->uri->segment(1));
 //pr($this->uri->segment(2));
-$array_controlador = array('encuestausuario' => array('lista_encuesta_usuario'));
+$array_controlador = array('encuestausuario' => array('lista_encuesta_usuario', 'instrumento_asignado', 'guardar_encuesta_usuario'));
 $valida_menu = 1;
 foreach ($array_controlador as $controlador => $metodos) {
     if ($controlador == $this->uri->segment(1)) {
@@ -73,6 +73,7 @@ if (isset($logueado) && !empty($logueado)) {
                             </ul>
                         </li>
                     <?php } ?>
+                    <?php if (isset($secciones_acceso[En_modulos::CATALOGOS])) { ?>
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Catálogos
                             <span class="caret"></span></a>
@@ -80,6 +81,8 @@ if (isset($logueado) && !empty($logueado)) {
                             <li><a href="<?php echo site_url('catalogos/departamentos'); ?>" class="a_menu">Departamentos</a></li>
                         </ul>
                     </li>    
+                    <?php } ?>
+                    
                     <li>
                         <a href="<?php echo site_url('login/regresar_sied'); ?>" class="a_nav_sied">
                             Regresar a SIED

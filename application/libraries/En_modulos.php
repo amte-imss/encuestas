@@ -36,7 +36,8 @@ class En_modulos {
             CATALOGOS_INDEX  = 30, //hijo 29
             EVALUACION_ENCUESTA_INDEX  = 31, //hijo 5
             MATRIZ_DE_BLOQUES_INDEX  = 32, //hijo 5
-            DESIGNAR_BLOQUES_GUARDAR = 33//hijo 4
+            DESIGNAR_BLOQUES_GUARDAR = 33,//hijo 4
+            CURSO_REPORTE_ENCUESTAS_CONT_Y_NO_CONTESTADAS = 35//hijo 4
             
             
             

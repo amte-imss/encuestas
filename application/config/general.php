@@ -32,8 +32,8 @@ $config['menu_super_admin'] = array('resultadocursoencuesta' => array('*'), 'enc
 
 $config['menu_validador'] = array('login' => array('cerrar_session', 'cerrar_session_ajax'), 'dashboard' => array('*'), 'tarjeton' => array('*'), 'pagina_no_encontrada' => array('index'), 'bonos_titular' => array('*'), 'bono_perfil_empleado' => array('*'));
 
-$config['menu_no_logueado'] = array('login/logeo');
-$config['menu_logueado_general'] = array('login/cerrar_session');
+$config['menu_no_logueado'] = array('login/logeo', 'encuestausuario/lista_encuesta_usuario');
+$config['menu_logueado_general'] = array('login/cerrar_session', 'modal/*');
 $config['omite_menus'] = array('encuestausuario' => array('*')); //Es importante que el usuario mantenga una sesión inicida, pero no deben aparecer los menus, ejemplos: gestión, reportes implementación, instrumentos etc. 
 /////Ruta de solicitudes
 $config['ruta_documentacion'] = $_SERVER["DOCUMENT_ROOT"] . "/sipimss_bonos/assets/files/archivos_bono/";

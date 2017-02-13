@@ -597,8 +597,8 @@ class Encuestausuario extends CI_Controller {
             $idcurso = $data_get['idcurso'];
 //            pr($this->session->userdata('logueado'));
 //            pr($this->session->userdata('id'));
-            //$sesion_valida = valida_sesion_activa($idusuario);
-            $sesion_valida = 1;
+            $sesion_valida = valida_sesion_activa($idusuario);
+//            $sesion_valida = 1;
             if ($sesion_valida) {
                 $this->session->unset_userdata('datos_encuesta_usuario'); //Eliminar la variable ya que puedequedara cargada con datos de otro curso
 
@@ -643,7 +643,7 @@ class Encuestausuario extends CI_Controller {
                         );
                     }
                 }
-
+//                pr($reglas_validas);
 //                pr($reglasgral);
                 if (isset($reglasgral)) {
                     foreach ($reglasgral as $keyrg => $valuerg) {
@@ -669,9 +669,6 @@ class Encuestausuario extends CI_Controller {
                                     //grupo del evaluador
                                     $gpo_evaluador = $value1['cve_grupo']; # code...
                                     //pr($gpo_evaluador);
-
-
-
 
                                     $datos_user_aeva[] = $this->enc_mod->listado_eval(array('gpo_evaluador' => $gpo_evaluador, 'role_evaluado' => $valuerg['rol_evaluado_cve'],
                                         'cur_id' => $idcurso, 'encuesta_cve' => $valuerg['encuesta_cve'],
@@ -827,7 +824,7 @@ class Encuestausuario extends CI_Controller {
                 $rolescusercurso = $this->enc_mod->get_roles_usercurso(array('user_id' => $valueuc['cve_usuario'], 'cur_id' => $idcurso));
                 //} 
 
-                pr($rolescusercurso);
+//                pr($rolescusercurso);
                 //$rolescusercurso = $this->enc_mod->get_roles_usercurso(array('user_id' => $idusuario, 'cur_id' => $idcurso));
 //                $rolescusercurso = array(14, 18, 32, 5);
                 $parametros = array('role_evaluador' => $rolescusercurso, 'tutorizado' => $tutorizado, 'cur_id' => $idcurso);

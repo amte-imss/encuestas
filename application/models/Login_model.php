@@ -252,51 +252,22 @@ class Login_model extends CI_Model {
     /**
      * @autor LEAS
      * Fecha creación: 03-02-2017
-     * @return Accesos por rol
+     * @return Accesos por rol en la tabla "public.mdl_config" , "name" = \'siteadmins\' 
+     * guarda los administradores de la plataforma no enrolados
      */
-    public function get_modulos_sesion_3($param) {
-//        pr($param);
-        $string_roeles = '';
-        if (isset($param['roles']) and ! empty($param['roles'])) {
-            $string_roeles = 'and mrol.id in( ';
-            $separador = '';
-            foreach ($param['roles'] as $idrole) {
-                $string_roeles .= $separador . $idrole;
-                $separador = ', ';
-            }
-            $string_roeles .= ' )';
-        } else {//Si no existen roles asociados con el usuario, envíar un array vacio
-            return array();
-        }
+    public function get_is_user_admin_sied($id_user) {
 
-        $select = array(
-            'm.modulo_cve', 'm.descripcion_modulo', 'mact.modulo_cve "actividad_cve"', 'mact.descripcion_modulo "descripcion_actividad"',
-            'mact.nom_controlador_funcion_mod', 'mract.acceso acceso_actividad'
-        );
-
-        $this->db->select($select);
-        $this->db->join('public.mdl_role mrol', 'mrol.id = mr.role_id ' . $string_roeles);
-        $this->db->join('encuestas.sse_modulo m', 'mr.modulo_cve = m.modulo_cve and m.is_seccion = 1 and mr.acceso = 1');
-        $this->db->join('encuestas.sse_modulo mact', 'mact.modulo_padre_cve = m.modulo_cve');
-        $this->db->join('encuestas.sse_modulo_rol mract', 'mract.modulo_cve = mact.modulo_cve', 'left');
+        $this->db->select('count(*) admin_existe');
         //Condiciones
-        $this->db->where('mract.acceso is null');
-        $this->db->or_where('mract.acceso', '1');
-        //Group by agrupamiento
-        $this->db->group_by('m.modulo_cve');
-        $this->db->group_by('m.descripcion_modulo');
-        $this->db->group_by('mact.modulo_cve');
-        $this->db->group_by('mact.descripcion_modulo');
-        $this->db->group_by('mact.nom_controlador_funcion_mod');
-        $this->db->group_by('mract.acceso');
-        //Ordenamiento
-        $this->db->order_by('m.modulo_cve');
-        $query = $this->db->get('encuestas.sse_modulo_rol mr');
-        $result = $query->result_array();
+        $this->db->where('"name" = \'siteadmins\'');
+        $this->db->where($id_user.'= any (string_to_array(c."value", \',\')::int8[])');
 
+        $query = $this->db->get('public.mdl_config c');
+        $result = $query->result_array();
+        
 //        pr($this->db->last_query());
         $query->free_result();
-        return $result;
+        return $result[0]['admin_existe'];
     }
 
     /**

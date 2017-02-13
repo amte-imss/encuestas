@@ -226,9 +226,11 @@ class Resultadocursoencuesta extends CI_Controller {
                     //$this->listado_resultado($data_sesiones, array('form_recurso'=>'#form_buscador', 'elemento_resultado'=>'#listado_resultado')); //Generar listado en caso de obtener datos
                     $filename = "Export_" . date("d-m-Y_H-i-s") . "_" . $datos_curso['data'][0]['cur_id'] . ".xls";
                     header("Content-Type: application/vnd.ms-excel");
+                    header("Content-Encoding: UTF-8");
                     header("Content-Disposition: attachment; filename=$filename");
                     header("Pragma: no-cache");
                     header("Expires: 0");
+                    echo "\xEF\xBB\xBF"; // UTF-8 BOM
                     echo $this->load->view('curso/listado_evaluados', $data, TRUE);
                 } else {
                     echo data_not_exist('No han sido encontrados datos con los criterios seleccionados. <script> $("#btn_export").hide(); </script>'); //Mostrar mensaje de datos no existentes

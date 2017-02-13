@@ -514,11 +514,14 @@ if (!function_exists('transformar_modulos')) {
             return null; //
         }
         $array_result = array();
-        foreach ($modulos_rol['modulos'] as $valores) {
-            $array_result['modulos'][$valores['modulo_cve']] = $valores;
-        }
-        foreach ($modulos_rol['secciones'] as $valores) {
-            $array_result['secciones'][$valores['modulo_cve']] = $valores;
+        if (isset($modulos_rol['modulos'])) {
+
+            foreach ($modulos_rol['modulos'] as $valores) {
+                $array_result['modulos'][$valores['modulo_cve']] = $valores;
+            }
+            foreach ($modulos_rol['secciones'] as $valores) {
+                $array_result['secciones'][$valores['modulo_cve']] = $valores;
+            }
         }
         return $array_result;
     }
@@ -558,6 +561,11 @@ if (!function_exists('permiso_acceso_ruta')) {
             if ($conactena == $value) {
                 return 1;
             }
+            
+            $exp_mgn = explode('/', $value); //descomposicion de la ruta
+            if (isset($exp_mgn[1]) and $controlador == $exp_mgn[0] and $exp_mgn[1] == '*') {//Valida que la cadena de control contenga una ruta, indica que no es un controlador como tal, y que no venga vacia
+                return 1;
+            }
         }
         $modulos_acceso = $CI->session->userdata('modulos_acceso');
         if (!is_null($modulos_acceso)) {
@@ -575,7 +583,7 @@ if (!function_exists('permiso_acceso_ruta')) {
                 }
             }
 
-            if (! empty($tmp_array_implicados)) {//Verifica la eistencia de reglas de seguridad para el controlador actual
+            if (!empty($tmp_array_implicados)) {//Verifica la eistencia de reglas de seguridad para el controlador actual
 //                if ($is_ajax) {//Valida si es ajax
 //                    if ($controlador == $ctrl_mod and $accion == $acc_mod) {//Si existe la condición, el controlador pasa
 //                        return 1;

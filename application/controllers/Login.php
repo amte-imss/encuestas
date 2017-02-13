@@ -71,7 +71,13 @@ class Login extends CI_Controller {
                     $token = md5(uniqid(rand(), TRUE));
                     //******Modulos de acceso *****
                     $roles = $this->enc_mod->get_roles_usercurso(array('user_id' => $id)); //Obtiene roles del usuario
+                    $is_admin_sied = $this->lm->get_is_user_admin_sied($id); //Obtiene todos los accesos de los roles relacionados
+                    if ($is_admin_sied) {
+                        $roles[] = 1;//Agrega el rol administrador, si es un administrador de sied
+                    }
+                    
                     $array_modulos = $this->lm->get_modulos_sesion(array('roles' => $roles)); //Obtiene todos los accesos de los roles relacionados
+                    
                     $modulos_acceso = transformar_modulos($array_modulos);
 //                    pr($modulos_acceso);
 //                    exit();
@@ -81,7 +87,7 @@ class Login extends CI_Controller {
                         'nombre' => $usuario->nombre . ' ' . $usuario->apellidos,
                         'logueado' => TRUE,
                         'token' => $token,
-                        'modulos_acceso' => $modulos_acceso['modulos'],//Carga los modulos de accesos
+                        'modulos_acceso' => $modulos_acceso['modulos'], //Carga los modulos de accesos
                         'secciones_acceso' => $modulos_acceso['secciones']//Carga las secciones de acceso del docente
                     );
                     //pr($usuario_data);

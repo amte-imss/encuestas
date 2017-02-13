@@ -82,7 +82,7 @@ class Resultadocursoindicador extends CI_Controller
 
     private function listado_resultado($data, $form)
     {
-        $data['controller'] = 'Resultadocursoindicador';
+        $data['controller'] = 'resultadocursoindicador';
         $data['action'] = 'get_data_ajax/';
         $data['encuestacve'] = 0;
 

@@ -21,10 +21,12 @@ class Iniciar_sesion {
         $accion = $CI->uri->segment(2);  //Accion
         $is_ajax = $CI->input->is_ajax_request();  //Accion
 
+        $datos_['sesion_iniciada'] = $logueado;
+//        pr($CI->session->userdata());
         if (!is_null($logueado)) {
             if (permiso_acceso_ruta($controlador, $accion, $is_ajax)) {//Verifica que el rol del usuario permita el accesos a por lo menos un módulo
             } else {
-                echo $CI->load->view('template/sin_acceso', null, true);
+                echo $CI->load->view('template/sin_acceso', $datos_, true);
                 exit();
             }
         } else {//Si el usuario no se encuentra con sesión iniciada
@@ -38,7 +40,7 @@ class Iniciar_sesion {
                 }
             }
             if (!$valida) {
-                echo $CI->load->view('template/sin_acceso', null, true);
+                echo $CI->load->view('template/sin_acceso', $datos_, true);
                 exit();
             }
         }
