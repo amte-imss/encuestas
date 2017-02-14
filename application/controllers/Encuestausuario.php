@@ -656,7 +656,7 @@ class Encuestausuario extends CI_Controller {
                             //echo "entra";
                             //por grupo
                             $datos_usuario = $this->enc_mod->get_datos_usuarios(array('user_id' => $idusuario,
-                                'cur_id' => $idcurso, 'rol_evaluado_cve' => $valuerg['rol_evaluado_cve']));
+                                'cur_id' => $idcurso, 'rol_evaluado_cve' => $valuerg['rol_evaluado_cve'],'rol_evaluador_cve' => $valuerg['rol_evaluador_cve'])););
 
 //                                pr($datos_usuario);
                             if (isset($datos_usuario) || isset($datos_curso) || !empty($datos_usuario) || !empty($datos_curso)) {
