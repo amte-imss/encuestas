@@ -152,12 +152,12 @@ $db['default2'] = array(
     'save_queries' => TRUE
 );
 
-$db['default2'] = array(
-    'dsn' => 'pgsql:host=11.32.41.19;dbname=nueva_kio',// se agrego la base de datos correctamente kio_prod201 -> nueva_kio
+$db['default'] = array(
+    'dsn' => 'pgsql:host=11.32.41.19;dbname=nueva_kiodes',// se agrego la base de datos correctamente kio_prod201 -> nueva_kio
     'hostname' => '11.32.41.19',
     'username' => 'innovaedu',
     'password' => 'nPgEoXCqd/?gV.,',
-    'database' => 'nueva_kio',
+    'database' => 'nueva_kiodes',
     'dbdriver' => 'pdo',
     'port' => '5432',
     'dbprefix' => '',
@@ -176,13 +176,12 @@ $db['default2'] = array(
     'failover' => array(),
     'save_queries' => TRUE
 );
-$db['default'] = array(
-    'dsn' => 'pgsql:host=11.32.41.19;dbname=nueva_kiodes',
-    'hostname' => '11.32.41.19',
-    'username' => 'innovaedu',
-    'password' => 'nPgEoXCqd/?gV.,',
-    'database' => 'nueva_kiodes',
-//    'database' => 'nueva_kio2',
+$db['default2'] = array(
+    'dsn' => 'pgsql:host=localhost;dbname=nueva_kio',// se agrego la base de datos correctamente kio_prod201 -> nueva_kio
+    'hostname' => 'localhost',
+    'username' => 'postgres',
+    'password' => 'postgresql',
+    'database' => 'nueva_kio',
     'dbdriver' => 'pdo',
     'port' => '5432',
     'dbprefix' => '',
