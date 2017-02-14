@@ -589,8 +589,8 @@ class Reporte_model extends CI_Model {
             case 'enc_con_ncon':
                 return array('e_c' => 'Reporte de encuestas contestadas', 'e_nc' => 'Reporte de encuestas no contestadas');
             case 'ordenar_por_con_no_con': return array(
-                    'uedo.nom,uedo.pat,uedo.mat' => 'Nombre del evaluado',
-                    'uedo.nom,uedo.pat,uedo.mat' => 'Nombre del evaluador',
+                    'uedo.firstname,uedo.lastname' => 'Nombre del evaluado',
+                    'uedor.firstname,uedor.lastname' => 'Nombre del evaluador',
                     'uedo.username' => 'Matrícula del evaluado',
                     'uedor.username' => 'Matrícula del evaluador',
                     'mrdor.id' => 'Rol evaluador',

@@ -71,7 +71,6 @@ WITH (
 CREATE TABLE encuestas.sse_modulo_rol (
 	modulo_cve int4 NOT NULL,
 	role_id int4 NOT NULL,
-	acceso numeric(1) DEFAULT 0,
 	CONSTRAINT sse_modulo_role_pkey PRIMARY KEY (modulo_cve, role_id),
 	CONSTRAINT fk_modulo_cve_r_role FOREIGN KEY (modulo_cve) REFERENCES encuestas.sse_modulo(modulo_cve)
 )
@@ -81,7 +80,7 @@ WITH (
 
  --
  --Crear tablas para guardar designación de evaluación de autoevaluación
- -- Ejecución LEAS 03/02/2017
+ -- Ejecución LEAS 03/02/2017    ?????????????????????????????????????? cancelada
  CREATE TABLE encuestas.sse_designar_autoeveluaciones (
 	des_autoevaluacion_cve serial,
 	reglas_evaluacion_cve int4 NOT NULL,
@@ -96,6 +95,84 @@ WITH (
 	OIDS=FALSE
 );
 
-ALTER TABLE encuestas.sse_evaluacion ALTER COLUMN reactivos_cve DROP NOT NULL; --Permite que la columna permita nulos Ejecución Luis petición Christian 
 
-ALTER TABLE encuestas.sse_evaluacion ALTER COLUMN acceso numeric(1) DEFAULT 0;
+
+
+
+
+CREATE OR REPLACE FUNCTION departments.get_rama_completa(clave_departametal character varying, top integer)
+ RETURNS character varying
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+	dept_row RECORD;
+	unidad text := '';
+BEGIN
+	SELECT INTO dept_row * FROM departments.ssd_cat_depto_adscripcion depto_adsc WHERE depto_adsc.cve_depto_adscripcion=clave_departametal;
+	IF(dept_row.ind_unidad = 1) then
+		unidad = dept_row.cve_depto_adscripcion||':'||dept_row.nom_depto_adscripcion;
+	else
+		unidad = departments.get_unidad(dept_row.cve_depto_adscripcion_padre,top);
+	end IF;
+	IF(dept_row.cve_depto_adscripcion_padre IS NULL OR top=0)THEN
+		return  dept_row.cve_depto_adscripcion||':'||dept_row.nom_depto_adscripcion||'||'||unidad;
+	ELSE
+		top = top - 1;
+		return  dept_row.cve_depto_adscripcion||':'||dept_row.nom_depto_adscripcion||'|'||departments.get_rama_json(dept_row.cve_depto_adscripcion_padre,top);
+	END IF;	
+END;
+$function$
+
+
+-- Se creó una función
+
+CREATE OR REPLACE FUNCTION departments.get_unidad(clave_departametal character varying, top integer)
+ RETURNS character varying
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+	dept_row RECORD;
+BEGIN
+	SELECT INTO dept_row * FROM departments.ssd_cat_depto_adscripcion depto_adsc WHERE depto_adsc.cve_depto_adscripcion=clave_departametal;
+	IF(dept_row.ind_unidad = 1 OR top=0) then
+		return dept_row.cve_depto_adscripcion||':'||dept_row.nom_depto_adscripcion;
+	else
+		top = top - 1;
+		return departments.get_unidad(dept_row.cve_depto_adscripcion_padre,top);
+		--return  dept_row.cve_depto_adscripcion||':'||dept_row.nom_depto_adscripcion||'|'||departments.get_unidad(dept_row.cve_depto_adscripcion_padre,top);
+	end IF;
+END;
+$function$
+
+
+
+--
+ --Crear tablas para guardar designación de evaluación de autoevaluación
+ -- Ejecución LEAS 14/02/2017  
+ CREATE TABLE encuestas.sse_designar_autoeveluaciones (
+	des_autoevaluacion_cve serial,
+	course_cve int4 NOT NULL,
+	encuesta_cve int4 NOT NULL,
+	evaluado_user_cve int4 NOT NULL,
+	evaluador_user_cve int4 NOT NULL,
+	evaluador_rol_id int4 NOT NULL,
+	grupos_ids_text varchar(256) null,
+	CONSTRAINT sse_designar_autoeveluaciones_pkey PRIMARY KEY (des_autoevaluacion_cve),
+	CONSTRAINT fk_encuestas_cve FOREIGN KEY (encuesta_cve) REFERENCES encuestas.sse_encuestas(encuesta_cve)
+)
+WITH (
+	OIDS=FALSE
+);
+
+--Crea campo que guarda la designación de auto evaluación
+
+alter table encuestas.sse_result_evaluacion_encuesta_curso add column des_autoevaluacion_cve int4 NULL;
+
+alter table encuestas.sse_result_evaluacion_encuesta_curso add
+  CONSTRAINT fk_des_autoevaluacion
+  FOREIGN KEY (des_autoevaluacion_cve) 
+  REFERENCES  encuestas.sse_designar_autoeveluaciones(des_autoevaluacion_cve);
+
+
+
+

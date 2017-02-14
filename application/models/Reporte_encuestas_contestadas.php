@@ -142,6 +142,7 @@ class Reporte_encuestas_contestadas extends CI_Model {
 
         $this->db->flush_cache(); //Limpia la cache
 //        pr($this->db->last_query());
+//        exit();
         $result['data'] = $query;
         $result['total'] = $total;
         $result['view_res'] = $array_config['view_res'];
@@ -236,12 +237,12 @@ class EncContestadas {
             "ec.course_cve", "ccfg.tutorizado", "reec.encuesta_cve", "reec.evaluador_user_cve", "reec.evaluado_user_cve",
             "enc.cve_corta_encuesta", "enc.descripcion_encuestas",
             //evaluado
-            "mrdo.id rid_do", 'mrdo."name" rolname_do', "uedo.username as matricula_do", "concat(uedo.nom, ' ', uedo.pat, ' ', uedo.mat) nom_evaluado",
+            "mrdo.id rid_do", 'mrdo."name" rolname_do', "uedo.username as matricula_do", "concat(uedo.firstname, ' ', uedo.lastname) nom_evaluado",
             "cattutdo.des_clave", "cattutdo.nom_nombre",
             "concat(depdo.cve_depto_adscripcion, ' - ', depdo.des_unidad_atencion) depart_do", "depdor.nom_delegacion del_do", "depdo.name_region reg_do",
             "cattutdor.des_clave clave_cattut_do", "cattutdor.nom_nombre name_cattut_do",
             //evaluador
-            "mrdor.id rid_dor", 'mrdor."name" rolname_dor', "uedor.username as matricula_dor", "concat(uedor.nom, ' ', uedor.pat, ' ', uedor.mat) nom_evaluador",
+            "mrdor.id rid_dor", 'mrdor."name" rolname_dor', "uedor.username as matricula_dor", "concat(uedor.firstname, ' ', uedor.lastname) nom_evaluador",
             "cattutdor.des_clave clave_cattut_dor", "cattutdor.nom_nombre name_cattut_dor", "catpredor.des_clave clave_catpre_dor", "catpredor.nom_nombre name_catpre_dor",
             "concat(depdor.cve_depto_adscripcion, ' - ', depdor.des_unidad_atencion) depart_dor", "depdor.nom_delegacion delegacion_dor", "depdor.name_region reg_dor",
             "concat(deppredor.cve_depto_adscripcion, ' - ', deppredor.des_unidad_atencion) departpre_dor", "deppredor.nom_delegacion delpre_dor", "deppredor.name_region regpre_dor",
@@ -271,11 +272,11 @@ class EncContestadas {
             "ec.course_cve", "mcs.shortname", "ccfg.tutorizado", "reec.encuesta_cve", "reec.evaluador_user_cve", "reec.evaluado_user_cve",
             "enc.cve_corta_encuesta", "enc.descripcion_encuestas",
             //evaluado
-            "mrdo.id", 'mrdo."name"', "uedo.username", "uedo.nom", "uedo.pat", "uedo.mat",
+            "mrdo.id", 'mrdo."name"', "uedo.username", "uedo.firstname", "uedo.lastname",
             "depdo.cve_depto_adscripcion", "depdo.des_unidad_atencion", "depdo.nom_delegacion", "depdo.name_region",
             "cattutdor.des_clave", "cattutdor.nom_nombre",
             //evaluador
-            "mrdor.id", 'mrdor."name"', "uedor.username", "uedor.nom", "uedor.pat", "uedor.mat",
+            "mrdor.id", 'mrdor."name"', "uedor.username", "uedor.firstname", "uedor.lastname",
             "cattutdor.des_clave", "cattutdor.nom_nombre", "catpredor.des_clave", "catpredor.nom_nombre",
             "depdor.cve_depto_adscripcion", "depdor.des_unidad_atencion", "depdor.nom_delegacion", "depdor.name_region",
             "deppredor.cve_depto_adscripcion", "deppredor.des_unidad_atencion", "deppredor.nom_delegacion", "deppredor.name_region",
@@ -345,7 +346,7 @@ class EncNoContestadas {
             "enc.cve_corta_encuesta", "enc.descripcion_encuestas",
             //Evaluador 
             "mrdor.id rid_do", 'mrdor."name" rolname_dor', 'uedor.username matricula_dor',
-            "concat(uedor.nom, ' ', uedor.pat, ' ', uedor.mat) nom_evaluador",
+            "concat(uedor.firstname, ' ', uedor.lastname) nom_evaluador",
             "cattutdor.des_clave clave_cattut_dor", "cattutdor.nom_nombre name_cattut_dor", "catpredor.des_clave clave_catpre_dor",
             "catpredor.nom_nombre name_catpre_dor",
             "concat(depdor.cve_depto_adscripcion, ' - ', depdor.des_unidad_atencion) depart_dor",
@@ -354,7 +355,7 @@ class EncNoContestadas {
             "deppredor.nom_delegacion delpre_dor", "deppredor.name_region regpre_dor",
             //Evaluado
             "mrdo.id rid_dor", 'mrdo."name" rolname_do', 'uedo.username matricula_do',
-            "concat(uedo.nom, ' ', uedo.pat, ' ', uedo.mat) nom_evaluado"
+            "concat(uedo.firstname, ' ', uedo.lastname) nom_evaluado"
             , "cattutdo.des_clave", "cattutdo.nom_nombre",
             "concat(depdo.cve_depto_adscripcion, ' - ', depdo.des_unidad_atencion) depart_do",
             "depdor.nom_delegacion del_do", "depdo.name_region reg_do",
@@ -450,12 +451,12 @@ class EncNoContestadas {
         return array(
             "rege.reglas_evaluacion_cve", "ec.course_cve, mcs.shortname", "enc.cve_corta_encuesta", "enc.descripcion_encuestas",
 //Evaluador
-            "mrdor.id", 'mrdor."name"', "uedor.id", "uedor.username", "uedor.nom", "uedor.pat", "uedor.mat",
+            "mrdor.id", 'mrdor."name"', "uedor.id", "uedor.username", "uedor.firstname", "uedor.lastname",
             "cattutdor.des_clave", "cattutdor.nom_nombre", "catpredor.des_clave", "catpredor.nom_nombre",
             "depdor.cve_depto_adscripcion", "depdor.des_unidad_atencion", "depdor.nom_delegacion", "depdor.name_region",
             "deppredor.cve_depto_adscripcion", "deppredor.des_unidad_atencion", "deppredor.nom_delegacion", "deppredor.name_region",
 //Evaluado
-            "mrdo.id", 'mrdo."name"', "expe.userid", "uedo.username", "uedo.nom", "uedo.pat", "uedo.mat"
+            "mrdo.id", 'mrdo."name"', "expe.userid", "uedo.username", "uedo.firstname", "uedo.lastname"
             , "cattutdo.des_clave", "cattutdo.nom_nombre",
             "depdo.cve_depto_adscripcion", "depdo.des_unidad_atencion", "depdor.nom_delegacion", "depdo.name_region",
             "cattutdor.des_clave", "cattutdor.nom_nombre",
@@ -499,11 +500,11 @@ class WhereGeneral {
     function getWereText() {
         return array(
             'matriculado' => array('campo' => 'lower(uedo.username) like', 'escape' => 'where', 'value' => 'lower(\'%~~%\')'),
-            'namedocentedo' => array('campo' => "lower(translate(concat(uedo.nom, ' ',uedo.pat, ' ', uedo.mat),'áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU')) like", 'escape' => 'where', 'value' => "lower(translate('%~~%','áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU'))"),
+            'namedocentedo' => array('campo' => "lower(translate(concat(uedo.firstname, ' ', uedo.lastname),'áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU')) like", 'escape' => 'where', 'value' => "lower(translate('%~~%','áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU'))"),
             'claveadscripcion' => array('campo' => 'lower(depdo.cve_depto_adscripcion) like', 'escape' => 'where', 'value' => 'lower(\'%~~%\')'),
             'categoria' => array('campo' => 'lower(cattutdo.des_clave) like', 'escape' => 'where', 'value' => 'lower(\'%~~%\')'),
             'matriculador' => array('campo' => 'lower(uedor.username) like', 'escape' => 'where', 'value' => 'lower(\'%~~%\')'),
-            'namedocentedor' => array('campo' => "lower(translate(concat(uedor.nom, ' ',uedor.pat, ' ', uedor.mat),'áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU')) like", 'escape' => 'where', 'value' => "lower(translate('%~~%','áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU'))"),
+            'namedocentedor' => array('campo' => "lower(translate(concat(uedor.firstname, ' ', uedor.lastname),'áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU')) like", 'escape' => 'where', 'value' => "lower(translate('%~~%','áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU'))"),
             'claveadscripciondor' => array('campo' => '(lower(depdor.cve_depto_adscripcion) like lower(\'%~~%\') or lower(deppredor.cve_depto_adscripcion) like lower(\'%~~%\'))', 'escape' => 'where', 'value' => ''),
             'categoriar' => array('campo' => '(lower(cattutdor.des_clave) like lower(\'%~~%\') or lower(catpredor.des_clave) like lower(\'%~~%\'))', 'escape' => 'where', 'value' => ''),
         );

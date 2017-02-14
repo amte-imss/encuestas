@@ -52,7 +52,7 @@ if (isset($encuestas) && !empty($encuestas)) {
                     }
 
                     if (isset($modulos_acceso[En_modulos::ACTIVAR_INSTRUMENTO]) and $modulos_acceso[En_modulos::ACTIVAR_INSTRUMENTO]['acceso'] == 1) {
-                        $activar = '<a onclick="unlock_encuesta(' . $val['encuesta_cve'] . ');" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="Desactivar instrumento">
+                        $activar = '<a onclick="unlock_encuesta(' . $val['encuesta_cve'] . ');" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="Activar instrumento">
                                         <span class="glyphicon glyphicon-off"></span>
                                     </a>';
                     }

@@ -48,9 +48,9 @@ class Encuestas extends CI_Controller
 
         //var_dump($this->session->userdata('token'));
 
-        if($this->session->has_userdata('id'))
-        {
-             $modulos_acceso = $this->session->userdata("modulos_acceso");               
+//        if($this->session->has_userdata('id'))
+//        {
+            $modulos_acceso = $this->session->userdata("modulos_acceso");               
             $datos['encuestas'] = $this->enc_mod->listado_instrumentos();
             $datos['modulos_acceso'] = $modulos_acceso;
             //$datos['listado_preguntas'] = $this->enc_mod->get_preguntas_encuesta(array('encuesta_cve'=>1));
@@ -60,13 +60,13 @@ class Encuestas extends CI_Controller
             $main_contet = $this->load->view('encuesta/encuestas', $datos, true);
             $this->template->setMainContent($main_contet);
             $this->template->getTemplate();            
-        }
-        else
-        {
-            $url_sied = $this->config->item('url_sied');
-            redirect($url_sied);
-            //redirect('http://11.32.41.13/kio/sied');        # code...
-        }    
+//        }
+//        else
+//        {
+//            $url_sied = $this->config->item('url_sied');
+//            redirect($url_sied);
+//            //redirect('http://11.32.41.13/kio/sied');        # code...
+//        }    
  
     }
 

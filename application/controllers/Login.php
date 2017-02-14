@@ -149,12 +149,13 @@ class Login extends CI_Controller {
         if (is_null($eduDist)) {
             $url_sied_logout = $this->config->item('url_sied_logout');
         } else {
+            
             $url_sied_logout = $this->config->item('url_moodle_logout');
         }
         //session_destroy();
         $this->session->sess_destroy();
         //redirect('login');
-        redirect($url_sied_logout);
+//        redirect($url_sied_logout);
         exit();
     }
 

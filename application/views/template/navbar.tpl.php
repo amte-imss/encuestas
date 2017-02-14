@@ -22,9 +22,9 @@ if (isset($logueado) && !empty($logueado)) {
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
             <?php if ($valida_menu) { ?>
-                <div class="navbar-header right">
-                    <a class="navbar-brand" href="<?php echo site_url('login/cerrar_session'); ?>">Cerrar sesión
-                        <span class="glyphicon glyphicon-log-out"></span></a>
+                <div class="navbar-header right" onclick="window.close(this);">
+                    <a class="navbar-brand" href="<?php echo site_url('login/cerrar_session'); ?>" onclick="window.close(this);">Cerrar sesión
+                        <span class="glyphicon glyphicon-log-out" ></span></a>
                 </div>
                 <ul class="nav navbar-nav">
                     <?php if (isset($secciones_acceso[En_modulos::ENCUESTAS])) { ?>
@@ -38,7 +38,7 @@ if (isset($logueado) && !empty($logueado)) {
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">Reportes
                                 <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <!--<li><a href="<?php // echo site_url('reporte_general');                ?>" class="a_menu">Reporte general</a></li>-->
+                                <!--<li><a href="<?php // echo site_url('reporte_general');                 ?>" class="a_menu">Reporte general</a></li>-->
                                 <?php if (isset($modulos_acceso[En_modulos::REPORTES_BONOS]) and $modulos_acceso[En_modulos::REPORTES_BONOS]['acceso'] == 1) { ?>
                                     <li><a href="<?php echo site_url('reporte'); ?>" class="a_menu">Reporte resumen de bonos</a></li>
                                 <?php } ?>
@@ -74,15 +74,15 @@ if (isset($logueado) && !empty($logueado)) {
                         </li>
                     <?php } ?>
                     <?php if (isset($secciones_acceso[En_modulos::CATALOGOS])) { ?>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Catálogos
-                            <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="<?php echo site_url('catalogos/departamentos'); ?>" class="a_menu">Departamentos</a></li>
-                        </ul>
-                    </li>    
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Catálogos
+                                <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="<?php echo site_url('catalogos/departamentos'); ?>" class="a_menu">Departamentos</a></li>
+                            </ul>
+                        </li>    
                     <?php } ?>
-                    
+
                     <li>
                         <a href="<?php echo site_url('login/regresar_sied'); ?>" class="a_nav_sied">
                             Regresar a SIED

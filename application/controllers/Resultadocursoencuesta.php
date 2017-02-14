@@ -95,6 +95,8 @@ class Resultadocursoencuesta extends CI_Controller {
 //                    $datos_curso = $this->cur_mod->listado_cursos(array('cur_id' => $curso));
                     $this->load->model('Reporte_encuestas_contestadas', 'r_enc_cont'); // modelo de cursos
 //                    $n_resultado = $this->r_enc_cont->listado_evaluados_($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
+//                    pr("saludos ");
+//                    exit();
                     $resultado = $this->r_enc_cont->getBusquedaEncContNoCont($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
 //                    $resultado = $this->encur_mod->listado_evaluados($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
 //                    pr($resultado);
@@ -104,8 +106,6 @@ class Resultadocursoencuesta extends CI_Controller {
                     $data['tutorizado'] = $resultado['tutorizado'];
                     $data['controller'] = 'Resultadocursoencuesta';
                     $data['action'] = 'get_data_ajax/' . $curso;
-
-
 
                     $this->listado_resultado($data, array('form_recurso' => '#form_curso', 'elemento_resultado' => '#listado_resultado'), $resultado['view_res']); //Generar listado en caso de obtener datos
                 }
