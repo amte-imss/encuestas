@@ -284,7 +284,7 @@ class Reporte_model extends CI_Model {
         return $resultado;
     }
 
-    public function listado_usuariosenc($idcurso) {
+    public function listado_usuariosenc($params=null) {
         $resultado = array();
         /* SELECT c.id AS cve_curso,  u.id AS cve_usuario, u.username AS username, u.firstname AS nom, u.lastname AS pat,
           u.cve_departamental
@@ -297,11 +297,17 @@ class Reporte_model extends CI_Model {
           JOIN mdl_user_enrolments ue ON ue.enrolid = en.id AND ue.userid = u.id
           where c.id=761 and r.id not in(11,29,19,34) */
 
-        $this->db->where('c.id', $idcurso);
+        $this->db->where('c.id', $params['curso_id']);
         $this->db->where_not_in('r.id', 11);
         $this->db->where_not_in('r.id', 19);
         $this->db->where_not_in('r.id', 29);
         $this->db->where_not_in('r.id', 34);
+
+        if(isset($params['role_id']) and $params['role_id'] == 5)
+        {
+            $this->db->where_not_in('r.id', $params['role_id'] );
+
+        }    
 
         $this->db->join('public.mdl_role_assignments ra', 'ra.userid = u.id');
         $this->db->join('public.mdl_context ct', 'ct.id = ra.contextid');
@@ -316,7 +322,8 @@ class Reporte_model extends CI_Model {
             'u.username AS username',
             'u.firstname AS nombres',
             'u.lastname AS apellidos',
-            'u.cve_departamental AS cve_ads');
+            'u.cve_departamental AS cve_ads',
+            'ra.roleid as rol');
 
         $this->db->select($busqueda);
 

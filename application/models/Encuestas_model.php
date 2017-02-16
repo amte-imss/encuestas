@@ -1773,7 +1773,7 @@ class Encuestas_model extends CI_Model {
                 and cbgp.mdl_groups_cve = ANY (string_to_array(reec.grupos_ids_text, \',\')::int[])
                 where encuesta_cve=' . $params['encuesta_cve'] . ' and reec.course_cve=' . $params['cur_id'] . ' 
                     and evaluado_user_cve=public.mdl_user.id and evaluador_user_cve=' . $params['evaluador_user_cve'] . ')  as realizado';
-            $this->db->distinct($consulta);
+           $this->db->distinct($consulta);
             $this->db->select($consulta);
             /* $this->db->select('public.mdl_user.firstname,public.mdl_user.lastname,public.mdl_role.name as role, public.mdl_role.id as rol_id, ' . $grupo_condition . ', 
               (select public.mdl_role.name from public.mdl_role where id=' . $params['role_evaluador'] . ') as evaluador,' .
@@ -3372,5 +3372,447 @@ class Encuestas_model extends CI_Model {
         $query->free_result(); //Libera la memoria
         
         return $resultado;
+    }
+
+
+    public function listado_autoeval($params = null) {
+        $resultado = array();
+
+        $this->db->where('tutorias.mdl_userexp.cursoid', $params['cur_id']);
+        $this->db->where('tutorias.mdl_userexp.ind_status', '1');
+
+
+        $this->db->where_in('tutorias.mdl_userexp.userid', $params['evaluador_user_cve']);
+
+
+
+
+        if (isset($params['gpo_evaluador']) && !empty($params['gpo_evaluador'])) {//El evaluador es parte de un grupo
+            //$this->db->where('tutorias.mdl_userexp.cursoid', $params['cur_id']);
+            //$this->db->where('tutorias.mdl_userexp.role',$params['role_evaluado']);
+            $this->db->where('tutorias.mdl_userexp.grupoid', $params['gpo_evaluador']);
+
+            $this->db->where('tutorias.mdl_userexp.role', $params['role_evaluado']);
+
+            $this->db->select('public.mdl_user.firstname,public.mdl_user.lastname,public.mdl_role.name as role, public.mdl_role.id as rol_id, public.mdl_groups.name as ngpo, \'\' AS grupos_ids_text,
+                (select public.mdl_role.name from public.mdl_role where id=' . $params['role_evaluador'] . ') as evaluador,' .
+                    $params['encuesta_cve'] . ' as regla, public.mdl_groups.id as gpoid, tutorias.mdl_userexp.cursoid as cursoid, public.mdl_user.id as userid,
+                (select evaluacion_resul_cve from encuestas.sse_result_evaluacion_encuesta_curso 
+                where encuesta_cve=' . $params['encuesta_cve'] . ' and course_cve=' . $params['cur_id'] . ' and group_id=' . $params['gpo_evaluador'] . ' 
+                    and evaluado_user_cve=public.mdl_user.id and evaluador_user_cve=' . $params['evaluador_user_cve'] . ')  as realizado,
+             (select public.mdl_user.firstname || \' \' || public.mdl_user.lastname from public.mdl_user where id='. $params['evaluador_user_cve'].') as nomevaluador,
+             encuestas.sse_designar_autoeveluaciones.*');
+
+            $this->db->join('public.mdl_user', 'public.mdl_user.id= tutorias.mdl_userexp.userid');
+            $this->db->join('public.mdl_role', 'public.mdl_role.id= tutorias.mdl_userexp.role');
+            $this->db->join('public.mdl_groups', 'public.mdl_groups.id=tutorias.mdl_userexp.grupoid');
+
+        } elseif (isset($params['bloque_evaluador']) && !empty($params['bloque_evaluador'])) {//El evaluador se encuentra en varios bloques
+            /* SELECT "public"."mdl_user"."firstname", "public"."mdl_user"."lastname", "public"."mdl_role"."name" as "role", "public"."mdl_groups"."name" as "ngpo", 
+              (select public.mdl_role.name from public.mdl_role where id=32) as evaluador, 535 as "regla",
+              "public"."mdl_groups"."id" as "gpoid", "tutorias"."mdl_userexp"."cursoid" as "cursoid",
+              "public"."mdl_user"."id" as "userid",
+              (select evaluacion_resul_cve from encuestas.sse_result_evaluacion_encuesta_curso where encuesta_cve=535 and course_cve=838 and group_id=11856 and evaluado_user_cve=public.mdl_user.id and evaluador_user_cve=1738)  as realizado
+              FROM "tutorias"."mdl_userexp"
+              JOIN "public"."mdl_user" ON "public"."mdl_user"."id"= "tutorias"."mdl_userexp"."userid"
+              JOIN "public"."mdl_role" ON "public"."mdl_role"."id"= "tutorias"."mdl_userexp"."role"
+              JOIN "public"."mdl_groups" ON "public"."mdl_groups"."id"="tutorias"."mdl_userexp"."grupoid"
+              JOIN encuestas.sse_curso_bloque_grupo on encuestas.sse_curso_bloque_grupo.mdl_groups_cve = public.mdl_groups.id
+              WHERE "tutorias"."mdl_userexp"."cursoid" = '838'
+              AND "tutorias"."mdl_userexp"."role" = 18
+              and encuestas.sse_curso_bloque_grupo.bloque=2 */
+
+            //$this->db->where('tutorias.mdl_userexp.cursoid', $params['cur_id']);
+
+            $this->db->where('tutorias.mdl_userexp.role', $params['role_evaluado']);
+            $this->db->where('encuestas.sse_curso_bloque_grupo.bloque', $params['bloque_evaluador']);
+
+            if (isset($params['grupos']) && !empty($params['grupos'])) {
+                $grupo_condition = "(SELECT array_agg(g.name)::varchar FROM public.mdl_groups g WHERE g.id IN (" . $params['grupos'] . ")) AS ngpo, '" . $params['grupos'] . "' as grupos_ids_text";
+            } else {
+                $grupo_condition = "public.mdl_groups.name as ngpo, \'\' AS grupos_ids_text";
+            }
+
+
+            $consulta = 'public.mdl_user.firstname,public.mdl_user.lastname,public.mdl_role.name as role, public.mdl_role.id as rol_id, ' . $grupo_condition . ', 
+                encuestas.sse_curso_bloque_grupo.bloque,
+                (select public.mdl_role.name from public.mdl_role where id=' . $params['role_evaluador'] . ') as evaluador,' .
+                    $params['encuesta_cve'] . ' as regla,  tutorias.mdl_userexp.cursoid as cursoid, public.mdl_user.id as userid,
+                (select max(evaluacion_resul_cve) from encuestas.sse_result_evaluacion_encuesta_curso reec
+                join encuestas.sse_curso_bloque_grupo cbgp on cbgp.course_cve = reec.course_cve and cbgp.bloque = encuestas.sse_curso_bloque_grupo.bloque
+                and cbgp.mdl_groups_cve IN (' . $params['grupos'] . ')
+                and cbgp.mdl_groups_cve = ANY (string_to_array(reec.grupos_ids_text, \',\')::int[])
+                where encuesta_cve=' . $params['encuesta_cve'] . ' and reec.course_cve=' . $params['cur_id'] . ' 
+                    and evaluado_user_cve=public.mdl_user.id and evaluador_user_cve=' . $params['evaluador_user_cve'] . ')  as realizado,
+                (select public.mdl_user.firstname || \' \' || public.mdl_user.lastname from public.mdl_user where id='. $params['evaluador_user_cve'].') as nomevaluador,
+                encuestas.sse_designar_autoeveluaciones.*';
+            $this->db->distinct($consulta);
+            $this->db->select($consulta);
+            /* $this->db->select('public.mdl_user.firstname,public.mdl_user.lastname,public.mdl_role.name as role, public.mdl_role.id as rol_id, ' . $grupo_condition . ', 
+              (select public.mdl_role.name from public.mdl_role where id=' . $params['role_evaluador'] . ') as evaluador,' .
+              $params['encuesta_cve'] . ' as regla, public.mdl_groups.id as gpoid, tutorias.mdl_userexp.cursoid as cursoid, public.mdl_user.id as userid,
+              (select evaluacion_resul_cve from encuestas.sse_result_evaluacion_encuesta_curso where encuesta_cve=' . $params['encuesta_cve'] . ' and course_cve=' . $params['cur_id'] . '
+              and evaluado_user_cve=public.mdl_user.id and evaluador_user_cve=' . $params['evaluador_user_cve'] . ')  as realizado');
+             */
+
+            $this->db->join('public.mdl_user', 'public.mdl_user.id= tutorias.mdl_userexp.userid');
+            $this->db->join('public.mdl_role', 'public.mdl_role.id= tutorias.mdl_userexp.role');
+            $this->db->join('public.mdl_groups', 'public.mdl_groups.id=tutorias.mdl_userexp.grupoid');
+            $this->db->join('encuestas.sse_curso_bloque_grupo', 'encuestas.sse_curso_bloque_grupo.mdl_groups_cve = public.mdl_groups.id');
+        } else {
+            $params['gpo_evaluador'] = 0;
+            $consulta = 'public.mdl_user.firstname,public.mdl_user.lastname,public.mdl_role.name as role, public.mdl_role.id as rol_id, ' . $params['gpo_evaluador'] . ' as ngpo, \'\' AS grupos_ids_text,
+              (select public.mdl_role.name from public.mdl_role where id=' . $params['role_evaluador'] . ') as evaluador,' .
+                    $params['encuesta_cve'] . ' as regla, tutorias.mdl_userexp.cursoid as cursoid, public.mdl_user.id as userid,
+                    (select evaluacion_resul_cve from encuestas.sse_result_evaluacion_encuesta_curso where encuesta_cve=' . $params['encuesta_cve'] . ' and course_cve=' . $params['cur_id'] . ' 
+                        and evaluado_user_cve=public.mdl_user.id and evaluador_user_cve=' . $params['evaluador_user_cve'] . ')  as realizado,
+(select public.mdl_user.firstname || \' \' || public.mdl_user.lastname from public.mdl_user where id='. $params['evaluador_user_cve'].') as nomevaluador,
+encuestas.sse_designar_autoeveluaciones.*';
+
+
+
+
+            $this->db->distinct($consulta);
+            $this->db->select($consulta);
+
+            $this->db->where('tutorias.mdl_userexp.role', $params['role_evaluado']);
+
+
+            $this->db->join('public.mdl_user', 'public.mdl_user.id= tutorias.mdl_userexp.userid');
+            $this->db->join('public.mdl_role', 'public.mdl_role.id= tutorias.mdl_userexp.role');
+        }
+
+
+
+         $this->db->join('encuestas.sse_designar_autoeveluaciones','sse_designar_autoeveluaciones.course_cve='. $params['cur_id'].' 
+and sse_designar_autoeveluaciones.encuesta_cve='.$params['encuesta_cve'].' and 
+sse_designar_autoeveluaciones.evaluado_user_cve=public.mdl_user.id and 
+sse_designar_autoeveluaciones.grupos_ids_text = grupos_ids_text','left');
+
+        $query = $this->db->get('tutorias.mdl_userexp');
+
+        /* if ($query->num_rows() > 0){
+          //$resultado['result'] = true;
+          //$resultado['data'] = $query->result_array();
+          $resultado = $query->result_array();
+
+          } */
+        //pr($this->db->last_query());
+        //$resultado = $query->result_array();
+       
+        $resultado['evagral'] = $this->listado_evagral(array('role_evaluado' => $params['role_evaluado'],
+                        'cur_id' => $params['cur_id'],'role_evaluador' => $params['role_evaluador']));
+        
+        /*$resultado['userevaluador']=$this->user_evaluador_autoevaluacion(array('role_evaluado' => $params['role_evaluado'],
+                        'cur_id' => $params['cur_id'],'role_evaluador' => $params['role_evaluador']));*/
+        $resultado['data'] = $query->result_array();
+        //$this->db->flush_cache();
+        //$query->free_result(); //Libera la memoria                                
+
+
+
+        return $resultado;
+    } 
+
+    public function listado_evagral($params = null) {
+        $resultado = array();
+        /* SELECT c.id AS cve_curso,  u.id AS cve_usuario, u.username AS username, u.firstname AS nom, u.lastname AS pat,
+          u.cve_departamental
+          FROM mdl_user u
+          JOIN mdl_role_assignments ra ON ra.userid = u.id
+          JOIN mdl_context ct ON ct.id = ra.contextid
+          JOIN mdl_course c ON c.id = ct.instanceid
+          JOIN mdl_role r ON r.id = ra.roleid
+          JOIN mdl_enrol en ON en.courseid = c.id
+          JOIN mdl_user_enrolments ue ON ue.enrolid = en.id AND ue.userid = u.id
+          where c.id=761 and r.id not in(11,29,19,34) */
+
+        $this->db->where('c.id', $params['cur_id']);
+        
+
+        $this->db->where_not_in('r.id', 11);
+        $this->db->where_not_in('r.id', 19);
+        $this->db->where_not_in('r.id', 29);
+        $this->db->where_not_in('r.id', 34);
+        $this->db->where_not_in('r.id', 5);
+        $this->db->where_not_in('r.id', 33);
+
+        $this->db->where_not_in('r.id', $params['role_evaluado']);
+        
+        if($params['role_evaluador'] == 32 ||  $params['role_evaluador'] == 33)
+        {
+            $this->db->where('r.id in(14,18,30)');
+        }
+        if($params['role_evaluador'] == 18)
+        {
+            $this->db->where('r.id in(14,30)');
+        }
+        if($params['role_evaluador'] == 14 )
+        {
+            $this->db->where('r.id in(30)');
+        }
+
+
+
+        $this->db->join('public.mdl_role_assignments ra', 'ra.userid = u.id');
+        $this->db->join('public.mdl_context ct', 'ct.id = ra.contextid');
+        $this->db->join('public.mdl_course c', 'c.id = ct.instanceid');
+        $this->db->join('public.mdl_role r', 'r.id = ra.roleid');
+        $this->db->join('public.mdl_enrol en', 'en.courseid = c.id');
+        $this->db->join('public.mdl_user_enrolments ue', 'ue.enrolid = en.id AND ue.userid = u.id');
+
+        $busqueda = array(
+            'u.id AS cve_usuario',
+            'u.username AS username',
+            'u.firstname AS nombres',
+            'u.lastname AS apellidos',
+            'ra.roleid as rol',
+            'r.name as rolen');
+
+        $this->db->select($busqueda);
+
+
+        $query = $this->db->get('public.mdl_user u');
+        $resultado = $query->result_array();
+
+        $query->free_result(); //Libera la memoria
+
+        foreach ($resultado as $index => $value) {
+
+                $arrol[$value['cve_usuario'].'/'.$value['rol']] = $value['nombres'].' '.$value['apellidos'].'('.$value['rolen'].')';
+        }
+        //pr($this->db->last_query());
+        return $arrol;
+    }
+
+    public function guardaract_autoevaluacion($autoevaluacion = array()) {
+
+        $data=array();
+        //$data['course_cve'] = $autoevaluacion['idcurso'];
+        //$data['tutorizado'] = $autoevaluacion['tutorizado'];
+
+        //$data['rol_evaluado_cve'] = $autoevaluacion['rolevaluado'];
+
+        $evaluador=explode("/",$autoevaluacion['evaluador']);
+        //$data['rol_evaluador_cve']=$evaluador[1];
+
+        //si existen reglas extras-- ya no se utilizó por el análisis sugerido
+        /*$regla=$this->get_regla( 
+            array('tutorizado' => $autoevaluacion['tutorizado'], 
+                  'rol_evaluador_cve' => $evaluador[1], 
+                  'rol_evaluado_cve' => $autoevaluacion['rolevaluado']));
+
+
+        
+        $data['reglas_evaluacion_cve'] = $regla['id'];*/
+
+        if(isset($autoevaluacion['grupos_ids_text']))
+        {
+            $autoeva = $autoevaluacion['grupos_ids_text'];
+        }
+        else
+        {
+            $autoeva = $autoevaluacion['idgrupo'];
+        }    
+       
+        $insert_autoevaluacion=array();
+        $insert_autoevaluacion['course_cve'] = $autoevaluacion['cur_id'];
+        $insert_autoevaluacion['encuesta_cve'] = $autoevaluacion['idencuesta']; 
+        $insert_autoevaluacion['evaluado_user_cve'] = $autoevaluacion['iduevaluado'];
+        $insert_autoevaluacion['evaluador_user_cve'] = $evaluador[0];
+        $insert_autoevaluacion['evaluador_rol_id'] = $evaluador[1];
+        $insert_autoevaluacion['grupos_ids_text']= $autoeva;
+       
+        
+
+        
+
+
+        //pr($regla['id']);
+        if(isset($autoevaluacion['idencuesta']) && ($autoevaluacion['idencuesta'] == TRUE))
+        {
+            $existe_autoevaluacion=$this->get_autoevaluacion(
+            array('course_cve' => $autoevaluacion['cur_id'],
+                  'encuesta_cve' => $autoevaluacion['idencuesta'],                  
+                  'evaluado_user_cve'  => $autoevaluacion['iduevaluado'],
+                  'evaluador_user_cve' => $evaluador[0],
+                  'evaluador_rol_id' => $evaluador[1],                  
+                  'grupos_ids_text' => $autoeva));
+
+            //pr($existe_autoevaluacion['data']);
+            if($existe_autoevaluacion['result'] == false)
+            {
+                //inserta
+                 //pr($existe_autoevaluacion['id']);
+                $this->db->insert('encuestas.sse_designar_autoeveluaciones', $insert_autoevaluacion);
+                $insert_id = $this->db->insert_id();
+            }
+            else
+            {
+                //actualiza
+                //verificar que no este evaluado por el mismo evaluador
+                $autoevaluacionset=array();
+                $autoevaluacionset['evaluador_user_cve'] = $evaluador[0];
+                $autoevaluacionset['evaluador_rol_id'] = $evaluador[1];
+
+                 if($existe_autoevaluacion['data']['evaluador_user_cve'] != $evaluador[0])
+                 {
+                     $this->db->where('des_autoevaluacion_cve', $existe_autoevaluacion['data']['des_autoevaluacion_cve']);
+                     $this->db->update('encuestas.sse_designar_autoeveluaciones', $autoevaluacionset);
+                     $update_id = $existe_autoevaluacion['data']['des_autoevaluacion_cve'];
+                 }
+               
+            }
+
+        }
+        else
+        {
+          echo  "No se encuetra regla de evaluación asociada a esta combinación";
+        }    
+
+       
+
+       
+       
+
+        /*$row = array(
+            'insert_id' => $insert_id,
+            'id_instrumento_enc' => $instrumento['id_instrumento_enc']
+        );
+        //echo" {";
+        return $row;*/
+    }
+
+    public function get_regla($params = array()) {
+        $resultado = array('result' => false, 'id' => 0);
+
+
+        $this->db->where('tutorizado',$params['tutorizado']);
+        $this->db->where('rol_evaluador_cve',$params['rol_evaluador_cve']);
+        $this->db->where('rol_evaluado_cve',$params['rol_evaluado_cve']);
+
+
+        $query = $this->db->get('encuestas.sse_reglas_evaluacion'); //Obtener conjunto de registros
+        //pr($query);
+        if ($query->num_rows() > 0) {
+            $resultado['result'] = true;
+            $resultado['id'] = $query->result_array()[0]['reglas_evaluacion_cve'];
+        }
+
+        //pr($this->db->last_query());
+        //pr($query->result_array()[0]['reglas_evaluacion_cve']);
+        return $resultado;
+    }
+
+    public function get_autoevaluacion($params = array()) {
+        $resultado = array('result' => false, 'id' => 0);
+
+
+        $this->db->where('encuesta_cve',$params['encuesta_cve']);
+        //$this->db->where('evaluador_user_cve',$params['evaluador_user_cve']);
+        $this->db->where('evaluado_user_cve',$params['evaluado_user_cve']);
+        $this->db->where('course_cve',$params['course_cve']);
+        $this->db->where('grupos_ids_text',$params['grupos_ids_text']);
+
+
+        $query = $this->db->get('encuestas.sse_designar_autoeveluaciones'); //Obtener conjunto de registros
+        //pr($query);
+        if ($query->num_rows() > 0) {
+            $resultado['result'] = true;
+            $resultado['data'] = $query->result_array()[0];
+        }
+
+        //pr($this->db->last_query());
+        return $resultado;
+    }
+
+    /*public function user_evaluador_autoevaluacion($params = array()) {
+        $resultado = array('result' => false, 'id' => 0);
+
+
+        $this->db->where('reglas_evaluacion_cve',$params['reglas_evaluacion_cve']);
+        //$this->db->where('evaluador_user_cve',$params['evaluador_user_cve']);
+        $this->db->where('evaluado_user_cve',$params['evaluado_user_cve']);
+        $this->db->where('course_cve',$params['cur_id']);
+        $this->db->where('grupos_ids_text',$params['grupos_ids_text']);
+
+
+        $query = $this->db->get('encuestas.sse_designar_autoeveluaciones'); //Obtener conjunto de registros
+        //pr($query);
+        if ($query->num_rows() > 0) {
+            $resultado['result'] = true;
+            $resultado['data'] = $query->result_array()[0];
+        }
+
+        //pr($this->db->last_query());
+        return $resultado;
+    }*/
+    public function get_usuariosasig_aevaluar($params = array()) {
+
+        /*
+        SELECT encuestas.sse_reglas_evaluacion.rol_evaluado_cve as roleevaluado,(select name from public.mdl_role where id=rol_evaluado_cve ) as roleevaluadon, grupos_ids_text,
+public.mdl_role.name as evaluadorn,sse_encuestas.encuesta_cve as regla,sse_designar_autoeveluaciones.course_cve,sse_designar_autoeveluaciones.evaluado_user_cve as user_id_evaluado,
+(select evaluacion_resul_cve from encuestas.sse_result_evaluacion_encuesta_curso where encuesta_cve=sse_encuestas.encuesta_cve and course_cve=sse_designar_autoeveluaciones.course_cve 
+and evaluado_user_cve=public.mdl_user.id and evaluador_user_cve=sse_designar_autoeveluaciones.evaluador_user_cve)  as realizado,
+(select firstname || ' ' || lastname from mdl_user where id=sse_designar_autoeveluaciones.evaluado_user_cve) as nombreevaluado, sse_reglas_evaluacion.rol_evaluador_cve
+FROM "encuestas"."sse_reglas_evaluacion"
+JOIN "encuestas"."sse_encuestas" ON "sse_encuestas"."reglas_evaluacion_cve"="sse_reglas_evaluacion"."reglas_evaluacion_cve"
+JOIN "encuestas"."sse_encuesta_curso" ON "sse_encuesta_curso"."encuesta_cve"="sse_encuestas"."encuesta_cve"
+JOIN "encuestas"."sse_designar_autoeveluaciones" on sse_designar_autoeveluaciones.reglas_evaluacion_cve= sse_encuestas.reglas_evaluacion_cve
+join public.mdl_user on public.mdl_user.id=encuestas.sse_designar_autoeveluaciones.evaluador_user_cve 
+join public.mdl_role on public.mdl_role.id=sse_reglas_evaluacion.rol_evaluador_cve
+WHERE "sse_encuestas"."status" = '1'
+AND "sse_reglas_evaluacion"."tutorizado" = '1'
+AND "sse_encuesta_curso"."course_cve" = '838'
+AND "sse_reglas_evaluacion"."ord_prioridad" IN('1')
+and sse_designar_autoeveluaciones.evaluador_user_cve=22111*/
+        $resultado=array();
+
+        //$regla_id=$this->get_regla(array(''));
+       /* $reglas_validas = $this->enc_mod->get_reglas_validas_cur(array('tutorizado' => $params['tutorizado'], 
+            'cur_id' => $params['cur_id'], 'ord_prioridad' => '1'));*/
+
+
+        $this->db->where('sse_encuestas.status', '1');
+        $this->db->where('sse_reglas_evaluacion.tutorizado', $params['tutorizado']);
+        $this->db->where('sse_encuesta_curso.course_cve', $params['cur_id']);
+
+        $this->db->where('sse_reglas_evaluacion.ord_prioridad', '1');
+        $this->db->where('sse_designar_autoeveluaciones.evaluador_user_cve', $params['user_id']);
+
+
+        
+
+        
+        $consulta = 'encuestas.sse_reglas_evaluacion.rol_evaluado_cve as roleevaluado,
+        (select name from public.mdl_role where id=rol_evaluado_cve ) as roleevaluadon, grupos_ids_text,
+        public.mdl_role.name as evaluadorn,sse_encuestas.encuesta_cve as regla,
+        sse_designar_autoeveluaciones.course_cve,sse_designar_autoeveluaciones.evaluado_user_cve as user_id_evaluado,
+        (select evaluacion_resul_cve from encuestas.sse_result_evaluacion_encuesta_curso where encuesta_cve=sse_encuestas.encuesta_cve and course_cve=sse_designar_autoeveluaciones.course_cve 
+and evaluado_user_cve=public.mdl_user.id and evaluador_user_cve=sse_designar_autoeveluaciones.evaluador_user_cve)  as realizado,
+(select firstname || \' \' || lastname from mdl_user where id=sse_designar_autoeveluaciones.evaluado_user_cve) as nombreevaluado,
+ sse_reglas_evaluacion.rol_evaluador_cve';
+
+
+
+
+       
+        $this->db->select($consulta);
+
+        $this->db->join('encuestas.sse_encuestas','sse_encuestas.reglas_evaluacion_cve=sse_reglas_evaluacion.reglas_evaluacion_cve');
+        $this->db->join('encuestas.sse_encuesta_curso', 'sse_encuesta_curso.encuesta_cve=sse_encuestas.encuesta_cve');
+        $this->db->join('encuestas.sse_designar_autoeveluaciones','sse_designar_autoeveluaciones.reglas_evaluacion_cve= sse_encuestas.reglas_evaluacion_cve');
+        $this->db->join('public.mdl_user','public.mdl_user.id=encuestas.sse_designar_autoeveluaciones.evaluador_user_cve');
+        $this->db->join('public.mdl_role','public.mdl_role.id=sse_reglas_evaluacion.rol_evaluador_cve');
+
+        $query = $this->db->get('encuestas.sse_reglas_evaluacion');
+
+      
+        $resultado = $query->result_array();
+        
+       
+        //pr($this->db->last_query());
+        return $resultado;
+
     }
 }
