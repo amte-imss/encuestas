@@ -228,7 +228,7 @@ class Curso extends CI_Controller {
     }
 
     public function info_curso($curso = null) {
-        if ($this->session->has_userdata('id')) {
+         if ($this->session->has_userdata('id')) {
             $data['curso'] = $this->cur_mod->listado_cursos(array('cur_id' => $curso));
             $data['roles'] = $this->cur_mod->listar_roles_curso(array('cur_id' => $curso));
 //        $data['grupos'] = $this->cur_mod->listar_grupos_curso(array('cur_id' => $curso));
