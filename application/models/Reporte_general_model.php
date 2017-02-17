@@ -94,8 +94,8 @@ class Reporte_general_model extends CI_Model {
     {
         $resultado = array();
         $this->db->select(array("eeec.course_cve", "reg.tutorizado", "enc.is_bono", "reg.rol_evaluado_cve", "reg.rol_evaluador_cve", 
-            "case sum(base) when 0 then 0 else round(sum(total_puntua_si)::numeric * 100/sum(base)::numeric,3) end as promedio",
-            "case sum(base_napb) when 0 then 0 else round(sum(total_puntua_si_napb)::numeric * 100/sum(base_napb)::numeric,3) end as promedio_napb"));
+            //"case sum(base) when 0 then 0 else round(sum(total_puntua_si)::numeric * 100/sum(base)::numeric,3) end as promedio",
+            "case sum(base_napb) when 0 then 0 else round(sum(total_puntua_si_napb)::numeric * 100/sum(base_napb)::numeric,3) end as promedio"));
         
         if (isset($params['anio']) && !empty($params['anio'])) { //Año
             $this->db->where("vdc.anio='".$params['anio']."'");
