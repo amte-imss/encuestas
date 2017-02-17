@@ -1,5 +1,7 @@
 <div class="panel panel-default">
     <?php
+    //echo "fdfasd";
+    //pr($this->session->userdata('id'));
     $this->config->load('general');
     $tipo_msg = $this->config->item('alert_msg');
     /*
@@ -138,6 +140,11 @@
                             <tr>                
                                 <td>
                                     <a href="<?php echo site_url('cursoencuesta/curso_encuesta/' . $info_curso['cur_id']) ?>" class="btn btn-info btn-block">Asignar encuestas</a>
+                                </td>
+                            </tr>
+                             <tr>                
+                                <td>
+                                    <a href="<?php echo site_url('curso/lista_encuesta_usuario_autoevaluados/' . $info_curso['cur_id'] . '/'. $this->session->userdata('id')) ?>" class="btn btn-info btn-block">Asignar evaluador: Caso autoevaluado</a>
                                 </td>
                             </tr>
                             <?php

@@ -233,6 +233,7 @@ class Curso extends CI_Controller {
             $data['roles'] = $this->cur_mod->listar_roles_curso(array('cur_id' => $curso));
 //        $data['grupos'] = $this->cur_mod->listar_grupos_curso(array('cur_id' => $curso));
             $data += $this->cur_mod->getGruposBloques(array('vdc.idc' => $curso));
+           
 //        pr($data); exit();
 
             $main_contet = $this->load->view('curso/info_curso', $data, true);
@@ -261,8 +262,8 @@ class Curso extends CI_Controller {
 
 //Listado de usuarios autoevaluados
     public function lista_encuesta_usuario_autoevaluados($idcurso=null,$idusuario=null) {
-            //$sesion_valida = valida_sesion_activa($idusuario);
-            $sesion_valida = 1;
+            $sesion_valida = valida_sesion_activa($idusuario);
+            //$sesion_valida = 1;
             if ($sesion_valida) {
                 $this->session->unset_userdata('datos_encuesta_usuario'); //Eliminar la variable ya que puedequedara cargada con datos de otro curso
 
