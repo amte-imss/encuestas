@@ -2924,7 +2924,14 @@ class Encuestas_model extends CI_Model {
             'depto_tut_evaluador.name_region "region_evaluador2"',
             'depto_tut_evaluador.nom_delegacion "delegacion_evaluador2"',
             'depto_tut_evaluador.des_unidad_atencion "unidad_evaluador2"',
-            'cat_tut_evaluador.nom_nombre "categoria_evaluador2"');
+            'cat_tut_evaluador.nom_nombre "categoria_evaluador2"',
+            ////////////// Se agregan para autoevaluaciones
+            "autoevaluacion.evaluador_user_cve as autoeva_user_cve", "usuario_autoevaluacion.username as autoeva_username", "usuario_autoevaluacion.firstname as autoeva_nombre", "usuario_autoevaluacion.lastname as autoeva_apellido", 
+            "autoevaluacion.evaluador_rol_id as autoeva_rol_id", "rol_autoevaluacion.name as autoeva_rol_nombre", "tutor_autoevaluacion.cve_departamento as autoeva_cve_departamento",
+            "depto_tut_autoevaluacion.nom_depto_adscripcion as autoeva_nom_depto", "depto_tut_autoevaluacion.cve_regiones as autoeva_cve_regiones", 
+            "depto_tut_autoevaluacion.name_region as autoeva_name_region", "depto_tut_autoevaluacion.cve_delegacion as autoeva_cve_delegacion", 
+            "depto_tut_autoevaluacion.nom_delegacion as autoeva_nom_delegacion", "(select * from departments.get_unidad(tutor_autoevaluacion.cve_departamento, 7)) as rama_tut_autoevaluacion",
+            "tutor_autoevaluacion.cve_categoria as autoeva_cve_categoria", "cat_tut_autoevaluacion.nom_nombre as autoeva_cat_nombre");
 
         $this->db->flush_cache();
 
@@ -2978,41 +2985,61 @@ class Encuestas_model extends CI_Model {
         $this->db->join('"departments"."ssv_departamentos" depto_pre_evaluador', '"depto_pre_evaluador"."cve_depto_adscripcion"="prereg_evaluador"."cve_departamental"', "left");
         $this->db->join('"departments"."ssv_departamentos" depto_tut_evaluador', '"depto_tut_evaluador"."cve_depto_adscripcion"="tut_evaluador"."cve_departamento"  ', "left");
         $this->db->join('"encuestas.sse_curso_bloque_grupo" "BLOQUE"', '(BLOQUE.course_cve = "AA"."course_cve" and "AA"."group_id" = "BLOQUE".mdl_groups_cve) OR (BLOQUE.course_cve = "AA"."course_cve" AND BLOQUE.mdl_groups_cve = ANY (string_to_array("AA".grupos_ids_text, \', \')::int[]))', 'inner');
+        ////////////// Se agregan para autoevaluaciones
+        $this->db->join('encuestas.sse_designar_autoeveluaciones autoevaluacion', 'autoevaluacion.des_autoevaluacion_cve=AA.des_autoevaluacion_cve', 'left');
+        $this->db->join('public.mdl_user usuario_autoevaluacion', 'usuario_autoevaluacion.id=autoevaluacion.evaluador_user_cve', 'left');
+        $this->db->join('public.mdl_role rol_autoevaluacion', 'rol_autoevaluacion.id=autoevaluacion.evaluador_rol_id', 'left');
+        $this->db->join('tutorias.mdl_usertutor tutor_autoevaluacion', 'tutor_autoevaluacion.nom_usuario=usuario_autoevaluacion.username
+                    and tutor_autoevaluacion.id_curso=autoevaluacion.course_cve and autoevaluacion.evaluador_rol_id <> 5', 'left');
+        $this->db->join('nomina.ssn_categoria cat_tut_autoevaluacion', 'cat_tut_autoevaluacion.cve_categoria = tutor_autoevaluacion.cve_categoria', 'left');
+        $this->db->join('departments.ssv_departamentos depto_tut_autoevaluacion', 'depto_tut_autoevaluacion.cve_depto_adscripcion=tutor_autoevaluacion.cve_departamento', 'left');
 
         //espacio para filtros
         if (isset($params['grupo']) && !empty($params['grupo']))
         {
-            $this->db->like('"GRUPO".name', $params['grupo']);
+            $this->db->where('UPPER("GRUPO".name) like UPPER(\'%'.$params['grupo'].'%\')');
         }
 
         if (isset($params['tipo_buscar_docente_evaluado']) && $params['tipo_buscar_docente_evaluado'] == 'matriculado' && isset($params['text_buscar_docente_evaluado']) && !empty($params['text_buscar_docente_evaluado']))
         {
-            $this->db->where('"U1".username', $params['text_buscar_docente_evaluado']);
+            $this->db->where('("U1".username=\''.$params['text_buscar_docente_evaluado'].'\' OR usuario_autoevaluacion.username=\''.$params['text_buscar_docente_evaluado'].'\')');
+        } elseif (isset($params['tipo_buscar_docente_evaluado']) && $params['tipo_buscar_docente_evaluado'] == 'namedocentedo' && isset($params['text_buscar_docente_evaluado']) && !empty($params['text_buscar_docente_evaluado'])){
+            $this->db->where('(UPPER("U1".firstname) like UPPER(\'%'.$params['text_buscar_docente_evaluado'].'%\') OR UPPER("U1".lastname) like UPPER(\'%'.$params['text_buscar_docente_evaluado'].'%\') OR '
+                    . 'UPPER(usuario_autoevaluacion.firstname) like UPPER(\'%'.$params['text_buscar_docente_evaluado'].'%\') OR UPPER(usuario_autoevaluacion.lastname) like UPPER(\'%'.$params['text_buscar_docente_evaluado'].'%\'))');
         }
 
         if (isset($params['tipo_buscar_adscripcion']) && $params['tipo_buscar_adscripcion'] == 'claveadscripcion' && isset($params['text_buscar_adscripcion']) && !empty($params['text_buscar_adscripcion']))
         {
-            $this->db->where('"depto_pre_evaluador".cve_departamento = \'' . $params['text_buscar_adscripcion'] . '\' OR depto_tut_evaluador".cve_departamento = \'' . $params['text_buscar_adscripcion'] . '\'');
+            $this->db->where('("depto_pre_evaluador".cve_departamento = \'' . $params['text_buscar_adscripcion'] . '\' OR "depto_tut_evaluador".cve_departamento = \'' . $params['text_buscar_adscripcion'] . '\')');
         }
 
         if (isset($params['tipo_buscar_categoria']) && $params['tipo_buscar_categoria'] == 'categoria' && isset($params['text_buscar_categoria']) && !empty($params['text_buscar_categoria']))
         {
-            $this->db->where('"cat_pre_evaluador".cve_categoria = ' . $params['text_buscar_categoria'] . ' OR cat_tut_evaluador".cve_categoria = ' . $params['text_buscar_adscripcion']);
+            /*$this->db->where('("cat_pre_evaluador".cve_categoria like \'%' . $params['text_buscar_categoria'] . '%\' OR "cat_tut_evaluador".cve_categoria like \'%' . $params['text_buscar_categoria'].'%\' OR '
+                    . '"cat_pre_evaluador".nom_nombre like \'%' . $params['text_buscar_categoria'] . '%\' OR "cat_tut_evaluador".nom_nombre like \'%' . $params['text_buscar_categoria'].'%\' OR '
+                    . '"tutor_autoevaluacion".cve_categoria like \'%'.$params['text_buscar_categoria'].'%\' OR "cat_tut_autoevaluacion".nom_nombre like \'%' . $params['text_buscar_categoria'] . '%\')');*/
+            $this->db->where('(UPPER("cat_pre_evaluador".nom_nombre) like UPPER(\'%' . $params['text_buscar_categoria'] . '%\') OR UPPER("cat_tut_evaluador".nom_nombre) like UPPER(\'%' . $params['text_buscar_categoria'].'%\') OR '
+                    . 'UPPER("cat_tut_autoevaluacion".nom_nombre) like UPPER(\'%' . $params['text_buscar_categoria'] . '%\'))');
         }
 
         if (isset($params['delg_umae']) && !empty($params['delg_umae']))
         {
-            $this->db->where('depto_pre_evaluador.cve_delegacion  = \'' . $params['delg_umae'] . '\' OR depto_tut_evaluador.cve_delegacion  = \'' . $params['delg_umae'] . '\'');
+            $this->db->where('(depto_pre_evaluador.cve_delegacion  = \'' . $params['delg_umae'] . '\' OR depto_tut_evaluador.cve_delegacion  = \'' . $params['delg_umae'] . '\')');
+        }
+        
+        if (isset($params['umae']) && !empty($params['umae'])) { //UMAE, listado de adscripción
+            $this->db->where('("depto_pre_evaluador".cve_departamento = \'' . $params['umae'] . '\' OR "depto_tut_evaluador".cve_departamento = \'' . $params['umae'] . '\')');
+            //$this->db->where("tut_evaluado.cve_departamento='".$params['umae']."'");
         }
 
         if (isset($params['bloque']) && !empty($params['bloque']))
         {
-            $this->db->where('BLOQUE.bloque', $params['bloque']);
+            $this->db->where('cast("BLOQUE".bloque as text)=\''.$params['bloque'].'\'');
         }
 
         if (isset($params['curso']) && !empty($params['curso']))
         {
-            $this->db->where('AA.course_cve', $params['curso']);
+            $this->db->where('("CURSO".clave ilike \'%'.$params['curso'].'%\' OR "CURSO".namec ilike \'%'.$params['curso'].'%\')');
         }
         
         if (isset($params['tutorizado']) && $params['tutorizado'] != '')
@@ -3040,7 +3067,12 @@ class Encuestas_model extends CI_Model {
             'depto_pre_evaluador.name_region', 'depto_pre_evaluador.nom_delegacion',
             'depto_pre_evaluador.des_unidad_atencion', 'cat_pre_evaluador.nom_nombre',
             'depto_tut_evaluador.name_region', 'depto_tut_evaluador.nom_delegacion',
-            'depto_tut_evaluador.des_unidad_atencion', 'cat_tut_evaluador.nom_nombre');
+            'depto_tut_evaluador.des_unidad_atencion', 'cat_tut_evaluador.nom_nombre',
+            ///Se agrega autoevaluacion
+            'autoevaluacion.evaluador_user_cve', 'usuario_autoevaluacion.username', 'usuario_autoevaluacion.firstname', 'usuario_autoevaluacion.lastname', 
+            'autoevaluacion.evaluador_rol_id', 'rol_autoevaluacion.name', 'tutor_autoevaluacion.cve_departamento', 'depto_tut_autoevaluacion.nom_depto_adscripcion',
+            'depto_tut_autoevaluacion.cve_regiones', 'depto_tut_autoevaluacion.name_region', 'depto_tut_autoevaluacion.cve_delegacion', 
+            'depto_tut_autoevaluacion.nom_delegacion', 'tutor_autoevaluacion.cve_categoria', 'cat_tut_autoevaluacion.nom_nombre');
         $this->db->group_by($group_by);
 
 

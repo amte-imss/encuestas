@@ -3,6 +3,7 @@ if (isset($registros) && !empty($registros))
 {
 //echo form_open('cursoencuesta/guardar_asociacion', array('id'=>'form_asignar', 'class'=>'form-horizontal'));
     ?>
+    <div class="col-sm-12 col-md-12 col-lg-12 text-danger text-left">Las celdas marcadas con * indican que esos datos derivan de una autoevaluación.</div>
     <div style="width: 100%; overflow: auto;">
         <div class="table-responsive" style="width: 100%; max-width: 900px;">
             <table class="table table-striped table-hover table-bordered">
@@ -41,6 +42,14 @@ if (isset($registros) && !empty($registros))
                     <?php
                     foreach ($registros as $registro)
                     {
+                        if(isset($registro['autoeva_user_cve']) && !empty($registro['autoeva_user_cve'])){
+                            $registro['UN1'] = '<span class="text-danger">*</span> '.$registro['autoeva_nombre'].' '.$registro['autoeva_apellido'].' ('.$registro['autoeva_username'].')';
+                            $registro['URN1'] = '<span class="text-danger">*</span> '.$registro['autoeva_rol_nombre'];
+                            $registro['region_evaluador2'] = '<span class="text-danger">*</span> '.$registro['autoeva_name_region'];
+                            $registro['delegacion_evaluador2'] = '<span class="text-danger">*</span> '.$registro['autoeva_nom_delegacion'];
+                            $registro['unidad_evaluador2'] = '<span class="text-danger">*</span> '.$registro['rama_tut_autoevaluacion'];
+                            $registro['categoria_evaluador2'] = '<span class="text-danger">*</span> '.$registro['autoeva_cat_nombre'];
+                        }   
                         ?>
                         <tr>
                             <td><?php echo $registro['BLN']; ?></td>
@@ -99,7 +108,7 @@ if (isset($registros) && !empty($registros))
         <div class="jumbotron"><div class="container"> <p class="text_center">No se encontraron datos registrados con esta busqueda</p> </div></div>
     </div>
 <?php } ?>
-
+<div class="col-sm-12 col-md-12 col-lg-12 text-danger text-left">Las celdas marcadas con * indican que esos datos derivan de una autoevaluación.</div>
 <script type="text/javascript">
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();

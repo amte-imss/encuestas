@@ -92,13 +92,13 @@
         <div class="col-lg-6 col-sm-6">
             <div class="panel-body  input-group input-group-sm">
                 <!--<span class="input-group-addon">Sesiones:</span>-->
-                <label for="evaluado">Delegación - UMAE</label>
-                <?php echo $this->form_complete->create_element(array('id' => 'delg_umae', 'type' => 'dropdown', 'options' => $delg_umae, 'first' => array('' => 'Seleccione delegación o UMAE'), 'attributes' => array('class' => 'form-control', 'placeholder' => 'Delegación o UMAE', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Delegación o UMAE'))); //, 'onchange' => "data_ajax($url_control)" ?>
+                <label for="evaluado">Delegación</label>
+                <?php echo $this->form_complete->create_element(array('id' => 'delg_umae', 'type' => 'dropdown', 'options' => $delg_umae, 'first' => array('' => 'Seleccione delegación'), 'attributes' => array('class' => 'form-control', 'placeholder' => 'Delegación', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Delegación'))); //, 'onchange' => "data_ajax($url_control)" ?>
             </div>
         </div>
     <?php } ?>
     <?php if (isset($umae)) { ?>
-        <div id="div_umae" class="col-lg-6 col-sm-6" style="display:none;">
+        <div id="div_umae" class="col-lg-6 col-sm-6">
             <div class="panel-body  input-group input-group-sm">
                 <!--<span class="input-group-addon">Sesiones:</span>-->
                 <label for="evaluado">UMAE</label>
@@ -154,13 +154,13 @@
 </fieldset>
 <script type="text/javascript">
 $(document).ready(function () {
-    $('#delg_umae').change(function(){
+    /*$('#delg_umae').change(function(){
         if($(this).val()=="-1"){
             $("#div_umae").show();
         } else {
             $("#div_umae").hide();
         }
         $('#umae').val('');
-    });
+    });*/
 });
 </script>

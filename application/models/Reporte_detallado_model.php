@@ -119,35 +119,40 @@ class Reporte_detallado_model extends CI_Model {
 
         if (isset($params['text_buscar_docente_evaluador']) && !empty($params['text_buscar_docente_evaluador'])) { //Clave o nombre de instrumento
             if($params['tipo_buscar_docente_evaluador']==="matriculado"){
-                $this->db->where("evaluador.username='".$params['text_buscar_docente_evaluador']."'");
+                $this->db->where("(evaluador.username='".$params['text_buscar_docente_evaluador']."' OR usuario_autoevaluacion.username='".$params['text_buscar_docente_evaluador']."' )");
             } else {
-                $this->db->where("(lower(evaluador.firstname) like lower('%".$params['text_buscar_docente_evaluador']."%') OR lower(evaluador.lastname) like lower('%".$params['text_buscar_docente_evaluador']."%'))");
+                $this->db->where("((lower(evaluador.firstname) like lower('%".$params['text_buscar_docente_evaluador']."%') OR lower(evaluador.lastname) like lower('%".$params['text_buscar_docente_evaluador']."%')) OR"
+                        . "(lower(usuario_autoevaluacion.firstname) like lower('%".$params['text_buscar_docente_evaluador']."%') OR lower(usuario_autoevaluacion.lastname) like lower('%".$params['text_buscar_docente_evaluador']."%')))");
             }
         }
         if (isset($params['text_buscar_categoriar']) && !empty($params['text_buscar_categoriar'])) { //Categoría
             if($params['tipo_buscar_categoriar']==="categoria"){
-                $this->db->where("(lower(cat_tut_evaluador.des_clave) like lower('%".$params['text_buscar_categoriar']."%') OR lower(cat_tut_evaluador.nom_nombre) like lower('%".$params['text_buscar_categoriar']."%')
-                        OR lower(cat_pre_evaluador.des_clave) like lower('%".$params['text_buscar_categoriar']."%') OR lower(cat_pre_evaluador.nom_nombre) like lower('%".$params['text_buscar_categoriar']."%'))");
+                $this->db->where("((lower(cat_tut_evaluador.des_clave) like lower('%".$params['text_buscar_categoriar']."%') OR lower(cat_tut_evaluador.nom_nombre) like lower('%".$params['text_buscar_categoriar']."%')
+                        OR lower(cat_pre_evaluador.des_clave) like lower('%".$params['text_buscar_categoriar']."%') OR lower(cat_pre_evaluador.nom_nombre) like lower('%".$params['text_buscar_categoriar']."%')) OR"
+                        . "(lower(cat_tut_autoevaluacion.des_clave) like lower('%".$params['text_buscar_categoriar']."%') OR lower(cat_tut_autoevaluacion.nom_nombre) like lower('%".$params['text_buscar_categoriar']."%')))");
             }
         }
         if (isset($params['rol_evaluador']) && !empty($params['rol_evaluador'])) { //Rol del evaluado
-            $this->db->where("eva.evaluador_rol_id=".$params['rol_evaluador']);
+            $this->db->where("(eva.evaluador_rol_id=".$params['rol_evaluador']." OR autoevaluacion.evaluador_rol_id=".$params['rol_evaluador'].")");
         }
         if (isset($params['regionr']) && !empty($params['regionr'])) { //Región
-            $this->db->where("(depto_tut_evaluador.cve_regiones=".$params['regionr']." OR depto_pre_evaluador.cve_regiones=".$params['regionr'].")");
+            $this->db->where("(depto_tut_evaluador.cve_regiones=".$params['regionr']." OR depto_pre_evaluador.cve_regiones=".$params['regionr']
+                    . " OR depto_tut_autoevaluacion.cve_regiones=".$params['regionr'].")");
         }
         if (isset($params['delg_umaer']) && !empty($params['delg_umaer']) && $params['delg_umaer']!="-1") { //Delegación / UMAE (-1)
-            $this->db->where("(depto_tut_evaluador.cve_delegacion='".$params['delg_umaer']."' OR depto_pre_evaluador.cve_delegacion='".$params['delg_umaer']."')");
+            $this->db->where("(depto_tut_evaluador.cve_delegacion='".$params['delg_umaer']."' OR depto_pre_evaluador.cve_delegacion='".$params['delg_umaer']."'"
+                    . " OR depto_tut_autoevaluacion.cve_delegacion='".$params['delg_umaer']."')");
         }
         if (isset($params['umaer']) && !empty($params['umaer'])) { //UMAE, listado de adscripción
-            $this->db->where("(tut_evaluador.cve_departamento='".$params['umaer']."' OR prereg_evaluador.cve_departamental='".$params['umaer']."')");
+            $this->db->where("(tut_evaluador.cve_departamento='".$params['umaer']."' OR prereg_evaluador.cve_departamental='".$params['umaer']."'"
+                    . " OR tutor_autoevaluacion.cve_departamento='".$params['umaer']."')");
         }
 
         //pr($params);
         $this->db->join('encuestas.sse_evaluacion eva', 'eva.encuesta_cve=enc.encuesta_cve');
         $this->db->join('encuestas.view_datos_curso curso', 'curso.idc=eva.course_cve');
         $this->db->join('encuestas.sse_result_evaluacion_encuesta_curso res_eva_enc', 'res_eva_enc.encuesta_cve = eva.encuesta_cve and res_eva_enc.course_cve = eva.course_cve and res_eva_enc.evaluado_user_cve = eva.evaluado_user_cve and res_eva_enc.evaluador_user_cve = eva.evaluador_user_cve', 'left');
-        $this->db->join('encuestas.sse_curso_bloque_grupo curso_bloque_grupo', 'curso_bloque_grupo.course_cve=res_eva_enc.course_cve and curso_bloque_grupo.mdl_groups_cve=res_eva_enc.group_id', 'left');
+        $this->db->join('encuestas.sse_curso_bloque_grupo curso_bloque_grupo', 'curso_bloque_grupo.course_cve=res_eva_enc.course_cve and (curso_bloque_grupo.mdl_groups_cve=res_eva_enc.group_id  or curso_bloque_grupo.mdl_groups_cve= ANY (string_to_array(res_eva_enc.grupos_ids_text, \',\')::int[]))', 'left');
         $this->db->join('encuestas.sse_reglas_evaluacion eva_reg', 'eva_reg.reglas_evaluacion_cve=enc.reglas_evaluacion_cve', 'left');
         $this->db->join('public.mdl_groups grupo', 'grupo.id=eva.group_id', 'left');
         $this->db->join('public.mdl_user evaluado', 'evaluado.id=eva.evaluado_user_cve', 'left');
@@ -163,6 +168,14 @@ class Reporte_detallado_model extends CI_Model {
         $this->db->join('nomina.ssn_categoria cat_tut_evaluador', 'cat_tut_evaluador.cve_categoria = tut_evaluador.cve_categoria', 'left');
         $this->db->join('departments.ssv_departamentos depto_pre_evaluador', 'depto_pre_evaluador.cve_depto_adscripcion=prereg_evaluador.cve_departamental', 'left');
         $this->db->join('departments.ssv_departamentos depto_tut_evaluador', 'depto_tut_evaluador.cve_depto_adscripcion=tut_evaluador.cve_departamento', 'left');
+        ////////////// Se agregan para autoevaluaciones
+        $this->db->join('encuestas.sse_designar_autoeveluaciones autoevaluacion', 'autoevaluacion.des_autoevaluacion_cve=eva.des_autoevaluacion_cve', 'left');
+        $this->db->join('public.mdl_user usuario_autoevaluacion', 'usuario_autoevaluacion.id=autoevaluacion.evaluador_user_cve', 'left');
+        $this->db->join('public.mdl_role rol_autoevaluacion', 'rol_autoevaluacion.id=autoevaluacion.evaluador_rol_id', 'left');
+        $this->db->join('tutorias.mdl_usertutor tutor_autoevaluacion', 'tutor_autoevaluacion.nom_usuario=usuario_autoevaluacion.username
+                    and tutor_autoevaluacion.id_curso=autoevaluacion.course_cve and autoevaluacion.evaluador_rol_id <> 5', 'left');
+        $this->db->join('nomina.ssn_categoria cat_tut_autoevaluacion', 'cat_tut_autoevaluacion.cve_categoria = tutor_autoevaluacion.cve_categoria', 'left');
+        $this->db->join('departments.ssv_departamentos depto_tut_autoevaluacion', 'depto_tut_autoevaluacion.cve_depto_adscripcion=tutor_autoevaluacion.cve_departamento', 'left');
         
         $this->db->group_by("enc.encuesta_cve, enc.descripcion_encuestas, enc.is_bono, enc.reglas_evaluacion_cve, curso_bloque_grupo.bloque, enc.tipo_encuesta, enc.eva_tipo, tex_tutorizado,
             eva.course_cve, curso.namec, curso.clave, curso.tipo_curso, curso.tipo_curso_id, curso.horascur, curso.anio, curso.fecha_inicio, curso.fecha_fin, eva.group_id, eva.grupos_ids_text, grupo.name, 
@@ -172,7 +185,11 @@ class Reporte_detallado_model extends CI_Model {
             tut_evaluador.cve_categoria, cat_tut_evaluador.nom_nombre, prereg_evaluador.cve_cat, cat_pre_evaluador.nom_nombre,
             evaluado.username, evaluado.firstname, evaluado.lastname, evaluador.username, evaluador.firstname, evaluador.lastname, enc.reglas_evaluacion_cve,
             prereg_evaluador.cve_departamental, tut_evaluador.cve_departamento, depto_tut_evaluador.nom_depto_adscripcion, depto_tut_evaluador.cve_regiones, depto_tut_evaluador.name_region, depto_tut_evaluador.cve_delegacion, depto_tut_evaluador.nom_delegacion,
-            depto_pre_evaluador.nom_depto_adscripcion, depto_pre_evaluador.cve_regiones, depto_pre_evaluador.name_region, depto_pre_evaluador.cve_delegacion, depto_pre_evaluador.nom_delegacion, res_eva_enc.calif_emitida");
+            depto_pre_evaluador.nom_depto_adscripcion, depto_pre_evaluador.cve_regiones, depto_pre_evaluador.name_region, depto_pre_evaluador.cve_delegacion, depto_pre_evaluador.nom_delegacion, 
+            autoevaluacion.evaluador_user_cve, usuario_autoevaluacion.username, usuario_autoevaluacion.firstname, usuario_autoevaluacion.lastname, autoevaluacion.evaluador_rol_id, rol_autoevaluacion.name, tutor_autoevaluacion.cve_departamento,
+            depto_tut_autoevaluacion.nom_depto_adscripcion, depto_tut_autoevaluacion.cve_regiones, depto_tut_autoevaluacion.name_region, depto_tut_autoevaluacion.cve_delegacion, 
+            depto_tut_autoevaluacion.nom_delegacion, tutor_autoevaluacion.cve_categoria, cat_tut_autoevaluacion.nom_nombre,
+            res_eva_enc.calif_emitida");
         //eva.group_id, grupo.name
         $this->db->stop_cache();
         /////////////////////// Fin almacenado de parámetros en cache ///////////////////////////
@@ -203,7 +220,7 @@ class Reporte_detallado_model extends CI_Model {
                 JOIN public.mdl_course c ON c.id=ue.cursoid
                 JOIN encuestas.sse_curso_bloque_grupo cbg ON cbg.mdl_groups_cve=g.id
                 WHERE ue.role=18 
-                AND ue.grupoid=eva.group_id
+                AND (ue.grupoid=eva.group_id or ue.grupoid=ANY (string_to_array(eva.grupos_ids_text, ',')::int[]))
                 AND ue.cursoid = eva.course_cve
                 ) AS ct_bloque", //GROUP BY u.firstname, u.lastname, u.username
             //"(SELECT array_agg(g.name)::varchar FROM public.mdl_groups g WHERE g.id =ANY(regexp_split_to_array(eva.grupos_ids_text, ',')::bigint[])) AS grupo_nombre",
@@ -216,7 +233,14 @@ class Reporte_detallado_model extends CI_Model {
                 JOIN public.mdl_course c ON c.id=ue.cursoid
                 JOIN encuestas.sse_curso_bloque_grupo cbg ON cbg.mdl_groups_cve=g.id
                 WHERE ue.cursoid = eva.course_cve AND eva.evaluado_user_cve=ue.userid AND eva.evaluado_rol_id=ue.role
-                GROUP BY eva.evaluado_user_cve=ue.userid) as grupo_evaluado" //
+                GROUP BY eva.evaluado_user_cve=ue.userid) as grupo_evaluado",
+            ////////////// Se agregan para autoevaluaciones
+            "autoevaluacion.evaluador_user_cve as autoeva_user_cve", "usuario_autoevaluacion.username as autoeva_username", "usuario_autoevaluacion.firstname as autoeva_nombre", "usuario_autoevaluacion.lastname as autoeva_apellido", 
+            "autoevaluacion.evaluador_rol_id as autoeva_rol_id", "rol_autoevaluacion.name as autoeva_rol_nombre", "tutor_autoevaluacion.cve_departamento as autoeva_cve_departamento",
+            "depto_tut_autoevaluacion.nom_depto_adscripcion as autoeva_nom_depto", "depto_tut_autoevaluacion.cve_regiones as autoeva_cve_regiones", 
+            "depto_tut_autoevaluacion.name_region as autoeva_name_region", "depto_tut_autoevaluacion.cve_delegacion as autoeva_cve_delegacion", 
+            "depto_tut_autoevaluacion.nom_delegacion as autoeva_nom_delegacion", "(select * from departments.get_unidad(tutor_autoevaluacion.cve_departamento, 7)) as rama_tut_autoevaluacion",
+            "tutor_autoevaluacion.cve_categoria as autoeva_cve_categoria", "cat_tut_autoevaluacion.nom_nombre as autoeva_cat_nombre"
         ); //"grupo.name as grupo_nombre"
         /* FROM public.mdl_user u
                 JOIN public.mdl_role_assignments ra ON ra.userid = u.id
@@ -260,7 +284,7 @@ class Reporte_detallado_model extends CI_Model {
         $resultado['preguntas'] = $this->reporte_preguntas(array('conditions'=>"encuesta_cve in (".$encuestas.")", 'order'=>'encuesta_cve, seccion_cve, orden'));
         $resultado['respuestas'] = $this->reporte_detalle_resultados($enc_cur_eva_evar);
         //pr($resultado['data']);
-        
+        //pr($resultado);
         $query->free_result(); //Libera la memoria
 
         return $resultado;

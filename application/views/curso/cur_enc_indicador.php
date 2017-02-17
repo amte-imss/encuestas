@@ -15,7 +15,7 @@ echo form_open('resultadocursoindicador/get_data_ajax/'.$curso, array('id' => 'f
                                 <div class="col-lg-4 col-sm-4">
                                     <div class="panel-body input-group input-group-sm">
                                         <!--<span class="input-group-addon">Delegación:</span>-->
-                                        <label for="bloque"><span style="color:red;">*</span> Bloques</label>
+                                        <label for="bloque">Bloques</label>
                                         <?php echo $this->form_complete->create_element(array('id' => 'bloque', 'type' => 'text',  'attributes' => array('name' => 'bloque', 'class' => 'form-control', 'placeholder' => 'Bloque', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Bloques', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
                                     </div>
                                 </div>
@@ -111,16 +111,25 @@ echo form_open('resultadocursoindicador/get_data_ajax/'.$curso, array('id' => 'f
                                 <div class="col-lg-6 col-sm-6">
                                     <div class="panel-body  input-group input-group-sm">
                                         <!--<span class="input-group-addon">Sesiones:</span>-->
-                                        <label for="evaluado">Delegación - UMAE</label>
-                                        <?php echo $this->form_complete->create_element(array('id' => 'delg_umae', 'type' => 'dropdown', 'options' => $delg_umae, 'first' => array('' => 'Seleccione delegación o UMAE'), 'attributes' => array('name' => 'categoria', 'class' => 'form-control', 'placeholder' => 'Delegación o UMAE', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Delegación o UMAE', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
+                                        <label for="evaluado">Delegación</label>
+                                        <?php echo $this->form_complete->create_element(array('id' => 'delg_umae', 'type' => 'dropdown', 'options' => $delg_umae, 'first' => array('' => 'Seleccione delegación'), 'attributes' => array('name' => 'categoria', 'class' => 'form-control', 'placeholder' => 'Delegación', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'Delegación', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); ?>
+                                    </div>
+                                </div>
+                            <?php } ?>
+                            <?php if (isset($umae)) { ?>
+                                <div id="div_umae" class="col-lg-6 col-sm-6">
+                                    <div class="panel-body  input-group input-group-sm">
+                                        <!--<span class="input-group-addon">Sesiones:</span>-->
+                                        <label for="evaluado">UMAE</label>
+                                        <?php echo $this->form_complete->create_element(array('id' => 'umae', 'type' => 'dropdown', 'options' => $umae, 'first' => array('' => 'Seleccione la UMAE'), 'attributes' => array('class' => 'form-control', 'placeholder' => 'UMAE', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => 'UMAE', 'onchange' => "data_ajax(site_url+'/resultadocursoindicador/get_data_ajax', '#form_curso', '#listado_resultado')"))); //, 'onchange' => "data_ajax($url_control)" ?>
                                     </div>
                                 </div>
                             <?php } ?>
                             <?php
-                            if (isset($buscar_adscripcion)) {//Buscar por instrumento    
+                            /*if (isset($buscar_adscripcion)) {//Buscar por instrumento    
                                 $boton_buscar = 1;
                                 ?>
-                                <div class="col-lg-6 col-sm-6">
+                                <!-- <div class="col-lg-6 col-sm-6">
                                     <div class="panel-body input-group">
                                         <input type="hidden" id="menu_adscripcion" name="tipo_buscar_adscripcion" value="claveadscripcion">
                                         <div class="input-group-btn">
@@ -150,9 +159,9 @@ echo form_open('resultadocursoindicador/get_data_ajax/'.$curso, array('id' => 'f
                                         );
                                         ?>
                                     </div>
-                                </div>
-                            <?php } ?>
-                            <?php
+                                </div> -->
+                            <?php }*/ ?>
+                            <?php 
                             if (isset($buscar_categoria)) {//Buscar por instrumento   
                                 $boton_buscar = 1;
                                 ?>

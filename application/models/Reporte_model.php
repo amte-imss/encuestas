@@ -488,6 +488,7 @@ class Reporte_model extends CI_Model {
             'order_by' => array('ASC' => 'Ascendente', 'DESC' => 'Descendente'),
             'order_columns' => array('emp_matricula' => 'Matrícula', 'cve_depto_adscripcion' => 'Adscripción', 'cat_nombre' => 'Categoría', 'grup_nom' => 'BD'),
             'delg_umae' => dropdown_options($del_umae, 'cve_delegacion', 'nom_delegacion'),
+            'umae' => dropdown_options($this->get_lista_umae(), 'cve_depto_adscripcion', 'nom_dependencia'),
             'instrumento' => $this->get_lista_roles_regla_evaluacion(),
             'buscar_por' => array('clavecurso' => 'Clave instrumento', 'nombrecurso' => 'Nombre instrumento'),
             'buscar_categoria' => array('categoria' => 'Categoría'),
