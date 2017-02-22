@@ -241,6 +241,7 @@ class Encuestausuario extends CI_Controller {
             $datos['evaluado_user_cve'] = $this->input->post('iduevaluado', true);
             $datos['evaluador_user_cve'] = $this->input->post('iduevaluador', true);
             $datos['curso_cve'] = $this->input->post('idcurso', true);
+            $datos['des_autoevaluacion_cve'] = $this->input->post('des_autoevaluacion_cve', true);
             $datos['grupo_cve'] = $this->input->post('idgrupo', true);
             if (!is_null($this->input->post('bloque', true))) {
                 $datos['bloque'] = $this->input->post('bloque', true);
@@ -282,6 +283,8 @@ class Encuestausuario extends CI_Controller {
             $campos_evaluacion['curso_cve'] = $this->input->post('idcurso', true);
             $campos_evaluacion['curso'] = $this->cur_mod->listado_cursos(array('cur_id' => $this->input->post('idcurso', true)));
             $campos_evaluacion['grupo_cve'] = $this->input->post('idgrupo', true);
+            $campos_evaluacion['des_autoevaluacion_cve'] = $this->input->post('des_autoevaluacion_cve', true);
+
             $campos_evaluacion['evaluado_user_cve'] = $this->input->post('iduevaluado', true);
             $campos_evaluacion['evaluador_user_cve'] = $this->input->post('iduevaluador', true);
             $campos_evaluacion['is_bono'] = $this->input->post('is_bono', true);
@@ -507,7 +510,7 @@ class Encuestausuario extends CI_Controller {
                     if (isset($reglasgral)) {
                         foreach ($reglasgral as $keyrg => $valuerg) {
 
-                            pr($valuerg);
+                            //pr($valuerg);
 
                             if ($valuerg['eva_tipo'] != 1) {
                                 //por persona
@@ -787,8 +790,8 @@ class Encuestausuario extends CI_Controller {
 
 
 
-            //$listado_autoeval = $this->enc_mod->get_usuariosasig_aevaluar(array('user_id' => $idusuario,'cur_id' => $idcurso,'tutorizado' =>$datos_curso['data'][0]['tutorizado'])); 
-            //$datos['listado_autoeval'] = $listado_autoeval;
+            $listado_autoeval = $this->enc_mod->get_usuariosasig_aevaluar(array('user_id' => $idusuario,'cur_id' => $idcurso,'tutorizado' =>$datos_curso['data'][0]['tutorizado'])); 
+            $datos['listado_autoeval'] = $listado_autoeval;
 
 
             $nombreevaluador = $datos_usuario_evaluador[0]['nombres'] . ' ' . $datos_usuario_evaluador[0]['apellidos'];

@@ -1,6 +1,6 @@
 <?php
 if (isset($datos_user_aeva) && !empty($datos_user_aeva)) {
-//    pr($datos_user_aeva);
+  //pr($listado_autoeval);
     ?>
     <div class="list-group-item">
         <div style="text-align:right"><?php echo $nombreevaluador ?>
@@ -131,12 +131,93 @@ if (isset($datos_user_aeva) && !empty($datos_user_aeva)) {
                     }
                 }
             }
+
+            if (isset($listado_autoeval) && !empty($listado_autoeval)) {
+              //pr($listado_autoeval);
+                foreach ($listado_autoeval as $valaev) {
+                    //pr($valaev);
+                              
+
+
+                 echo '<tr>
+                        <td >' . $valaev['regla'] . '</td >
+                        <td >' . $valaev['evaluadorn'] . '</td >
+                        <td >' . $valaev['roleevaluadon'] . '</td > 
+                         <td >' . $valaev['nombreevaluado'] . '</td>
+                        <td > ';
+
+
+                        if(isset($valaev['grupos_ids_text']) && ($valaev['grupos_ids_text']=='0'))
+                        {
+                            echo '--';
+                        }
+                        else
+                        {
+                          
+                          echo $valaev['grupos_ids_text'];  
+                        } 
+
+                        echo '</td >';
+                   
+
+                            echo '<td>';
+                            echo form_open('encuestausuario/instrumento_asignado', array('id' => 'form_curso'));
+                            ?>
+                        <input type="hidden" id="idencuesta" name="idencuesta" value="<?php echo $valuel['regla'] ?>">
+                        <?php if ($is_bloques_grupos) { ?>
+                            <input type = "hidden" id = "grupos_ids_text" name = "grupos_ids_text" value = "<?php echo $valuel['grupos_ids_text'] ?>">
+                        <?php } ?>
+                        <?php if (isset($valuel['bloque'])) { ?>
+                            <input type = "hidden" id = "bloque" name = "bloque" value = "<?php echo $valuel['bloque'] ?>">
+                        <?php } ?>
+
+                        <input type="hidden" id="iduevaluado" name="iduevaluado" value="<?php echo $valuel['userid'] ?>">
+                        <input type="hidden" id="idcurso" name="idcurso" value="<?php echo $valuel['cursoid'] ?>">
+                        <input type="hidden" id="idgrupo" name="idgrupo" value="<?php
+                        if (isset($valuel['gpoid']) && $valuel['gpoid'] > 0) {
+                            echo $valuel['gpoid'];
+                        } else {
+                            echo '0';
+                        }
+                        ?>">
+                        <input type="hidden" id="iduevaluador" name="iduevaluador" value="<?php echo $iduevaluador ?>">
+                        <input type="hidden" id="des_autoevaluacion_cve" name="des_autoevaluacion_cve" value="<?php echo $valaev['des_autoevaluacion_cve'] ?>">
+                        
+
+
+                        <?php
+                        if (isset($valuelaev['realizado']) || !empty($valuelaev['realizado'])) {
+                            echo "Realizada";
+                        } else {
+                            ?>
+                            <input type="submit"  class="btn btn-info btn-block" value="Evaluar usuario">
+                            <?php
+                        }
+                        ?>
+
+                        <!--
+                          <a href="'.site_url('encuestausuario/instrumento_asignado/'.$val[0]['regla']).'" class="btn btn-info btn-block">
+                              <span class="glyphicon glyphicon-search"></span>
+                          </a>-->
+                        <?php
+                        echo form_close();
+
+                        echo '</td>
+                        ';
+
+                        echo '</tr>';
+                     
+                    //}
+                }        
+
+            }    
+
+
             ?>
             </tbody>
         </table>
 
     </div>
-    <div style="margin-bottom: 100px;" class="clearfix"> </div>
 <?php } else if (isset($coment_general)) { ?>
     <div class="row">
         <div class="jumbotron"><div class="container"><p class="text_center"><?php echo $coment_general; ?></p> </div></div>
@@ -148,3 +229,4 @@ if (isset($datos_user_aeva) && !empty($datos_user_aeva)) {
     </div>
 
 <?php } ?>
+

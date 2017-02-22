@@ -128,7 +128,7 @@ if (isset($datos_user_aeva) && !empty($datos_user_aeva)) {
                             echo "Realizada";
                         } else {
                           
-                          echo $this->form_complete->create_element(array('id' => 'evaluador', 
+                          echo $this->form_complete->create_element(array('id' => 'evaluador', 'name' => 'evaluador',
                             'type' => 'dropdown', 
                             'options' => $val['evagral'], 
                             'first' => array('' => 'Seleccione'),

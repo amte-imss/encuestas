@@ -282,14 +282,18 @@ class Curso extends CI_Controller {
                 //pr(array_values($datos_roles_curso['data
                 //roles por curso por usuario
                 $usuarioscurso = $this->rep_mod->listado_usuariosenc(array('curso_id' => $idcurso, 'role_id' => '5'));
-               //pr($usuarioscurso);
+                //pr($usuarioscurso);
 
                 foreach ($usuarioscurso as $keyuc => $valueuc) 
 
             {
                     //checar reglas validas con encuestas asignadas al curso
-                    //pr($value);
+                 //   pr($valueuc);
 
+                 /*if($valueuc['cve_usuario'] ==  10549)
+                 {  */
+                    echo $valueuc['cve_usuario'];
+                    echo '<br>'; 
                     $reglas_validas = $this->enc_mod->get_reglas_validas_cur(array('role_evaluador' => $valueuc['rol'],
                         'tutorizado' => $datos_curso['data'][0]['tutorizado'], 'cur_id' => $idcurso, 'ord_prioridad' => '1'));
 
@@ -305,10 +309,12 @@ class Curso extends CI_Controller {
                             'evaluador_user_cve' => $valueuc['cve_usuario'],
                         );
                     }
+                    pr($reglasgral);
+                  //}  
                 //}
             }
 
-              //pr($reglasgral);
+              pr($reglasgral);
                 if (isset($reglasgral)) {
                     //unset($datos_user_aeva);
                     foreach ($reglasgral as $keyrg => $valuerg) {

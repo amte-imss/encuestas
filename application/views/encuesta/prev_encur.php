@@ -176,6 +176,10 @@ echo js('encuestas/guardar_encuesta_usuario.js');
                         echo '<input type="hidden" id="idcurso" name="idcurso" value="' . $curso_cve . '">';
                         echo '<input type="hidden" id="is_bono" name="is_bono" value="' . $instrumento[0]['is_bono'] . '">';
                         echo '<input type="hidden" id="idgrupo" name="idgrupo" value="' . $grupo_cve . '">';
+                        echo '<input type="hidden" id="des_autoevaluacion_cve" name="des_autoevaluacion_cve" value="' . $des_autoevaluacion_cve . '">';
+
+
+
                         if (isset($grupos_ids_text)) {
                             echo '<input type="hidden" id="grupos_ids_text" name="grupos_ids_text" value="' . $grupos_ids_text . '">';
                         }
