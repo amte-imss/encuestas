@@ -250,7 +250,7 @@ class EncContestadas {
             //"concat(deppredor.cve_depto_adscripcion, ' - ', deppredor.des_unidad_atencion) departpre_dor", "deppredor.nom_delegacion delpre_dor", "deppredor.name_region regpre_dor",
             "(select * from departments.get_unidad(deppredor.cve_depto_adscripcion, 7)) departpre_dor", "deppredor.nom_delegacion delpre_dor", "deppredor.name_region regpre_dor",
             "reec.calif_emitida", "reec.calif_emitida_napb",
-            ////////////// Se agregan para autoevaluaciones
+            ////////////// Se agregan para autoevaluaciones a
             "autoevaluacion.evaluador_user_cve as autoeva_user_cve", "usuario_autoevaluacion.username as autoeva_username", "usuario_autoevaluacion.firstname as autoeva_nombre", "usuario_autoevaluacion.lastname as autoeva_apellido", 
             "autoevaluacion.evaluador_rol_id as autoeva_rol_id", "rol_autoevaluacion.name as autoeva_rol_nombre", "tutor_autoevaluacion.cve_departamento as autoeva_cve_departamento",
             "depto_tut_autoevaluacion.nom_depto_adscripcion as autoeva_nom_depto", "depto_tut_autoevaluacion.cve_regiones as autoeva_cve_regiones", 

@@ -98,6 +98,7 @@ class Resultadocursoencuesta extends CI_Controller {
 //                    pr("saludos ");
 //                    exit();
                     $resultado = $this->r_enc_cont->getBusquedaEncContNoCont($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
+                    //pr($this->db->last_query());
 //                    $resultado = $this->encur_mod->listado_evaluados($filtros); //Datos del formulario se envían para generar la consulta segun los filtros
 //                    pr($resultado);
 

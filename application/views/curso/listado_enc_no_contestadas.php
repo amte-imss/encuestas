@@ -14,14 +14,14 @@ if (isset($evaluaciones) && !empty($evaluaciones)) {
                         <th>Nombre usuario evaluador</th>
                         <th>Rol evaluador</th>
                         <th>Categor&iacute;a evaluador</th>
-                        <th>Departamento evaluador</th>
+                        <th>Unidad evaluador</th>
                         <th>Regi&oacute;n evaluador</th>
                         <th>Delegaci&oacute;n evaluador</th>
                         <th>Matr&iacute;cula del evaluado</th>
                         <th>Nombre docente evaluado</th>
                         <th>Rol evaluado</th>
                         <th>Categor&iacute;a evaluado</th>
-                        <th>Departamento evaluado</th>
+                        <th>Unidad evaluado</th>
                         <th>Regi&oacute;n evaluado</th>
                         <th>Delegaci&oacute;n evaluado</th>
                         <th>Fol&iacute;o de la encesta</th>
