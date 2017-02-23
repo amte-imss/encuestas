@@ -141,7 +141,7 @@ class Reporte_encuestas_contestadas extends CI_Model {
         $query = $ejecuta->result_array();
 
         $this->db->flush_cache(); //Limpia la cache
-//        pr($this->db->last_query());
+        //pr($this->db->last_query());
 //        exit();
         $result['data'] = $query;
         $result['total'] = $total;
@@ -239,14 +239,24 @@ class EncContestadas {
             //evaluado
             "mrdo.id rid_do", 'mrdo."name" rolname_do', "uedo.username as matricula_do", "concat(uedo.firstname, ' ', uedo.lastname) nom_evaluado",
             "cattutdo.des_clave", "cattutdo.nom_nombre",
-            "concat(depdo.cve_depto_adscripcion, ' - ', depdo.des_unidad_atencion) depart_do", "depdor.nom_delegacion del_do", "depdo.name_region reg_do",
+            //"concat(depdo.cve_depto_adscripcion, ' - ', depdo.des_unidad_atencion) depart_do", "depdor.nom_delegacion del_do", "depdo.name_region reg_do",
+            "(select * from departments.get_unidad(depdo.cve_depto_adscripcion, 7)) depart_do", "depdor.nom_delegacion del_do", "depdo.name_region reg_do",
             "cattutdor.des_clave clave_cattut_do", "cattutdor.nom_nombre name_cattut_do",
             //evaluador
             "mrdor.id rid_dor", 'mrdor."name" rolname_dor', "uedor.username as matricula_dor", "concat(uedor.firstname, ' ', uedor.lastname) nom_evaluador",
             "cattutdor.des_clave clave_cattut_dor", "cattutdor.nom_nombre name_cattut_dor", "catpredor.des_clave clave_catpre_dor", "catpredor.nom_nombre name_catpre_dor",
-            "concat(depdor.cve_depto_adscripcion, ' - ', depdor.des_unidad_atencion) depart_dor", "depdor.nom_delegacion delegacion_dor", "depdor.name_region reg_dor",
-            "concat(deppredor.cve_depto_adscripcion, ' - ', deppredor.des_unidad_atencion) departpre_dor", "deppredor.nom_delegacion delpre_dor", "deppredor.name_region regpre_dor",
+            //"concat(depdor.cve_depto_adscripcion, ' - ', depdor.des_unidad_atencion) depart_dor", "depdor.nom_delegacion delegacion_dor", "depdor.name_region reg_dor",
+            "(select * from departments.get_unidad(depdor.cve_depto_adscripcion, 7)) depart_dor", "depdor.nom_delegacion delegacion_dor", "depdor.name_region reg_dor",
+            //"concat(deppredor.cve_depto_adscripcion, ' - ', deppredor.des_unidad_atencion) departpre_dor", "deppredor.nom_delegacion delpre_dor", "deppredor.name_region regpre_dor",
+            "(select * from departments.get_unidad(deppredor.cve_depto_adscripcion, 7)) departpre_dor", "deppredor.nom_delegacion delpre_dor", "deppredor.name_region regpre_dor",
             "reec.calif_emitida", "reec.calif_emitida_napb",
+            ////////////// Se agregan para autoevaluaciones
+            "autoevaluacion.evaluador_user_cve as autoeva_user_cve", "usuario_autoevaluacion.username as autoeva_username", "usuario_autoevaluacion.firstname as autoeva_nombre", "usuario_autoevaluacion.lastname as autoeva_apellido", 
+            "autoevaluacion.evaluador_rol_id as autoeva_rol_id", "rol_autoevaluacion.name as autoeva_rol_nombre", "tutor_autoevaluacion.cve_departamento as autoeva_cve_departamento",
+            "depto_tut_autoevaluacion.nom_depto_adscripcion as autoeva_nom_depto", "depto_tut_autoevaluacion.cve_regiones as autoeva_cve_regiones", 
+            "depto_tut_autoevaluacion.name_region as autoeva_name_region", "depto_tut_autoevaluacion.cve_delegacion as autoeva_cve_delegacion", 
+            "depto_tut_autoevaluacion.nom_delegacion as autoeva_nom_delegacion", "(select * from departments.get_unidad(tutor_autoevaluacion.cve_departamento, 7)) as rama_tut_autoevaluacion",
+            "tutor_autoevaluacion.cve_categoria as autoeva_cve_categoria", "cat_tut_autoevaluacion.nom_nombre as autoeva_cat_nombre"
         );
     }
 
@@ -282,7 +292,10 @@ class EncContestadas {
             "deppredor.cve_depto_adscripcion", "deppredor.des_unidad_atencion", "deppredor.nom_delegacion", "deppredor.name_region",
             //más
             "reec.calif_emitida", "reec.calif_emitida_napb",
-            "cattutdo.des_clave", "cattutdo.nom_nombre "
+            "cattutdo.des_clave", "cattutdo.nom_nombre ",
+            "autoevaluacion.evaluador_user_cve", "usuario_autoevaluacion.username", "usuario_autoevaluacion.firstname", "usuario_autoevaluacion.lastname", "autoevaluacion.evaluador_rol_id", "rol_autoevaluacion.name", 
+            "tutor_autoevaluacion.cve_departamento", "depto_tut_autoevaluacion.nom_depto_adscripcion", "depto_tut_autoevaluacion.cve_regiones", "depto_tut_autoevaluacion.name_region", "depto_tut_autoevaluacion.cve_delegacion", 
+            "depto_tut_autoevaluacion.nom_delegacion", "tutor_autoevaluacion.cve_categoria", "cat_tut_autoevaluacion.nom_nombre",
         );
     }
 
@@ -328,6 +341,14 @@ class EncContestadas {
             array('tabla' => 'tutorias.mdl_usertutor tutdo', 'on' => 'tutdo.nom_usuario=uedo.username and tutdo.id_curso=ec.course_cve', 'escape' => 'left'),
             array('tabla' => 'nomina.ssn_categoria cattutdo', 'on' => 'cattutdo.cve_categoria = tutdo.cve_categoria', 'escape' => 'left'),
             array('tabla' => 'departments.ssv_departamentos depdo', 'on' => 'depdo.cve_depto_adscripcion = tutdo.cve_departamento', 'escape' => 'left'),
+            ////////////// Se agregan para autoevaluaciones
+            array('tabla' => 'encuestas.sse_designar_autoeveluaciones autoevaluacion', 'on' => 'autoevaluacion.des_autoevaluacion_cve=reec.des_autoevaluacion_cve', 'escape' => 'left'),
+            array('tabla' => 'public.mdl_user usuario_autoevaluacion', 'on' => 'usuario_autoevaluacion.id=autoevaluacion.evaluador_user_cve', 'escape' => 'left'),
+            array('tabla' => 'public.mdl_role rol_autoevaluacion', 'on' => 'rol_autoevaluacion.id=autoevaluacion.evaluador_rol_id', 'escape' => 'left'),
+            array('tabla' => 'tutorias.mdl_usertutor tutor_autoevaluacion', 'on' => 'tutor_autoevaluacion.nom_usuario=usuario_autoevaluacion.username
+                        and tutor_autoevaluacion.id_curso=autoevaluacion.course_cve and autoevaluacion.evaluador_rol_id <> 5', 'escape' => 'left'),
+            array('tabla' => 'nomina.ssn_categoria cat_tut_autoevaluacion', 'on' => 'cat_tut_autoevaluacion.cve_categoria = tutor_autoevaluacion.cve_categoria', 'escape' => 'left'),
+            array('tabla' => 'departments.ssv_departamentos depto_tut_autoevaluacion', 'on' => 'depto_tut_autoevaluacion.cve_depto_adscripcion=tutor_autoevaluacion.cve_departamento', 'escape' => 'left'),
         );
     }
 
@@ -360,6 +381,13 @@ class EncNoContestadas {
             "concat(depdo.cve_depto_adscripcion, ' - ', depdo.des_unidad_atencion) depart_do",
             "depdor.nom_delegacion del_do", "depdo.name_region reg_do",
             "cattutdor.des_clave clave_cattut_do", "cattutdor.nom_nombre name_cattut_do",
+            ////////////// Se agregan para autoevaluaciones
+            "autoevaluacion.evaluador_user_cve as autoeva_user_cve", "usuario_autoevaluacion.username as autoeva_username", "usuario_autoevaluacion.firstname as autoeva_nombre", "usuario_autoevaluacion.lastname as autoeva_apellido", 
+            "autoevaluacion.evaluador_rol_id as autoeva_rol_id", "rol_autoevaluacion.name as autoeva_rol_nombre", "tutor_autoevaluacion.cve_departamento as autoeva_cve_departamento",
+            "depto_tut_autoevaluacion.nom_depto_adscripcion as autoeva_nom_depto", "depto_tut_autoevaluacion.cve_regiones as autoeva_cve_regiones", 
+            "depto_tut_autoevaluacion.name_region as autoeva_name_region", "depto_tut_autoevaluacion.cve_delegacion as autoeva_cve_delegacion", 
+            "depto_tut_autoevaluacion.nom_delegacion as autoeva_nom_delegacion", "(select * from departments.get_unidad(tutor_autoevaluacion.cve_departamento, 7)) as rama_tut_autoevaluacion",
+            "tutor_autoevaluacion.cve_categoria as autoeva_cve_categoria", "cat_tut_autoevaluacion.nom_nombre as autoeva_cat_nombre"
         );
     }
 
@@ -429,7 +457,8 @@ class EncNoContestadas {
             array('tabla' => 'mdl_context ctxt', 'on' => 'ctxt.instanceid = mcs.id', 'escape' => ''),
             array('tabla' => 'mdl_role_assignments rss', 'on' => 'rss.contextid = ctxt.id', 'escape' => ''),
             array('tabla' => 'mdl_role mrdor', 'on' => 'mrdor.id = rss.roleid and mrdor.id = rege.rol_evaluador_cve', 'escape' => ''),
-            array('tabla' => 'mdl_user uedor', 'on' => 'uedor.id = rss.userid and uedor.id <> uedo.id', 'escape' => ''),
+            //array('tabla' => 'mdl_user uedor', 'on' => 'uedor.id = rss.userid and uedor.id <> uedo.id', 'escape' => ''),
+            array('tabla' => 'mdl_user uedor', 'on' => 'uedor.id = rss.userid', 'escape' => ''),
             array('tabla' => 'public.mdl_groups_members gm', 'on' => 'gm.userid = uedor.id AND gm.groupid = mg.id', 'escape' => 'RIGHT'),
             array('tabla' => 'gestion.sgp_tab_preregistro_al gpregdor', 'on' => 'gpregdor.nom_usuario = uedor.username and gpregdor.cve_curso = ec.course_cve and rege.rol_evaluador_cve = 5', 'escape' => 'left'),
             array('tabla' => 'nomina.ssn_categoria catpredor', 'on' => 'catpredor.cve_categoria = gpregdor.cve_cat', 'escape' => 'left'),
@@ -437,6 +466,15 @@ class EncNoContestadas {
             array('tabla' => 'tutorias.mdl_usertutor tutdor', 'on' => 'tutdor.nom_usuario=uedor.username and tutdor.id_curso=ec.course_cve', 'escape' => 'left'),
             array('tabla' => 'nomina.ssn_categoria cattutdor', 'on' => 'cattutdor.cve_categoria = tutdor.cve_categoria', 'escape' => 'left'),
             array('tabla' => 'departments.ssv_departamentos depdor', 'on' => 'depdor.cve_depto_adscripcion = tutdor.cve_departamento', 'escape' => 'left'),
+            ////////////// Se agregan para autoevaluaciones
+            //array('tabla' => 'encuestas.sse_designar_autoeveluaciones autoevaluacion', 'autoevaluacion.des_autoevaluacion_cve=eva.des_autoevaluacion_cve', 'left'),
+            array('tabla' => 'encuestas.sse_designar_autoeveluaciones autoevaluacion', 'on' => 'autoevaluacion.course_cve=ec.course_cve AND autoevaluacion.encuesta_cve=enc.encuesta_cve AND autoevaluacion.evaluado_user_cve=uedo.id AND uedor.id=uedo.id', 'escape' => 'left'),
+            array('tabla' => 'public.mdl_user usuario_autoevaluacion', 'on' => 'usuario_autoevaluacion.id=autoevaluacion.evaluador_user_cve', 'escape' => 'left'),
+            array('tabla' => 'public.mdl_role rol_autoevaluacion', 'on' => 'rol_autoevaluacion.id=autoevaluacion.evaluador_rol_id', 'escape' => 'left'),
+            array('tabla' => 'tutorias.mdl_usertutor tutor_autoevaluacion', 'on' => 'tutor_autoevaluacion.nom_usuario=usuario_autoevaluacion.username
+                    and tutor_autoevaluacion.id_curso=autoevaluacion.course_cve and autoevaluacion.evaluador_rol_id <> 5', 'escape' => 'left'),
+            array('tabla' => 'nomina.ssn_categoria cat_tut_autoevaluacion', 'on' => 'cat_tut_autoevaluacion.cve_categoria = tutor_autoevaluacion.cve_categoria', 'escape' => 'left'),
+            array('tabla' => 'departments.ssv_departamentos depto_tut_autoevaluacion', 'on' => 'depto_tut_autoevaluacion.cve_depto_adscripcion=tutor_autoevaluacion.cve_departamento', 'escape' => 'left'),
         );
     }
 
@@ -460,6 +498,9 @@ class EncNoContestadas {
             , "cattutdo.des_clave", "cattutdo.nom_nombre",
             "depdo.cve_depto_adscripcion", "depdo.des_unidad_atencion", "depdor.nom_delegacion", "depdo.name_region",
             "cattutdor.des_clave", "cattutdor.nom_nombre",
+            "autoevaluacion.evaluador_user_cve", "usuario_autoevaluacion.username", "usuario_autoevaluacion.firstname", "usuario_autoevaluacion.lastname", "autoevaluacion.evaluador_rol_id", "rol_autoevaluacion.name", "tutor_autoevaluacion.cve_departamento",
+            "depto_tut_autoevaluacion.nom_depto_adscripcion", "depto_tut_autoevaluacion.cve_regiones", "depto_tut_autoevaluacion.name_region", "depto_tut_autoevaluacion.cve_delegacion", 
+            "depto_tut_autoevaluacion.nom_delegacion", "tutor_autoevaluacion.cve_categoria", "cat_tut_autoevaluacion.nom_nombre"
         );
     }
 
@@ -484,15 +525,15 @@ class WhereGeneral {
         return array(
             'tutorizado' => array('campo' => 'ccfg.tutorizado', 'escape' => 'where', 'value' => ''),
             'anio' => array('campo' => "to_char(to_timestamp((mcs.startdate)::double precision), 'YYYY'::text)", 'escape' => 'where', 'value' => ''),
-            'regionr' => array('campo' => 'depdor.cve_regiones', 'escape' => 'where', 'value' => ''),
+            //'regionr' => array('campo' => 'depdor.cve_regiones', 'escape' => 'where', 'value' => ''),
             'region' => array('campo' => 'depdo.cve_regiones', 'escape' => 'where', 'value' => ''),
             'curso' => array('campo' => 'mcs.id', 'escape' => 'where', 'value' => ''),
             'instrumento_regla' => array('campo' => 'rege.reglas_evaluacion_cve', 'escape' => 'where', 'value' => ''),
-            'umaedor' => array('campo' => 'depdor.cve_depto_adscripcion', 'escape' => 'where', 'value' => ''),
+            //'umaedor' => array('campo' => 'depdor.cve_depto_adscripcion', 'escape' => 'where', 'value' => ''),
             'umae' => array('campo' => 'depdo.cve_depto_adscripcion', 'escape' => 'where', 'value' => ''),
-            'delegacion_dor' => array('campo' => 'depdor.cve_delegacion', 'escape' => 'where', 'value' => ''),
+            //'delegacion_dor' => array('campo' => 'depdor.cve_delegacion', 'escape' => 'where', 'value' => ''),
             'delegacion' => array('campo' => 'depdo.cve_delegacion', 'escape' => 'where', 'value' => ''),
-            'rol_evaluador' => array('campo' => 'rege.rol_evaluador_cve', 'escape' => 'where', 'value' => ''),
+            //'rol_evaluador' => array('campo' => 'rege.rol_evaluador_cve', 'escape' => 'where', 'value' => ''),
             'rol_evaluado' => array('campo' => 'rege.rol_evaluado_cve', 'escape' => 'where', 'value' => ''),
         );
     }
@@ -502,11 +543,17 @@ class WhereGeneral {
             'matriculado' => array('campo' => 'lower(uedo.username) like', 'escape' => 'where', 'value' => 'lower(\'%~~%\')'),
             'namedocentedo' => array('campo' => "lower(translate(concat(uedo.firstname, ' ', uedo.lastname),'áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU')) like", 'escape' => 'where', 'value' => "lower(translate('%~~%','áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU'))"),
             'claveadscripcion' => array('campo' => 'lower(depdo.cve_depto_adscripcion) like', 'escape' => 'where', 'value' => 'lower(\'%~~%\')'),
-            'categoria' => array('campo' => 'lower(cattutdo.des_clave) like', 'escape' => 'where', 'value' => 'lower(\'%~~%\')'),
-            'matriculador' => array('campo' => 'lower(uedor.username) like', 'escape' => 'where', 'value' => 'lower(\'%~~%\')'),
+            'categoria' => array('campo' => 'lower(cattutdo.nom_nombre) like', 'escape' => 'where', 'value' => 'lower(\'%~~%\')'),
+            //'matriculador' => array('campo' => 'lower(uedor.username) like', 'escape' => 'where', 'value' => 'lower(\'%~~%\')'),
+            'matriculador' => array('campo' => '(lower(uedor.username) like lower(\'%~~%\') OR usuario_autoevaluacion.username like lower(\'%~~%\'))', 'escape' => 'where', 'value' => ''),
             'namedocentedor' => array('campo' => "lower(translate(concat(uedor.firstname, ' ', uedor.lastname),'áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU')) like", 'escape' => 'where', 'value' => "lower(translate('%~~%','áéíóúÁÉÍÓÚüÜ','aeiouAEIOUuU'))"),
             'claveadscripciondor' => array('campo' => '(lower(depdor.cve_depto_adscripcion) like lower(\'%~~%\') or lower(deppredor.cve_depto_adscripcion) like lower(\'%~~%\'))', 'escape' => 'where', 'value' => ''),
-            'categoriar' => array('campo' => '(lower(cattutdor.des_clave) like lower(\'%~~%\') or lower(catpredor.des_clave) like lower(\'%~~%\'))', 'escape' => 'where', 'value' => ''),
+            //'categoriar' => array('campo' => '(lower(cattutdor.des_clave) like lower(\'%~~%\') or lower(catpredor.des_clave) like lower(\'%~~%\'))', 'escape' => 'where', 'value' => ''),
+            'categoriar' => array('campo' => '(lower(cattutdor.nom_nombre) like lower(\'%~~%\') or lower(catpredor.nom_nombre) like lower(\'%~~%\') or lower(cat_tut_autoevaluacion.nom_nombre) like lower(\'%~~%\'))', 'escape' => 'where', 'value' => ''),
+            'regionr' => array('campo' => '(depdor.cve_regiones=~~ OR depto_tut_autoevaluacion.cve_regiones=~~)', 'escape' => 'where', 'value' => ''),
+            'delegacion_dor' => array('campo' => '(depdor.cve_delegacion=\'~~\' OR depto_tut_autoevaluacion.cve_delegacion=\'~~\')', 'escape' => 'where', 'value' => ''),
+            'rol_evaluador' => array('campo' => '(rege.rol_evaluador_cve=\'~~\' OR autoevaluacion.evaluador_rol_id=\'~~\')', 'escape' => 'where', 'value' => ''),
+            'umaedor' => array('campo' => '(depdor.cve_depto_adscripcion=\'~~\' OR tutor_autoevaluacion.cve_departamento=\'~~\')', 'escape' => 'where', 'value' => ''),
         );
     }
 
@@ -520,6 +567,10 @@ class WhereGeneral {
             'text_buscar_docente_evaluador' => 'tipo_buscar_docente_evaluador',
             'text_buscar_adscripcion_dor' => 'tipo_buscar_adscripcion_dor',
             'text_buscar_categoriar' => 'tipo_buscar_categoriar',
+            'regionr' => 'regionr',
+            'delegacion_dor' => 'delegacion_dor',
+            'rol_evaluador' => 'rol_evaluador',
+            'umaedor' => 'umaedor'
         );
     }
 
@@ -539,11 +590,13 @@ class WhereGeneral {
         $array_where_text = $this->getWereText(); //Obtiene los where real para buscar por texto
 //        pr("------------------------------------------**************");
 //        pr($array_where);
-        $llave_valor = array();
+        $llave_valor = array(); //pr($array_where); pr($param);
         foreach ($array_where as $key => $filText) {//Recorre los campos de texto 
             if (isset($param[$key]) AND ( !empty($param[$key]) || strlen($param[$key]) > 0)) {//Verifica si exite el filtro en el array, si existe, valida que no venga vacio
                 if (isset($param[$filText]) AND ( !empty($param[$filText]) || strlen($param[$filText]) > 0)) {//Verifica si exite el filtro tipo, si existe, valida que no venga vacio
-                    $tmp = $array_where_text[$param[$filText]];
+                    //pr('key:'.$key.' pk:'. $param[$key].' filText:'. $filText.' pf:'.$param[$filText]);
+                    $tmp = ($filText==$key) ? $array_where_text[$filText] : $array_where_text[$param[$filText]];
+                    //pr($tmp);
                     $value_tmp = $tmp['value'];
                     $value_tmpp = str_replace('~~', $param[$key], $value_tmp);
                     $tmp['campo'] = str_replace('~~', $param[$key], $tmp['campo']);

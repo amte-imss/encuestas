@@ -627,7 +627,7 @@ class Reporte_model extends CI_Model {
             Reporte_model::GF_GENERAL_CNCE => array('order_by', /*'is_bloque_o_grupo'*/),
             Reporte_model::GF_BLOQUES_CURSO => array('order_by'),
             Reporte_model::GF_ENCUESTA_CONTESTADAS => array('enc_con_ncon', 'instrumento', /*'is_bloque_o_grupo',*/ 'ordenar_por_con_no_con', 'order_by'),
-            Reporte_model::GF_EVALUADOR_CONTESTADAS => array('buscar_docente_evaluado', 'buscar_categoria', 'rol_evaluador', 'region', 'delg_umae', 'umae', 'buscar_adscripcion', 'order_by'),
+            Reporte_model::GF_EVALUADOR_CONTESTADAS => array('buscar_docente_evaluado', 'buscar_categoria', 'rol_evaluador', 'region', 'delg_umae', 'umae', 'order_by'),
         );
         return $array;
     }

@@ -84,7 +84,8 @@ class Reporte_detallado_model extends CI_Model {
             $this->db->where("eva_reg.reglas_evaluacion_cve=".$params['instrumento_regla']);
         }
         if (isset($params['is_bono']) && !empty($params['is_bono'])) { //Aplica para bono
-            $this->db->where("eva_reg.is_bono=".$params['is_bono']);
+            //$this->db->where("eva_reg.is_bono=".$params['is_bono']);
+            $this->db->where("enc.is_bono=".$params['is_bono']);
         }
         if (isset($params['tipo_encuesta']) && !empty($params['tipo_encuesta'])) { //Aplica para bono
             $this->db->where("enc.tipo_encuesta=".$params['tipo_encuesta']);
@@ -94,7 +95,7 @@ class Reporte_detallado_model extends CI_Model {
         }
         if (isset($params['text_buscar_docente_evaluado']) && !empty($params['text_buscar_docente_evaluado'])) { //Clave o nombre de instrumento
             if($params['tipo_buscar_docente_evaluado']==="matriculado"){
-                $this->db->where("evaluado.username='".$params['text_buscar_docente_evaluado']."'");
+                $this->db->where("evaluado.username like '%".$params['text_buscar_docente_evaluado']."%'");
             } else {
                 $this->db->where("(lower(evaluado.firstname) like lower('%".$params['text_buscar_docente_evaluado']."%') OR lower(evaluado.lastname) like lower('%".$params['text_buscar_docente_evaluado']."%'))");
             }
@@ -119,7 +120,7 @@ class Reporte_detallado_model extends CI_Model {
 
         if (isset($params['text_buscar_docente_evaluador']) && !empty($params['text_buscar_docente_evaluador'])) { //Clave o nombre de instrumento
             if($params['tipo_buscar_docente_evaluador']==="matriculado"){
-                $this->db->where("(evaluador.username='".$params['text_buscar_docente_evaluador']."' OR usuario_autoevaluacion.username='".$params['text_buscar_docente_evaluador']."' )");
+                $this->db->where("(evaluador.username like '%".$params['text_buscar_docente_evaluador']."%' OR usuario_autoevaluacion.username like '%".$params['text_buscar_docente_evaluador']."%' )");
             } else {
                 $this->db->where("((lower(evaluador.firstname) like lower('%".$params['text_buscar_docente_evaluador']."%') OR lower(evaluador.lastname) like lower('%".$params['text_buscar_docente_evaluador']."%')) OR"
                         . "(lower(usuario_autoevaluacion.firstname) like lower('%".$params['text_buscar_docente_evaluador']."%') OR lower(usuario_autoevaluacion.lastname) like lower('%".$params['text_buscar_docente_evaluador']."%')))");
@@ -284,7 +285,7 @@ class Reporte_detallado_model extends CI_Model {
         $resultado['preguntas'] = $this->reporte_preguntas(array('conditions'=>"encuesta_cve in (".$encuestas.")", 'order'=>'encuesta_cve, seccion_cve, orden'));
         $resultado['respuestas'] = $this->reporte_detalle_resultados($enc_cur_eva_evar);
         //pr($resultado['data']);
-        //pr($resultado);
+        //pr($resultado['respuestas']);
         $query->free_result(); //Libera la memoria
 
         return $resultado;
@@ -292,16 +293,18 @@ class Reporte_detallado_model extends CI_Model {
 
     public function reporte_detalle_resultados($params = array()) {
         $resultado = array();
-        
+        //pr($params);
         foreach ($params as $key_p => $param) {
             $valor = explode(',', $param);
+            
+            $this->db->select('eva.*, res.reactivos_cve, res.ponderacion, res.texto, res.orden, res.texto_real');
             /*$query = $this->db->query('select * from encuestas.sse_evaluacion eva 
                 inner join encuestas.sse_respuestas res on eva.reactivos_cve=res.reactivos_cve
                 WHERE  eva.course_cve=838 and evaluador_rol_id=18 and evaluado_rol_id=32 AND eva.encuesta_cve=526');*/
             $this->db->where('eva.encuesta_cve='.$valor[0].' AND eva.course_cve='.$valor[1].' AND evaluado_rol_id='.$valor[2].' AND evaluador_rol_id='.$valor[3]);
-
-            $this->db->join('encuestas.sse_respuestas res', 'eva.reactivos_cve=res.reactivos_cve');
-
+            
+            $this->db->join('encuestas.sse_respuestas res', 'eva.reactivos_cve=res.reactivos_cve', 'left');
+            
             $query = $this->db->get('encuestas.sse_evaluacion eva');
             
             $temp = $query->result_array();
@@ -309,8 +312,8 @@ class Reporte_detallado_model extends CI_Model {
                 //$resultado['data'][$dato['course_cve']][$dato['group_id']][$dato['encuesta_cve']][$dato['evaluado_user_cve']][$dato['evaluador_user_cve']][$dato['preguntas_cve']] = $dato;
                 $resultado['data'][$dato['course_cve']][$dato['grupos_ids_text']][$dato['encuesta_cve']][$dato['evaluado_user_cve']][$dato['evaluador_user_cve']][$dato['preguntas_cve']] = $dato;
             }
-            //pr($resultado['data']);
-            //$this->db->flush_cache();
+            //pr($this->db->last_query());
+            //$this->db->flush_cache();            
             $query->free_result(); //Libera la memoria         
         }
         return $resultado;
@@ -318,6 +321,7 @@ class Reporte_detallado_model extends CI_Model {
 
     public function reporte_preguntas($params = null) {
         $resultado = array();
+        $this->db->select("*, tip_pre.descripcion similar to '%RESPUESTA_ABIERTA%' as is_abierta");
         if (isset($params['conditions']) && !empty($params['conditions'])) {
             $this->db->where($params['conditions']);
         }
@@ -325,6 +329,7 @@ class Reporte_detallado_model extends CI_Model {
             $tipo_orden = (isset($params['order_type']) && !empty($params['order_type'])) ? $params['order_type'] : "ASC";
             $this->db->order_by($params['order'], $tipo_orden);
         }
+        $this->db->join('encuestas.sse_tipo_pregunta tip_pre', 'tip_pre.tipo_pregunta_cve=preg.tipo_pregunta_cve');
         //$query = $this->db->query('select * from encuestas.sse_preguntas preg where encuesta_cve=526');
         $query_p = $this->db->get('encuestas.sse_preguntas preg');
         //pr($query_p);
@@ -332,7 +337,7 @@ class Reporte_detallado_model extends CI_Model {
         $resultado['data'] = $query_p->result_array();
         //pr($resultado);
         $query_p->free_result(); //Libera la memoria         
-
+        
         return $resultado;
     }
 
