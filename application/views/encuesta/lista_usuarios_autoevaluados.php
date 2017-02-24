@@ -5,22 +5,6 @@ if (isset($datos_user_aeva) && !empty($datos_user_aeva)) {
     //pr($datos_user_aeva);
 
     ?>
-    <div class="list-group-item">
-        <div style="text-align:right"><?php echo $nombreevaluador ?>
-        </div>
-        <?php
-        if (isset($error) AND ! is_null($error) AND ! empty($error)) {
-            echo '<div class="row">
-                                <div class="col-md-1 col-sm-1 col-xs-1"></div>
-                                <div class="col-md-10 col-sm-10 col-xs-10 alert alert-danger">
-                                    ' . $error . '
-                                </div>
-                                <div class="col-md-1 col-sm-1 col-xs-1"></div>
-                            </div>';
-        }
-        ?>
-
-    </div>
 
 
 
@@ -127,12 +111,21 @@ if (isset($datos_user_aeva) && !empty($datos_user_aeva)) {
                         if (isset($valuel['realizado']) || !empty($valuel['realizado'])) {
                             echo "Realizada";
                         } else {
+
+                        //pr($val['datosdesig']['data'][0]);
+                        $valor='';
+                        if($val['datosdesig']['result'] == true)
+                        {
+                              $valor=$val['datosdesig']['data'][0]['evaluador_user_cve'].'/'. $val['datosdesig']['data'][0]['evaluador_rol_id'];
+                         }
+                        
+
                           
                           echo $this->form_complete->create_element(array('id' => 'evaluador', 'name' => 'evaluador',
                             'type' => 'dropdown', 
                             'options' => $val['evagral'], 
-                            'first' => array('' => 'Seleccione'),
-                            'value'=> $valuel['evaluador_user_cve'].'/'. $valuel['evaluador_rol_id'],
+                            'first' => array('' => 'Seleccione'),            
+                            'value' => $valor, 
                             'attributes' => array('name' => 'evaluador', 
                                 'class' => 'form-control', 
                                 'placeholder' => 'Evaluador', 

@@ -292,8 +292,8 @@ class Curso extends CI_Controller {
 
                  /*if($valueuc['cve_usuario'] ==  10549)
                  {  */
-                    echo $valueuc['cve_usuario'];
-                    echo '<br>'; 
+                    //echo $valueuc['cve_usuario'];
+                    //echo '<br>'; 
                     $reglas_validas = $this->enc_mod->get_reglas_validas_cur(array('role_evaluador' => $valueuc['rol'],
                         'tutorizado' => $datos_curso['data'][0]['tutorizado'], 'cur_id' => $idcurso, 'ord_prioridad' => '1'));
 
@@ -309,12 +309,12 @@ class Curso extends CI_Controller {
                             'evaluador_user_cve' => $valueuc['cve_usuario'],
                         );
                     }
-                    pr($reglasgral);
+                    //pr($reglasgral);
                   //}  
                 //}
             }
 
-              pr($reglasgral);
+              //pr($reglasgral);
                 if (isset($reglasgral)) {
                     //unset($datos_user_aeva);
                     foreach ($reglasgral as $keyrg => $valuerg) {
@@ -344,11 +344,11 @@ class Curso extends CI_Controller {
 
 
 
-                                    $datos_user_aeva[] = $this->enc_mod->listado_autoeval(array('gpo_evaluador' => $gpo_evaluador, 'role_evaluado' => $valuerg['rol_evaluado_cve'],
+                                    /*$datos_user_aeva[] = $this->enc_mod->listado_autoeval(array('gpo_evaluador' => $gpo_evaluador, 'role_evaluado' => $valuerg['rol_evaluado_cve'],
                                         'cur_id' => $idcurso, 'encuesta_cve' => $valuerg['encuesta_cve'],
                                         'evaluador_user_cve' => $valuerg['evaluador_user_cve'],
                                         'role_evaluador' => $role_evaluador, 'eva_tipo' => $valuer['eva_tipo'])
-                                    );
+                                    );*/
                                 }
                             }
                         } elseif ($valuerg['eva_tipo'] == 2) {//Por bloque
@@ -371,8 +371,9 @@ class Curso extends CI_Controller {
                                 //pr($dato_ub);
                                 foreach ($dato_ub as $keyb_r => $valueb_r) {//Recorre roles 
                                     foreach ($valueb_r as $keyb_b => $valueb_b) {//Recorre bloques
-//                                        pr($valueb_b);
+                                        //pr($valueb_b);
 //                                        pr($dato_ub);
+                                        //echo "fadsf";
                                         $role_evaluador = $keyb_r;
                                         $bloque_evaluador = $keyb_b; # code...
 
@@ -422,9 +423,10 @@ class Curso extends CI_Controller {
                             //echo "entra3";      
                             //echo $valuer['encuesta_cve'];   //por usuario
                             //echo $value;
-                            $datos_user_aeva[] = $this->enc_mod->listado_autoeval(array('role_evaluado' => $valuerg['rol_evaluado_cve'],
+                           /*$datos_user_aeva[] = $this->enc_mod->listado_autoeval(array('role_evaluado' => $valuerg['rol_evaluado_cve'],
                                 'cur_id' => $idcurso, 'encuesta_cve' => $valuerg['encuesta_cve'],
-                                'evaluador_user_cve' => $valuerg['evaluador_user_cve'], 'role_evaluador' => $valuerg['rol_evaluador_cve']));
+                                'evaluador_user_cve' => $valuerg['evaluador_user_cve'], 'role_evaluador' => $valuerg['rol_evaluador_cve'])
+                           );*/
                         }
 
 

@@ -601,7 +601,7 @@ class Encuestausuario extends CI_Controller {
 //            pr($this->session->userdata('logueado'));
 //            pr($this->session->userdata('id'));
             $sesion_valida = valida_sesion_activa($idusuario);
-//            $sesion_valida = 1;
+            $sesion_valida = 1;
             if ($sesion_valida) {
                 $this->session->unset_userdata('datos_encuesta_usuario'); //Eliminar la variable ya que puedequedara cargada con datos de otro curso
 
@@ -673,11 +673,11 @@ class Encuestausuario extends CI_Controller {
                                     $gpo_evaluador = $value1['cve_grupo']; # code...
                                     //pr($gpo_evaluador);
 
-                                    $datos_user_aeva[] = $this->enc_mod->listado_eval(array('gpo_evaluador' => $gpo_evaluador, 'role_evaluado' => $valuerg['rol_evaluado_cve'],
+                                    /*$datos_user_aeva[] = $this->enc_mod->listado_eval(array('gpo_evaluador' => $gpo_evaluador, 'role_evaluado' => $valuerg['rol_evaluado_cve'],
                                         'cur_id' => $idcurso, 'encuesta_cve' => $valuerg['encuesta_cve'],
                                         'evaluador_user_cve' => $idusuario,
                                         'role_evaluador' => $role_evaluador, 'eva_tipo' => $valuer['eva_tipo'])
-                                    );
+                                    );*/
                                 }
                             }
                         } elseif ($valuerg['eva_tipo'] == 2) {//Por bloque
@@ -708,7 +708,7 @@ class Encuestausuario extends CI_Controller {
                                             $grupos_ids .= $value_data['cve_grupo'] . ',';
                                         }
 
-
+                                        //pr($grupos_ids);
                                         $datos_user_aeva[] = $this->enc_mod->listado_eval(array('bloque_evaluador' => $bloque_evaluador,
                                             'role_evaluado' => $valuerg['rol_evaluado_cve'],
                                             'cur_id' => $idcurso, 'encuesta_cve' => $valuerg['encuesta_cve'],
@@ -747,9 +747,9 @@ class Encuestausuario extends CI_Controller {
                             //echo "entra3";      
                             //echo $valuer['encuesta_cve'];   //por usuario
                             //echo $value;
-                            $datos_user_aeva[] = $this->enc_mod->listado_eval(array('role_evaluado' => $valuerg['rol_evaluado_cve'],
+                            /*$datos_user_aeva[] = $this->enc_mod->listado_eval(array('role_evaluado' => $valuerg['rol_evaluado_cve'],
                                 'cur_id' => $idcurso, 'encuesta_cve' => $valuerg['encuesta_cve'],
-                                'evaluador_user_cve' => $idusuario, 'role_evaluador' => $valuerg['rol_evaluador_cve']));
+                                'evaluador_user_cve' => $idusuario, 'role_evaluador' => $valuerg['rol_evaluador_cve']));*/
                         }
 
 
@@ -790,8 +790,8 @@ class Encuestausuario extends CI_Controller {
 
 
 
-            $listado_autoeval = $this->enc_mod->get_usuariosasig_aevaluar(array('user_id' => $idusuario,'cur_id' => $idcurso,'tutorizado' =>$datos_curso['data'][0]['tutorizado'])); 
-            $datos['listado_autoeval'] = $listado_autoeval;
+            //$listado_autoeval = $this->enc_mod->get_usuariosasig_aevaluar(array('user_id' => $idusuario,'cur_id' => $idcurso,'tutorizado' =>$datos_curso['data'][0]['tutorizado'])); 
+            //$datos['listado_autoeval'] = $listado_autoeval;
 
 
             $nombreevaluador = $datos_usuario_evaluador[0]['nombres'] . ' ' . $datos_usuario_evaluador[0]['apellidos'];
