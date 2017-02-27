@@ -344,11 +344,11 @@ class Curso extends CI_Controller {
 
 
 
-                                    /*$datos_user_aeva[] = $this->enc_mod->listado_autoeval(array('gpo_evaluador' => $gpo_evaluador, 'role_evaluado' => $valuerg['rol_evaluado_cve'],
+                                    $datos_user_aeva[] = $this->enc_mod->listado_autoeval(array('gpo_evaluador' => $gpo_evaluador, 'role_evaluado' => $valuerg['rol_evaluado_cve'],
                                         'cur_id' => $idcurso, 'encuesta_cve' => $valuerg['encuesta_cve'],
                                         'evaluador_user_cve' => $valuerg['evaluador_user_cve'],
                                         'role_evaluador' => $role_evaluador, 'eva_tipo' => $valuer['eva_tipo'])
-                                    );*/
+                                    );
                                 }
                             }
                         } elseif ($valuerg['eva_tipo'] == 2) {//Por bloque
@@ -401,7 +401,7 @@ class Curso extends CI_Controller {
                                           } */
                                     }
                                 }
-                                //$this->session->set_userdata(array('datos_encuesta_usuario' => $datos_user_aeva));
+                                $this->session->set_userdata(array('datos_encuesta_usuario' => $datos_user_aeva));
                                 //pr($this->session->userdata());
                                /* foreach ($datos_usuario_bloque as $keyb => $valueb) {
 
@@ -423,10 +423,10 @@ class Curso extends CI_Controller {
                             //echo "entra3";      
                             //echo $valuer['encuesta_cve'];   //por usuario
                             //echo $value;
-                           /*$datos_user_aeva[] = $this->enc_mod->listado_autoeval(array('role_evaluado' => $valuerg['rol_evaluado_cve'],
+                           $datos_user_aeva[] = $this->enc_mod->listado_autoeval(array('role_evaluado' => $valuerg['rol_evaluado_cve'],
                                 'cur_id' => $idcurso, 'encuesta_cve' => $valuerg['encuesta_cve'],
                                 'evaluador_user_cve' => $valuerg['evaluador_user_cve'], 'role_evaluador' => $valuerg['rol_evaluador_cve'])
-                           );*/
+                           );
                         }
 
 

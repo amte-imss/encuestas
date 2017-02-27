@@ -673,11 +673,11 @@ class Encuestausuario extends CI_Controller {
                                     $gpo_evaluador = $value1['cve_grupo']; # code...
                                     //pr($gpo_evaluador);
 
-                                    /*$datos_user_aeva[] = $this->enc_mod->listado_eval(array('gpo_evaluador' => $gpo_evaluador, 'role_evaluado' => $valuerg['rol_evaluado_cve'],
+                                    $datos_user_aeva[] = $this->enc_mod->listado_eval(array('gpo_evaluador' => $gpo_evaluador, 'role_evaluado' => $valuerg['rol_evaluado_cve'],
                                         'cur_id' => $idcurso, 'encuesta_cve' => $valuerg['encuesta_cve'],
                                         'evaluador_user_cve' => $idusuario,
                                         'role_evaluador' => $role_evaluador, 'eva_tipo' => $valuer['eva_tipo'])
-                                    );*/
+                                    );
                                 }
                             }
                         } elseif ($valuerg['eva_tipo'] == 2) {//Por bloque
@@ -747,9 +747,9 @@ class Encuestausuario extends CI_Controller {
                             //echo "entra3";      
                             //echo $valuer['encuesta_cve'];   //por usuario
                             //echo $value;
-                            /*$datos_user_aeva[] = $this->enc_mod->listado_eval(array('role_evaluado' => $valuerg['rol_evaluado_cve'],
+                            $datos_user_aeva[] = $this->enc_mod->listado_eval(array('role_evaluado' => $valuerg['rol_evaluado_cve'],
                                 'cur_id' => $idcurso, 'encuesta_cve' => $valuerg['encuesta_cve'],
-                                'evaluador_user_cve' => $idusuario, 'role_evaluador' => $valuerg['rol_evaluador_cve']));*/
+                                'evaluador_user_cve' => $idusuario, 'role_evaluador' => $valuerg['rol_evaluador_cve']));
                         }
 
 
