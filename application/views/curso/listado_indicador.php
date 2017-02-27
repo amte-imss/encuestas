@@ -49,7 +49,9 @@ if (isset($registros) && !empty($registros))
                             $registro['delegacion_evaluador2'] = '<span class="text-danger">*</span> '.$registro['autoeva_nom_delegacion'];
                             $registro['unidad_evaluador2'] = '<span class="text-danger">*</span> '.$registro['rama_tut_autoevaluacion'];
                             $registro['categoria_evaluador2'] = '<span class="text-danger">*</span> '.$registro['autoeva_cat_nombre'];
-                        }   
+                        }
+                        //pr($registro);
+                        $registro['GN'] = (!empty($registro['GN'])) ? implode(str_getcsv(trim($registro['GN'], '{}')), ', ') :  ((!empty($registro['GN1'])) ? $registro['GN1'] : '');
                         ?>
                         <tr>
                             <td><?php echo $registro['BLN']; ?></td>

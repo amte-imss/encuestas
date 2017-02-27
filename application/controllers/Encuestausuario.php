@@ -601,7 +601,7 @@ class Encuestausuario extends CI_Controller {
 //            pr($this->session->userdata('logueado'));
 //            pr($this->session->userdata('id'));
             $sesion_valida = valida_sesion_activa($idusuario);
-            $sesion_valida = 1;
+            //$sesion_valida = 1;
             if ($sesion_valida) {
                 $this->session->unset_userdata('datos_encuesta_usuario'); //Eliminar la variable ya que puedequedara cargada con datos de otro curso
 

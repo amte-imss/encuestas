@@ -2913,7 +2913,8 @@ class Encuestas_model extends CI_Model {
             'concat("U2".firstname, \' \', "U2".lastname, \' (\',"U1".username, \')\') as "UN2"',
             "UR2.name URN2",
             'CURSO.namec "CN"',
-            'GRUPO.name "GN"',
+            'CASE WHEN "AA".grupos_ids_text <> \'\' AND "AA".grupos_ids_text IS NOT NULL THEN (SELECT array_agg(g.name)::varchar FROM public.mdl_groups g WHERE g.id=ANY(regexp_split_to_array("AA".grupos_ids_text, \',\')::bigint[])) ELSE null END AS "GN"',
+            'GRUPO.name "GN1"',
             'depto_tut_evaluado.name_region "region_evaluado"',
             'depto_tut_evaluado.nom_delegacion "delegacion_evaluado"',
             //'depto_tut_evaluado.des_unidad_atencion "unidad_evaluado"',
@@ -3065,7 +3066,7 @@ class Encuestas_model extends CI_Model {
         $this->db->reset_query();
         $group_by = array('BLOQUE.bloque', 'AA.course_cve', 'AA.group_id', 'AA.evaluador_user_cve',
             'AA.evaluador_rol_id', 'AA.evaluado_user_cve', 'AA.evaluado_rol_id',
-            'AA.grupos_ids_text', 'UN1', '"U1".username', 'URN1', 'UN2', 'URN2', 'CN', 'GN',
+            'AA.grupos_ids_text', 'UN1', '"U1".username', 'URN1', 'UN2', 'URN2', 'CN', 'GN', 'GN1',
             'depto_tut_evaluado.name_region', ' depto_tut_evaluado.nom_delegacion',
             /*'depto_tut_evaluado.des_unidad_atencion',*/'depto_tut_evaluado.cve_depto_adscripcion', 'cat_tut_evaluado.nom_nombre',
             'depto_pre_evaluador.name_region', 'depto_pre_evaluador.nom_delegacion',
@@ -3121,7 +3122,8 @@ class Encuestas_model extends CI_Model {
 
         //pr($query);
 
-        $resultado = $this->db->query($query)->result_array();
+        $resultado = $this->db->query($query)->result_array(); 
+        //pr($this->db->last_query());
         $this->db->reset_query();
         $this->db->flush_cache();
         $salida['total'] = $count;
