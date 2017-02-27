@@ -26,7 +26,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <th>Grupo evaluado</th>
                 <th>Región evaluado</th>
                 <th>Delegación evaluado</th>
-                <th>Adscripción evaluado</th>
+                <th>Unidad evaluado</th>
                 <th>Categoría evaluado</th>
                 <th>Matrícula evaluador</th>
                 <th>Nombre evaluador</th>
@@ -40,7 +40,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <?php //pr($preguntas); 
                 if(!empty($preguntas)){
                     foreach ($preguntas as $key_p => $pregunta) {
-                        echo '<th>'.$pregunta['pregunta'].'</th>';
+                        $abierta = ($pregunta['is_abierta']==1) ? 'Abierta.' : '';
+                        $bono = ($pregunta['is_bono']==1) ? 'Aplica para bono.' : '';
+                        
+                        echo '<th>'.$pregunta['orden'].') '.$pregunta['pregunta'].' <span style="color:blue; font-size:.75rem">'.$abierta.'</span> <span style="color:red; font-size:.75rem">'.$bono.'</span></th>';
                     }
                 } ?>
                 <th>Porcentaje de evaluador</th>
@@ -126,8 +129,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     foreach ($preguntas as $key_p => $pregunta) {
                         //echo '<td>'.$respuestas[$dato['course_cve']][$dato['group_id']][$dato['encuesta_cve']][$dato['evaluado_user_cve']][$dato['evaluador_user_cve']][$pregunta['preguntas_cve']]['texto'].'</td>';
                         //if(isset($dato['course_cve']) && isset($dato['group_id']) && isset($dato['encuesta_cve']) && isset($dato['evaluado_user_cve']) && isset($dato['evaluador_user_cve']) && isset($pregunta['preguntas_cve'])) {
+                        /*if($key_p==39){
+                            pr($pregunta);
+                            pr($respuestas[$dato['course_cve']][$dato['grupos_ids_text']][$dato['encuesta_cve']][$dato['evaluado_user_cve']][$dato['evaluador_user_cve']]);
+                        }*/
                         if(isset($respuestas[$dato['course_cve']][$dato['grupos_ids_text']][$dato['encuesta_cve']][$dato['evaluado_user_cve']][$dato['evaluador_user_cve']][$pregunta['preguntas_cve']])) {
-                            echo '<td>'.$respuestas[$dato['course_cve']][$dato['grupos_ids_text']][$dato['encuesta_cve']][$dato['evaluado_user_cve']][$dato['evaluador_user_cve']][$pregunta['preguntas_cve']]['texto'].'</td>';
+                            if($pregunta['is_abierta']==1){
+                                echo '<td>'.$respuestas[$dato['course_cve']][$dato['grupos_ids_text']][$dato['encuesta_cve']][$dato['evaluado_user_cve']][$dato['evaluador_user_cve']][$pregunta['preguntas_cve']]['respuesta_abierta'].'</td>';
+                            } else {
+                                echo '<td>'.$respuestas[$dato['course_cve']][$dato['grupos_ids_text']][$dato['encuesta_cve']][$dato['evaluado_user_cve']][$dato['evaluador_user_cve']][$pregunta['preguntas_cve']]['texto'].'</td>';
+                            }
                         } else {
                             echo '<td></td>';
                         }

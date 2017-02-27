@@ -16,13 +16,13 @@ if (isset($registros) && !empty($registros))
                         <th rowspan="2">Rol del evaluador</th>
                         <th rowspan="2">Región del evaluador</th>
                         <th rowspan="2">Delegación / UMAE del evaluador</th>
-                        <th rowspan="2">Departamento del evaluador</th>
+                        <th rowspan="2">Unidad del evaluador</th>
                         <th rowspan="2">Categoría del evaluador</th>
                         <th rowspan="2">Nombre del evaluado</th>
                         <th rowspan="2">Rol del evaluado</th>
                         <th rowspan="2">Región del evaluado</th>
                         <th rowspan="2">Delegación / UMAE del evaluado</th>
-                        <th rowspan="2">Departamento del evaluado</th>
+                        <th rowspan="2">Unidad del evaluado</th>
                         <th rowspan="2">Categoría del evaluado</th>
                         <?php
                         $html_head = '';

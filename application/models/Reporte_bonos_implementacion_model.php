@@ -112,7 +112,8 @@ class config_busqueda {
             'vdc.tipo_curso', 'enc.is_bono', "concat(evaluado.firstname, ' ', evaluado.lastname) as name_evaluado",
             "evaluado.username", 'revaluado."name" as "name_rol_evaluado"', 'revaluado.id "id_rol_evaluado"',
             'vd.name_region', 'reg.rol_evaluador_cve', 'vd.cve_depto_adscripcion', 'vd.nom_delegacion',
-            "(select * from departments.get_rama_completa(vd.cve_depto_adscripcion, 7)) as rama_ads_evaluado"
+            //"(select * from departments.get_rama_completa(vd.cve_depto_adscripcion, 7)) as rama_ads_evaluado"
+            "(select * from departments.get_unidad(vd.cve_depto_adscripcion, 7)) as rama_ads_evaluado"
         );
     }
 

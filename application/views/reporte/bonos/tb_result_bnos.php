@@ -25,7 +25,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <th>Rol evaluado</th>
                     <th>Región</th>
                     <th>Delegación</th>
-                    <th>Clave de Adscripción</th>
+                    <th>Unidad</th>
                     <?php if (!empty($reglas_evaluacion)) { ?>
                         <?php foreach ($reglas_evaluacion as $val) {
                             ?>
@@ -40,13 +40,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     <?php
                     $rama = $val['rama_ads_evaluado'];
-                    $text_rama_adsc[0] = ' ';
+                    /*$text_rama_adsc[0] = ' ';
                     if(!empty($rama)){
                         $a_depto_rama_evaluador = explode(":", $rama);
 //                        pr($rama);
 //                        pr($a_depto_rama_evaluador);
                         $text_rama_adsc = (isset($a_depto_rama_evaluador[2])) ? explode("&", $a_depto_rama_evaluador[2]) : array('');
-                    }
+                    }*/
 //                    pr($rama);
                     $grupo = isset($val['mdl_groups_cve']) ? $val['mdl_groups_cve'] : '--';
                     $bloque = isset($val['bloque']) ? $val['bloque'] : '--';
@@ -64,7 +64,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     echo "<td>" . $val['name_rol_evaluado'] . "</td>";
                     echo "<td>" . $val['name_region'] . "</td>";
                     echo "<td>" . $val['nom_delegacion'] . "</td>";
-                    echo "<td>" . $val['cve_depto_adscripcion'] . ' ' . $text_rama_adsc[0] . "</td>";
+                    echo "<td>" . $rama . "</td>";
 
 //                pr($result_promedio);
 
