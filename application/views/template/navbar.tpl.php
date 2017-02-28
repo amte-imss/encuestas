@@ -67,9 +67,9 @@ if (isset($logueado) && !empty($logueado)) {
                                 <?php if (isset($modulos_acceso[En_modulos::GESTION_REGLAS_EVALUACION])and $modulos_acceso[En_modulos::GESTION_REGLAS_EVALUACION]['acceso'] == 1) { ?>
                                     <li><a href="<?php echo site_url('reglas_evaluacion/index'); ?>" class="a_menu">Gestión de Reglas de evaluación</a></li>
                                 <?php } ?>
-                                <?php if (isset($modulos_acceso[En_modulos::GESTION_DESIGNAR_AUTOEVALUACION])and $modulos_acceso[En_modulos::GESTION_DESIGNAR_AUTOEVALUACION]['acceso'] == 1) { ?>
+                                <?php /*if (isset($modulos_acceso[En_modulos::GESTION_DESIGNAR_AUTOEVALUACION])and $modulos_acceso[En_modulos::GESTION_DESIGNAR_AUTOEVALUACION]['acceso'] == 1) { ?>
                                     <li><a href="<?php echo site_url('encuestausuario/lista_encuesta_usuario_autoevaluado'); ?>" class="a_menu">Gestión de usuarios autoevaluados</a></li>
-                                <?php } ?>
+                                <?php }*/ ?>
                             </ul>
                         </li>
                     <?php } ?>
