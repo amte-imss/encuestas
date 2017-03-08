@@ -121,7 +121,7 @@ class Curso extends CI_Controller {
 //                    [id] => 11858
 //                    [name] => ZACATECAS
 //                )
-            
+            //pr($data_tabla);
             $data['vista'] = $this->load->view('curso/tabla_bloque_grupo', $data_tabla, true);
         }
         $main_contet = $this->load->view('curso/curso_bloque_grupos', $data, true);
@@ -164,6 +164,7 @@ class Curso extends CI_Controller {
             }
             $data_tabla['max_boque'] = $num_max;
             $data_tabla['bloques'] = $bloques;
+            $data_tabla['modulos_acceso'] = $this->session->userdata("modulos_acceso");
             $html['html'] = $this->load->view('curso/tabla_bloque_grupo', $data_tabla, true);
             echo json_encode($html);
         }

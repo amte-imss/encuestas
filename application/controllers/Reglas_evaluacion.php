@@ -18,6 +18,7 @@ class Reglas_evaluacion extends CI_Controller {
         parent::__construct();
 
         $this->load->database();
+        $this->db->schema = 'encuestas';
         $this->load->library('form_complete'); // form complete
         $this->load->library('form_validation'); //implemantación de la libreria form validation
         $this->load->library('grocery_CRUD');

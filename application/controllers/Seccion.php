@@ -7,6 +7,7 @@ class Seccion extends CI_Controller {
 		parent::__construct();
 
 		$this->load->database();
+                $this->db->schema = 'encuestas';
 		$this->load->helper('url');
 
 		//$this->load->library('grocery_CRUD');
@@ -39,7 +40,7 @@ class Seccion extends CI_Controller {
 
 		    //$crud = new grocery_CRUD();
 
-		    $crud->set_table('encuestas.sse_seccion')
+		    $crud->set_table('sse_seccion')
 		        ->set_subject('Sección')
 		        ->columns('seccion_cve','descripcion')
 		        ->display_as('seccion_cve','#')

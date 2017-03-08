@@ -31,14 +31,16 @@
                     echo '<td>' . $grupo['name'] . '</td>';
                     echo '<td>' . $tt . '</td>';
                     echo '<td>';
-                    echo $this->form_complete->create_element(array('id' => 'b_' . $grupo['id'],
-                        'type' => 'dropdown', 'options' => $bloques,
-                        'value' => $grupo['bloque'],
-                        'first' => array('' => 'Seleccione bloque'),
-                        'attributes' => array('name' => 'b_' . $grupo['id'], 'class' => 'form-control ddp',
-                            'placeholder' => 'Bloque para el grupo ' . $grupo['name'],
-                            'data-toggle' => 'tooltip', 'data-placement' => 'top',
-                            'title' => 'Bloque para el grupo ' . $grupo['name'])));
+                    if(isset($grupo['tts']) and !empty($grupo['tts'])){
+                        echo $this->form_complete->create_element(array('id' => 'b_' . $grupo['id'],
+                            'type' => 'dropdown', 'options' => $bloques,
+                            'value' => $grupo['bloque'],
+                            'first' => array('' => 'Seleccione bloque'),
+                            'attributes' => array('name' => 'b_' . $grupo['id'], 'class' => 'form-control ddp',
+                                'placeholder' => 'Bloque para el grupo ' . $grupo['name'],
+                                'data-toggle' => 'tooltip', 'data-placement' => 'top',
+                                'title' => 'Bloque para el grupo ' . $grupo['name'])));
+                    }
                     echo form_error_format('b_' . $grupo['id']);
                     echo '</td>';
                     echo '</tr>';
