@@ -3412,7 +3412,6 @@ class Encuestas_model extends CI_Model {
         return $resultado;
     }
 
-
     public function listado_autoeval($params = null) {
         $resultado = array();
 
