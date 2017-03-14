@@ -3412,8 +3412,10 @@ class Encuestas_model extends CI_Model {
         return $resultado;
     }
 
+
     public function listado_autoeval($params = null) {
         $resultado = array();
+
 
         $this->db->where('tutorias.mdl_userexp.cursoid', $params['cur_id']);
         $this->db->where('tutorias.mdl_userexp.ind_status', '1');
@@ -3443,7 +3445,7 @@ class Encuestas_model extends CI_Model {
                 (select evaluacion_resul_cve from encuestas.sse_result_evaluacion_encuesta_curso 
                 where encuesta_cve=' . $params['encuesta_cve'] . ' and course_cve=' . $params['cur_id'] . ' and group_id=' . $params['gpo_evaluador'] . ' 
                     and evaluado_user_cve=public.mdl_user.id and evaluador_user_cve=' . $params['evaluador_user_cve'] . ')  as realizado,
-             (select public.mdl_user.firstname || \' \' || public.mdl_user.lastname from public.mdl_user where id='. $params['evaluador_user_cve']. ') as nomevaluador'.
+             (select public.mdl_user.firstname || \' \' || public.mdl_user.lastname from public.mdl_user where id='. $params['evaluador_user_cve']. ') as nomevaluador,'.
              $condicionae);
 
 
@@ -3592,6 +3594,7 @@ sse_designar_autoeveluaciones.grupos_ids_text = grupos_ids_text','left');*/
 
     public function listado_evagral($params = null) {
         $resultado = array();
+        $arrol[]='';
         /* SELECT c.id AS cve_curso,  u.id AS cve_usuario, u.username AS username, u.firstname AS nom, u.lastname AS pat,
           u.cve_departamental
           FROM mdl_user u
