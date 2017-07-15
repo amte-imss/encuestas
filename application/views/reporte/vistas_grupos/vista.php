@@ -103,7 +103,7 @@ echo form_open($controlador, array('id' => 'form_curso'));
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" id="div_orden">
                     <div class="col-lg-4 col-sm-4">
                         <div class="panel-body input-group input-group-sm">
                             <span class="input-group-addon">Número de registros a mostrar:</span>

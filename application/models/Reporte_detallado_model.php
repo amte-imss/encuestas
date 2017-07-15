@@ -9,6 +9,7 @@ class Reporte_detallado_model extends CI_Model {
         parent::__construct();
         $this->config->load('general');
         //$this->load->database();
+        //$this->output->enable_profiler(TRUE);
     }
     
     /*
@@ -155,7 +156,7 @@ class Reporte_detallado_model extends CI_Model {
         $this->db->join('encuestas.sse_result_evaluacion_encuesta_curso res_eva_enc', 'res_eva_enc.encuesta_cve = eva.encuesta_cve and res_eva_enc.course_cve = eva.course_cve and res_eva_enc.evaluado_user_cve = eva.evaluado_user_cve and res_eva_enc.evaluador_user_cve = eva.evaluador_user_cve', 'left');
         $this->db->join('encuestas.sse_curso_bloque_grupo curso_bloque_grupo', 'curso_bloque_grupo.course_cve=res_eva_enc.course_cve and (curso_bloque_grupo.mdl_groups_cve=res_eva_enc.group_id  or curso_bloque_grupo.mdl_groups_cve= ANY (string_to_array(res_eva_enc.grupos_ids_text, \',\')::int[]))', 'left');
         $this->db->join('encuestas.sse_reglas_evaluacion eva_reg', 'eva_reg.reglas_evaluacion_cve=enc.reglas_evaluacion_cve', 'left');
-        $this->db->join('public.mdl_groups grupo', 'grupo.id=eva.group_id', 'left');
+        $this->db->join('public.mdl_groups grupo', 'grupo.id=eva.group_id and grupo.courseid = eva.course_cve', 'left');
         $this->db->join('public.mdl_user evaluado', 'evaluado.id=eva.evaluado_user_cve', 'left');
         $this->db->join('public.mdl_role rol_evaluado', 'rol_evaluado.id=eva.evaluado_rol_id', 'left');
         $this->db->join('tutorias.mdl_usertutor tut_evaluado', 'tut_evaluado.nom_usuario=evaluado.username and tut_evaluado.id_curso=eva.course_cve and eva.evaluado_rol_id <> 5', 'left');

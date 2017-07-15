@@ -121,8 +121,9 @@ class Resultadocursoencuesta extends CI_Controller {
 
     private function listado_resultado($data, $form, $view = '') {
         $pagination = $this->template->pagination_data_general($data); //Crear mensaje y links de paginación
-        $links = "<div class='col-sm-5 dataTables_info' style='line-height: 50px;'>" . $pagination['total'] . "</div>
-                <div class='col-sm-7 text-right'>" . $pagination['links'] . "</div>";
+        /*$links = "<div class='col-sm-5 dataTables_info' style='line-height: 50px;'>" . $pagination['total'] . "</div>
+                <div class='col-sm-7 text-right'>" . $pagination['links'] . "</div>";*/
+        $links = "";
         echo $links . $this->load->view($view, $data, TRUE) . $links . '
             <script>
             $("ul.pagination li a").click(function(event){

@@ -5,7 +5,7 @@ if (isset($evaluaciones) && !empty($evaluaciones)) {
 //pr($empleado);
     ?>
     <div class="col-sm-12 col-md-12 col-lg-12 text-danger text-left">Las celdas marcadas con * indican que esos datos derivan de una autoevaluación.</div>
-    <div id="div_y" style="width:900px; height:500px; overflow: scroll;">
+    <div id="div_y" style="width:900px; height:600px; overflow: scroll;">
         <!--<div class="table-responsive">-->
             <table class="table table-striped table-hover table-bordered">
                 <thead>
@@ -120,5 +120,6 @@ if (isset($evaluaciones) && !empty($evaluaciones)) {
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
         $('#btn_export').show();
+        $('#div_orden').hide();
     });
 </script>

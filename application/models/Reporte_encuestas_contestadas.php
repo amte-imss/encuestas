@@ -9,6 +9,7 @@ class Reporte_encuestas_contestadas extends CI_Model {
         parent::__construct();
         $this->config->load('general');
         $this->load->database();
+        //$this->output->enable_profiler(TRUE);
     }
 
     public function listado_evaluados_($params = null) {
@@ -99,7 +100,7 @@ class Reporte_encuestas_contestadas extends CI_Model {
         $array_config = $scripts->get_encuestas_param($params); //Obtene array para generar consulta
 //        pr($array_config);
 //        exit();
-        $this->db->start_cache();/**         * *************Inicio cache  *************** */
+        //$this->db->start_cache();/**         * *************Inicio cache  *************** */
 //        $this->db->from($this->confFind->getFrom());
         foreach ($array_config['join'] as $value) {//Aplica joins
             $this->db->join($value['tabla'], $value['on'], $value['escape']);
@@ -119,17 +120,17 @@ class Reporte_encuestas_contestadas extends CI_Model {
             $this->db->where($array_config['where_no_contestadas']);
         }
 
-        $this->db->stop_cache();
+        /*$this->db->stop_cache();
         $num_rows = $this->db->query($this->db->select('count(*) as total')->get_compiled_select($array_config['from']))->result();
         $total = count($num_rows);
 
 //        pr($this->db->last_query());
         $this->db->reset_query(); //Reset de query 
-
+        */
         $this->db->select($array_config['select']); //Agrega select para traer los campos 
-        if (isset($params['per_page']) && isset($params['current_row'])) { //Establecer límite definido para paginación 
+        /*if (isset($params['per_page']) && isset($params['current_row'])) { //Establecer límite definido para paginación 
             $this->db->limit($params['per_page'], $params['current_row']);
-        }
+        }*/
 
         $order_type = (isset($params['order_type'])) ? $params['order_type'] : 'asc';
         if (isset($params['order']) and ! empty($params['order'])) { //Establecer límite definido para paginación 
@@ -144,7 +145,8 @@ class Reporte_encuestas_contestadas extends CI_Model {
         //pr($this->db->last_query());
 //        exit();
         $result['data'] = $query;
-        $result['total'] = $total;
+        //$result['total'] = $total;
+        $result['total'] = $ejecuta->num_rows();
         $result['view_res'] = $array_config['view_res'];
         $result['tutorizado'] = $array_config['tutorizado'];
         $result['text_export'] = $array_config['text_export'];
@@ -454,11 +456,12 @@ class EncNoContestadas {
             array('tabla' => 'departments.ssv_departamentos depdo', 'on' => 'depdo.cve_depto_adscripcion = tutdo.cve_departamento', 'escape' => 'left'),
             //Evaluador
             array('tabla' => 'public.mdl_enrol enrdor', 'on' => 'enrdor.courseid = mcs.id', 'escape' => ''),
-            array('tabla' => 'mdl_context ctxt', 'on' => 'ctxt.instanceid = mcs.id', 'escape' => ''),
-            array('tabla' => 'mdl_role_assignments rss', 'on' => 'rss.contextid = ctxt.id', 'escape' => ''),
+            array('tabla' => 'mdl_context ctxt', 'on' => 'ctxt.instanceid = mcs.id and ctxt.contextlevel=50', 'escape' => ''),
+            array('tabla' => 'mdl_user_enrolments uer', 'on' => 'uer.enrolid = enrdor.id', 'escape' => ''),
+            array('tabla' => 'mdl_user uedor', 'on' => 'uedor.id = uer.userid', 'escape' => ''),
+            array('tabla' => 'mdl_role_assignments rss', 'on' => 'rss.contextid = ctxt.id and rss.userid=uedor.id', 'escape' => ''),
             array('tabla' => 'mdl_role mrdor', 'on' => 'mrdor.id = rss.roleid and mrdor.id = rege.rol_evaluador_cve', 'escape' => ''),
             //array('tabla' => 'mdl_user uedor', 'on' => 'uedor.id = rss.userid and uedor.id <> uedo.id', 'escape' => ''),
-            array('tabla' => 'mdl_user uedor', 'on' => 'uedor.id = rss.userid', 'escape' => ''),
             array('tabla' => 'public.mdl_groups_members gm', 'on' => 'gm.userid = uedor.id AND gm.groupid = mg.id', 'escape' => 'RIGHT'),
             array('tabla' => 'gestion.sgp_tab_preregistro_al gpregdor', 'on' => 'gpregdor.nom_usuario = uedor.username and gpregdor.cve_curso = ec.course_cve and rege.rol_evaluador_cve = 5', 'escape' => 'left'),
             array('tabla' => 'nomina.ssn_categoria catpredor', 'on' => 'catpredor.cve_categoria = gpregdor.cve_cat', 'escape' => 'left'),
