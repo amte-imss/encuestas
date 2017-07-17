@@ -93,7 +93,8 @@ class Login extends CI_Controller {
                     //pr($usuario_data);
                     $this->session->set_userdata($usuario_data);
                     if (is_null($curseid)) {
-                        redirect('encuestas/index');
+                        //redirect('encuestas/index');
+						redirect('inicio/index');
                     } else {
                         redirect('encuestausuario/lista_encuesta_usuario?iduser=' . $id . '&idcurso=' . $curseid . '&token=550');
                     }

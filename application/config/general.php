@@ -33,7 +33,7 @@ $config['menu_super_admin'] = array('resultadocursoencuesta' => array('*'), 'enc
 $config['menu_validador'] = array('login' => array('cerrar_session', 'cerrar_session_ajax'), 'dashboard' => array('*'), 'tarjeton' => array('*'), 'pagina_no_encontrada' => array('index'), 'bonos_titular' => array('*'), 'bono_perfil_empleado' => array('*'));
 
 $config['menu_no_logueado'] = array('login/logeo', 'encuestausuario/lista_encuesta_usuario');
-$config['menu_logueado_general'] = array('login/cerrar_session', 'modal/*');
+$config['menu_logueado_general'] = array('login/cerrar_session', 'modal/*', 'inicio/*');
 $config['omite_menus'] = array('encuestausuario' => array('*')); //Es importante que el usuario mantenga una sesión inicida, pero no deben aparecer los menus, ejemplos: gestión, reportes implementación, instrumentos etc. 
 /////Ruta de solicitudes
 $config['ruta_documentacion'] = $_SERVER["DOCUMENT_ROOT"] . "/sipimss_bonos/assets/files/archivos_bono/";
@@ -313,29 +313,13 @@ $config['ENCUESTAS_RESPUESTAS_PREGUNTA'] = array(
     ),
 );
 
-// Checar esta posible configuración.
-// if($_SERVER['CI_ENV']  === "development"){
-//      $config['url_sied'] ='http://'; // <- url en local
-//      $config['url_sied_logout'] = 'http:// ---  /app/login/logout.php'; // <- url en local
-// }else if($_SERVER['CI_ENV']  === "production"){ // <- checar nombre de variable para produción
-//      $config['url_sied'] ='http://11.32.41.92/kio/sied';
-//      $config['url_sied_logout'] = 'http://11.32.41.92/kio/sied/app/login/logout.php';    
-// }
 //Liga sied productivo
-//$config['url_sied'] = 'http://11.32.41.30/kio/sied';
-//$config['url_sied_logout'] = 'http://11.32.41.30/kio/sied/app/login/logout.php';
-//$config['url_sied'] = 'http://innovaedu.imss.gob.mx/sied';
-//$config['url_sied_logout'] = 'http://innovaedu.imss.gob.mx/sied/app/login/logout.php';
-//$config['url_moodle_logout'] = 'http://innovaedu.imss.gob.mx/educacionadistancia/login/index.php';
-//$config['url_sied'] = 'http://11.32.41.92/kio/sied';
-//$config['url_sied_logout'] = 'http://11.32.41.92/kio/sied/app/login/logout.php';
-//$config['url_moodle_logout'] = 'http://11.32.41.92/soluciones_web/kio/educacionadistancia/login/index.php';
-$config['url_sied'] = 'http://11.32.41.13/kio_des/sied';
+/*$config['url_sied'] = 'http://innovaedu.imss.gob.mx/sied';
+$config['url_sied_logout'] = 'http://innovaedu.imss.gob.mx/sied/app/login/logout.php';
+$config['url_moodle_logout'] = 'http://innovaedu.imss.gob.mx/educacionadistancia/login/index.php';*/
+$config['url_sied'] = 'http://11.32.41.13/kio_des/sied'; 
 $config['url_sied_logout'] = 'http://11.32.41.13/kio_des/sied/app/login/logout.php';
-$config['url_moodle_logout'] = 'http://11.32.41.13/kio_des/educacionadistancia/login/index.php';
-
-//$config['url_sied'] ='http://localhost/encuestas/';
-//$config['url_sied_logout'] = 'http://localhost/encuestas/app/login/logout.php';
+$config['url_moodle_logout'] = 'http://11.32.41.13/kio_des/educacionadistancia_kio/login/index.php';
 
 $config['TIPO_INSTRUMENTO'] = array(
     'DESEMPENIO' => 1,
