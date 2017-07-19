@@ -179,6 +179,15 @@ class Reporte_detallado_model extends CI_Model {
         $this->db->join('nomina.ssn_categoria cat_tut_autoevaluacion', 'cat_tut_autoevaluacion.cve_categoria = tutor_autoevaluacion.cve_categoria', 'left');
         $this->db->join('departments.ssv_departamentos depto_tut_autoevaluacion', 'depto_tut_autoevaluacion.cve_depto_adscripcion=tutor_autoevaluacion.cve_departamento', 'left');
         
+        //eva.group_id, grupo.name
+        $this->db->stop_cache();
+        /////////////////////// Fin almacenado de parámetros en cache ///////////////////////////
+        ///////////////////////////// Obtener número de registros ///////////////////////////////
+        $nr = $this->db->get_compiled_select('encuestas.sse_encuestas enc'); //Obtener el total de registros
+        $num_rows = $this->db->query("SELECT array_agg(DISTINCT(encuesta_cve)) as encuestas, array_agg(DISTINCT(encuesta_cve, course_cve, evaluado_rol_id, evaluador_rol_id)) as enc_cur_eva_evar FROM (" . $nr . ") AS temp")->result(); //Extracción de encuestas, para ser utilizadas en el filtro de preguntas
+        //pr($this->db->last_query());
+        //pr($this->db->last_query()); exit();
+        /////////////////////////////// FIN número de registros /////////////////////////////////
         $this->db->group_by("enc.encuesta_cve, enc.descripcion_encuestas, enc.is_bono, enc.reglas_evaluacion_cve, curso_bloque_grupo.bloque, enc.tipo_encuesta, enc.eva_tipo, tex_tutorizado,
             eva.course_cve, curso.namec, curso.clave, curso.tipo_curso, curso.tipo_curso_id, curso.horascur, curso.anio, curso.fecha_inicio, curso.fecha_fin, eva.group_id, eva.grupos_ids_text, grupo.name, 
             eva.evaluado_user_cve, eva.evaluado_rol_id, rol_evaluado.name, tut_evaluado.cve_departamento, 
@@ -192,14 +201,7 @@ class Reporte_detallado_model extends CI_Model {
             depto_tut_autoevaluacion.nom_depto_adscripcion, depto_tut_autoevaluacion.cve_regiones, depto_tut_autoevaluacion.name_region, depto_tut_autoevaluacion.cve_delegacion, 
             depto_tut_autoevaluacion.nom_delegacion, tutor_autoevaluacion.cve_categoria, cat_tut_autoevaluacion.nom_nombre,
             res_eva_enc.calif_emitida");
-        //eva.group_id, grupo.name
-        $this->db->stop_cache();
-        /////////////////////// Fin almacenado de parámetros en cache ///////////////////////////
-        ///////////////////////////// Obtener número de registros ///////////////////////////////
-        $nr = $this->db->get_compiled_select('encuestas.sse_encuestas enc'); //Obtener el total de registros
-        $num_rows = $this->db->query("SELECT count(*) AS total, array_agg(DISTINCT(encuesta_cve)) as encuestas, array_agg(DISTINCT(encuesta_cve, course_cve, evaluado_rol_id, evaluador_rol_id)) as enc_cur_eva_evar FROM (" . $nr . ") AS temp")->result();
-        //pr($this->db->last_query());
-        /////////////////////////////// FIN número de registros /////////////////////////////////
+        
         $busqueda = array(
             "enc.encuesta_cve", "enc.descripcion_encuestas", "enc.is_bono", "enc.tipo_encuesta", "enc.eva_tipo", "tex_tutorizado",
             "eva.course_cve", "curso.namec", "curso.clave as curso_clave", "curso.tipo_curso", "curso.tipo_curso_id", "curso.horascur", "curso.anio", "curso.fecha_inicio", "curso.fecha_fin", "eva.grupos_ids_text", "grupo.name as grupo_nombre1", "curso_bloque_grupo.bloque", 
@@ -261,17 +263,17 @@ class Reporte_detallado_model extends CI_Model {
             $tipo_orden = (isset($params['order_type']) && !empty($params['order_type'])) ? $params['order_type'] : "ASC";
             $this->db->order_by($params['order'], $tipo_orden);
         }
-        if(!isset($params['export']) || (isset($params['export']) && $params['export']==false)) {
+        /*if(!isset($params['export']) || (isset($params['export']) && $params['export']==false)) {
             if (isset($params['per_page']) && isset($params['current_row'])) { //Establecer límite definido para paginación 
                 $this->db->limit($params['per_page'], $params['current_row']);
             }
-        }
+        }*/
         $query = $this->db->get('encuestas.sse_encuestas enc'); //Obtener conjunto de registros        
         
         $this->db->flush_cache();
 
         //pr($this->db->last_query());
-        $resultado['total'] = $num_rows[0]->total;
+        $resultado['total'] = $query->num_rows(); //Conteo de registros
         $encuestas = 0;
         $enc_cur_eva_evar = array();
         if($resultado['total']>0){

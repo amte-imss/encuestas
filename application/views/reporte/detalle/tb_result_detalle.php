@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 //pr($lista_unidades);
 ?>
 <div class="col-sm-12 col-md-12 col-lg-12 text-danger text-left">Las celdas marcadas con * indican que esos datos derivan de una autoevaluación.</div>
-<div id="div_tabla_reporte_general_encuestas table-responsive" style="overflow-x: auto; width: 1200px;">
+<div id="div_tabla_reporte_general_encuestas table-responsive" style="width:900px; height:800px; overflow: scroll;">
     <!--Mostrará la tabla de actividad docente -->
     <table class="table table-striped table-hover table-bordered " id="tabla_reporte_gral_encuestas">
         <thead>
@@ -154,3 +154,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </table>
 </div>
 <div class="col-sm-12 col-md-12 col-lg-12 text-danger text-left">Las celdas marcadas con * indican que esos datos derivan de una autoevaluación.</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+        $('#div_orden').hide();
+    });
+</script>
